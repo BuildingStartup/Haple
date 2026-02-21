@@ -1,5 +1,6 @@
 import { FaShoppingBag } from "react-icons/fa";
 import { FaTag } from "react-icons/fa";
+import { Link } from "react-router-dom";
 export default function Home() {
   return (
     <section className="h-screen w-full flex flex-col justify-center bg-[#F1F5F9] px-1 text-center">
@@ -28,13 +29,15 @@ export default function Home() {
         </button>
         {/*  */}
         <button className="bg-[#10B981] py-3 rounded-xl">
-          <p className="flex gap-2 items-center justify-center mb-2">
-            <span>
-              <FaShoppingBag />
-            </span>
-            Find Products
-          </p>
-          <p>Browse the campus marketplace</p>
+          <Link to="/SignUp">
+            <p className="flex gap-2 items-center justify-center mb-2">
+              <span>
+                <FaShoppingBag />
+              </span>
+              Find Products
+            </p>
+            <p>Browse the campus marketplace</p>
+          </Link>
         </button>
       </div>
       <p className="text-sm mt-3">
