@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import Fields from "../Fields.jsx";
 import { useState } from "react";
 
 export default function SignUp() {
@@ -64,24 +64,15 @@ export default function SignUp() {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Company Name */}
-          <div className="flex flex-col gap-2">
-            <label htmlFor="companyName" className="text-sm font-medium">
-              Company Name
-            </label>
-            <input
-              id="companyName"
-              {...register("companyName", {
-                required: "Company Name is Required",
-              })}
-              placeholder="Company Name"
-              className="w-full px-3 py-3 border border-gray-300 rounded-lg outline-none focus:ring-1 focus:ring-[#1A55E3]"
-            />
-            {errors.companyName && (
-              <p className="text-red-500 text-sm">
-                {errors.companyName.message}
-              </p>
-            )}
-          </div>
+          <Fields
+            register={register}
+            labelName="Company Name"
+            forTag="companyName"
+            errors={errors}
+            errorMessage="Company Name is Required"
+            placeholder="Haple"
+            type="text"
+          />
 
           {/* Description */}
           <div className="flex flex-col gap-2">
@@ -97,7 +88,11 @@ export default function SignUp() {
               className="w-full px-3 py-3 border border-gray-300 rounded-lg resize-none outline-none focus:ring-1 focus:ring-[#1A55E3]"
               rows={3}
             />
-            {errors.description && <p>{errors.description.message}</p>}
+            {errors.description && (
+              <p className="text-red-500 text-[13px]">
+                {errors.description.message}
+              </p>
+            )}
           </div>
 
           {/* Mode Toggle */}
@@ -160,86 +155,60 @@ export default function SignUp() {
               )}
             </div>
             {errors.categories && (
-              <span className="text-red-500 text-sm">
+              <span className="text-red-500 text-[13px]">
                 {errors.categories.message}
               </span>
             )}
           </div>
 
+          {/* For email */}
+          <Fields
+            forTag="email"
+            labelName="Email Address"
+            validation={{
+              value: /^[^\s@]+@[^\s@]+\.(com)$/i,
+              message: "Enter a valid email",
+            }}
+            placeholder="joel@gmail.com"
+            type="email"
+            errorMessage="Email is required"
+            errors={errors}
+            register={register}
+          />
           {/* Contact Info */}
-          <div className="flex flex-col gap-2">
-            <label htmlFor="email" className="text-sm font-medium">
-              Email Address
-            </label>
-            <input
-              id="email"
-              {...register("email", {
-                required: "Email is required",
-                pattern: {
-                  value: /^[^\s@]+@[^\s@]+\.(com)$/i,
-                  message: "Enter a valid email",
-                },
-              })}
-              type="email"
-              placeholder="Email Address"
-              className="w-full px-3 py-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-[#1A55E3]"
-            />
-            {errors.email && (
-              <p className="text-red-500 text-sm">{errors.email.message}</p>
-            )}
-          </div>
 
-          <div className="flex flex-col gap-2">
-            <label htmlFor="whatsapp" className="text-sm font-medium">
-              WhatsApp Number
-            </label>
-            <input
-              id="whatsapp"
-              {...register("whatsapp", {
-                required: "Number must be 11 digits",
-                pattern: {
-                  value: /^\d{11}$/,
-                  message: "WhatsApp must be exactly 11 digits",
-                },
-              })}
-              type="tel"
-              placeholder="+234..."
-              className="w-full px-3 py-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-[#1A55E3]"
-            />
-            {errors.whatsapp && (
-              <p className="text-red-500 text-sm">{errors.whatsapp.message}</p>
-            )}
-          </div>
+          <Fields
+            forTag="whatsapp"
+            labelName="WhatsApp Number"
+            validation={{
+              value: /^\d{11}$/,
+              message: "WhatsApp must be exactly 11 digits",
+            }}
+            placeholder="+234"
+            type="tel"
+            errorMessage="Number must be 11 digits"
+            errors={errors}
+            register={register}
+          />
 
-          <div className="flex flex-col gap-2 relative">
-            <label htmlFor="password" className="text-sm font-medium">
-              Password
-            </label>
-            <input
-              id="password"
-              {...register("password", {
-                required: "Password is required",
-                pattern: {
-                  value: /^(?=.*[!@#$%^&*]).{8,}$/, // at least 8 chars, 1 symbol
-                  message:
-                    "Password must be at least 8 characters with at least 1 symbol",
-                },
-              })}
-              type={showPassword ? "text" : "password"}
-              placeholder="Password"
-              className="w-full px-3 py-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-[#1A55E3]"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-10 text-gray-400"
-            >
-              {showPassword ? <FaEye /> : <FaEyeSlash />}
-            </button>
-            {errors.password && (
-              <p className="text-red-500 text-sm">{errors.password.message}</p>
-            )}
-          </div>
+          {/* PassWord */}
+
+          <Fields
+            forTag="password"
+            labelName="Password"
+            validation={{
+              value: /^(?=.*[!@#$%^&*]).{8,}$/, // at least 8 chars, 1 symbol
+              message:
+                "Password must be at least 8 characters with at least 1 symbol",
+            }}
+            placeholder="Joel25@#"
+            type={showPassword ? "text" : "password"}
+            errorMessage="Password is required"
+            errors={errors}
+            register={register}
+            showPassword={showPassword}
+            setShowPassword={setShowPassword}
+          />
 
           {/* Submit Button */}
           <button

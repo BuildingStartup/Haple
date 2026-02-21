@@ -9,9 +9,3 @@ body {
   /* bg-[#F8FAFC] */
   /* Helping All People Locate Entrepreneurs */
 }
-
-@layer base {
-  input {
-    @apply w-full border-gray-500 border outline-none py-2 pl-1;
-  }
-}
