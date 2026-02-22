@@ -13,7 +13,7 @@ export default function Fields({
 }) {
   return (
     <div className="flex flex-col gap-2 relative">
-      <label htmlFor={forTag} className="text-sm font-medium">
+      <label htmlFor={forTag} className="font-medium">
         {labelName}
       </label>
       <input
@@ -24,7 +24,7 @@ export default function Fields({
           pattern: validation,
         })}
         placeholder={placeholder}
-        className="w-full px-3 py-3 border border-gray-300 rounded-lg outline-none focus:ring-1 focus:ring-[#1A55E3]"
+        className="w-full px-3 py-3 ring ring-gray-300 rounded-lg outline-none focus:ring focus:ring-[#1A55E3] transition-all duration-200"
       />
       {errors[forTag] && (
         <p className="text-red-500 text-[13px]">{errors[forTag].message}</p>

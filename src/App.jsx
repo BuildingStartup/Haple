@@ -1,8 +1,8 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 // PAGES
-import Home from "./Home/Home.jsx";
-import SignUp from "./SignUp/SignUp.jsx";
+// import Home from "./Home/Home.jsx";
+import SignUp from "./pages/SignUp.jsx";
 
 function App() {
   return (
@@ -10,7 +10,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           {/* routes go in here */}
-          <Route path="/" element={<Home />} />
+          {/* <Route path="/" element={<Home />} /> */}
           <Route path="/SignUp" element={<SignUp />} />
         </Routes>
       </BrowserRouter>
