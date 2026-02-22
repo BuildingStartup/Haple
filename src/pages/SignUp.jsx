@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { GoArrowLeft } from "react-icons/go";
 import Fields from "../ui/Fields.jsx";
+import { Link } from "react-router-dom";
 
 export default function SignUp() {
   const {
@@ -12,7 +13,7 @@ export default function SignUp() {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      mode: "product",
+      mode: "",
       categories: [],
     },
   });
@@ -53,15 +54,15 @@ export default function SignUp() {
   };
 
   return (
-    // <div className="h-screen bg-[#3d4247] flex justify-center">
-      <div className="h-screen px-4 py-6 space-y-6 ">
-        <div className="flex items-center gap-2 cursor-pointer">
+    // <div className="b-20">
+      <div className="h-screen px-4 py-6 space-y-6 pb-20">
+        <Link to="/" className="flex items-center gap-2 cursor-pointer">
           <GoArrowLeft className="text-2xl text-gray-600 cursor-pointer" />
           <span className="text-gray-600">Back</span>
-        </div>
+        </Link>
         {/* Header */}
-        <div className="text-center space-y-2">
-          <h2 className="text-2xl font-medium text-[#1A55E3]">
+        <div className="text-center space-y-1">
+          <h2 className="text-xl font-medium text-primary">
             Create your Seller Profile
           </h2>
           <p className="text-gray-600">
@@ -69,7 +70,7 @@ export default function SignUp() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mb-10">
           {/* Company Name */}
           <Fields
             register={register}
@@ -83,7 +84,7 @@ export default function SignUp() {
 
           {/* Description */}
           <div className="flex flex-col gap-2">
-            <label htmlFor="description" className="font-medium">
+            <label htmlFor="description" className="text-gray-700 font-medium">
               Description
             </label>
             <textarea
@@ -92,11 +93,11 @@ export default function SignUp() {
                 required: "Description is required",
               })}
               placeholder="What buyers will know about you"
-              className="w-full px-3 py-3 ring ring-gray-300 rounded-lg resize-none outline-none focus:ring focus:ring-[#1A55E3] transition-all duration-200"
+              className="w-full px-3 py-3 ring ring-gray-300 rounded-lg resize-none outline-none focus:ring focus:ring-primary transition-all duration-200"
               rows={3}
             />
             {errors.description && (
-              <p className="text-red-500 text-[13px]">
+              <p className="text-red-600 text-sm bg-red-50 p-2 rounded">
                 {errors.description.message}
               </p>
             )}
@@ -104,8 +105,8 @@ export default function SignUp() {
 
           {/* Mode Toggle */}
           <div className="space-y-4">
-            <label htmlFor="categories" className="font-medium">Select Categories</label>
-            <div className="flex gap-4">              
+            <label htmlFor="categories" className="text-gray-700 font-medium">Select Categories</label>
+            <div className="flex gap-4 mt-2">              
               <button
                 type="button"
                 onClick={() => {
@@ -114,7 +115,7 @@ export default function SignUp() {
                 }}
                 className={`flex-1 px-4 py-3 rounded-lg transition-all ring ring-gray-300 cursor-pointer ${
                   currentMode === "product"
-                    ? "bg-[#1A55E3] border-[#1A55E3] text-white"
+                    ? "bg-primary-lightest text-primary font-medium ring-2 ring-primary"
                     : "bg-white border-gray-300 text-gray-600"
                 }`}
               >
@@ -129,7 +130,7 @@ export default function SignUp() {
                 }}
                 className={`flex-1 px-4 py-3 rounded-lg transition-all ring ring-gray-300 cursor-pointer ${
                   currentMode === "service"
-                    ? "bg-[#1A55E3] border-[#1A55E3] text-white"
+                    ? "bg-primary-lightest text-primary font-medium ring-2 ring-primary"
                     : "bg-white border-gray-300 text-gray-600"
                 }`}
               >
@@ -138,6 +139,7 @@ export default function SignUp() {
             </div>
 
             {/* Category Multi Select */}
+            {currentMode && (
             <div className="space-y-2">
               <input
                 type="hidden"
@@ -153,9 +155,9 @@ export default function SignUp() {
                       key={service}
                       type="button"
                       onClick={() => handleToggle(service)}
-                      className={`text-center text-gray-400 rounded-xl ring ring-gray-300 px-3 transition-all ${
+                      className={`text-center text-gray-400 rounded-xl ring ring-gray-300 px-3 transition-all cursor-pointer ${
                         selectedCategories.includes(service)
-                          ? "bg-[#1A55E3] ring-[#1A55E3] text-white"
+                          ? "bg-primary-lightest text-primary font-medium "
                           : "bg-white border-gray-200 text-gray-600"
                       }`}
                     >
@@ -165,11 +167,12 @@ export default function SignUp() {
                 )}
               </div>
               {errors.categories && (
-                <span className="text-red-500 text-[13px]">
+                <span className="text-red-600 text-sm bg-red-50 p-2 rounded">
                   {errors.categories.message}
                 </span>
               )}
             </div>
+            )}
           </div>
 
           {/* For email */}
@@ -212,7 +215,7 @@ export default function SignUp() {
               message:
                 "Password must be at least 8 characters with at least 1 symbol",
             }}
-            placeholder="example@gmail.com"
+            placeholder="********"
             type={showPassword ? "text" : "password"}
             errorMessage="Password is required"
             errors={errors}
@@ -224,12 +227,11 @@ export default function SignUp() {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-[#1A55E3] py-4 font-medium text-white rounded-lg "
+            className="w-full bg-primary font-medium text-white rounded-lg py-3 mb-3 cursor-pointer hover:bg-primary-light transition-colors duration-200"
           >
             Launch My Shop
           </button>
         </form>
       </div>
-    // </div>
   );
 }

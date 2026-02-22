@@ -35,7 +35,7 @@ export default function Home() {
           <MdKeyboardArrowRight className="text-3xl text-stone-200 group-hover:text-white" />
         </Link>
 
-        <Link to="/explore" className=" bg-stone-50 flex items-center justify-between gap-4 py-4 px-6 rounded-xl cursor-pointer group hover:shadow-lg transition-all duration-300 ">
+        <Link to="/signUp" className=" bg-stone-50 flex items-center justify-between gap-4 py-4 px-6 rounded-xl cursor-pointer group hover:shadow-lg transition-all duration-300 ">
           <div className="flex items-center gap-4">
             <div className="bg-accent p-3 rounded-lg">
               <FaStore className="text-xl text-stone-700 group-hover:text-black"  />
@@ -50,11 +50,10 @@ export default function Home() {
 
       </div>
 
-      <p className="mt-2 md:text-base ">
+      <p className="mt-2 md:text-base">
         <span >Already a seller?</span> 
-        <Link to="sign-in" className="italic text-primary hover:underline">Sign in</Link>
+        <Link to="/signIn" className="italic text-primary hover:underline">Sign in</Link>
       </p>
-
     </div>
   );
 }

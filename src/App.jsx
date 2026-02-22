@@ -12,8 +12,8 @@ function App() {
         <Routes>
           {/* routes go in here */}
           {/* <Route path="/" element={<Home />} /> */}
-          <Route path="/SignUp" element={<SignUp />} />
           <Route path="/" element={<Home />} />
+          <Route path="/signUp" element={<SignUp />} />
         </Routes>
       </BrowserRouter>
       <Toaster
