@@ -1,6 +1,9 @@
 import { useForm } from "react-hook-form";
-import Fields from "../Fields.jsx";
+import Fields from "./Fields.jsx";
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { FaArrowLeft } from "react-icons/fa6";
 
 export default function SignUp() {
   const {
@@ -38,9 +41,10 @@ export default function SignUp() {
     "Graphic design",
     "Web design",
   ];
-
+  const navigate = useNavigate();
   const onSubmit = (data) => {
     console.log("Final Seller Data:", data);
+    navigate("/SellersProfile");
   };
 
   const handleToggle = (cat) => {
@@ -54,6 +58,24 @@ export default function SignUp() {
   return (
     <section className="min-h-screen bg-[#F1F5F9] flex justify-center">
       <div className="w-full bg-white min-h-screen px-4 py-8 space-y-6">
+        <button
+          style={{
+            background: "#F1F5F9",
+            border: "none",
+            borderRadius: "10px",
+            width: "36px",
+            height: "36px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
+            color: "#374151",
+          }}
+        >
+          <Link to="/">
+            <FaArrowLeft />
+          </Link>
+        </button>
         {/* Header */}
         <div className="text-center space-y-2">
           <h2 className="text-2xl font-black text-[#1A55E3]">Sign Up</h2>
