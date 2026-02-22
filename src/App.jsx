@@ -3,6 +3,7 @@ import { Toaster } from "react-hot-toast";
 // PAGES
 // import Home from "./Home/Home.jsx";
 import SignUp from "./pages/SignUp.jsx";
+import Home from "./pages/Home.jsx";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
           {/* routes go in here */}
           {/* <Route path="/" element={<Home />} /> */}
           <Route path="/SignUp" element={<SignUp />} />
+          <Route path="/" element={<Home />} />
         </Routes>
       </BrowserRouter>
       <Toaster

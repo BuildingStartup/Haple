@@ -5,7 +5,19 @@ body {
   margin: 0;
   box-sizing: border-box;
   font-family: "Poppins", sans-serif;
+  /* font-family: "Inter", sans-serif; */
   font-style: normal;
+  font-size: 14px;
   /* bg-[#F8FAFC] */
   /* Helping All People Locate Entrepreneurs */
+}
+
+
+
+@theme {
+  --color-primary: #3B82F6;
+  --color-primary-light: #60A5FA;
+  --color-accent: #F1F5F9;
+  --color-neutral: ;
+  --color-secondary: #25D366;
 }
