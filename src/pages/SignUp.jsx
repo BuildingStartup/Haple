@@ -1,10 +1,15 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { GoArrowLeft } from "react-icons/go";
+import { VscError } from "react-icons/vsc";
 import Fields from "../ui/Fields.jsx";
-import { Link } from "react-router-dom";
+import { createSellerProfile } from "../services/apiSellers.js";
+import useSignUp from "../features/authentication/useSignUp.js";
+import SpinnerMini from "../ui/SpinnerMini.jsx";
 
 export default function SignUp() {
+  const {loading, handleSignUp} = useSignUp();
   const {
     register,
     handleSubmit,
@@ -36,13 +41,25 @@ export default function SignUp() {
   const services = [
     "Make-up",
     "Nail Tech",
-    "Photographing",
+    "Photography",
     "Graphic design",
     "Web design",
   ];
 
   const onSubmit = (data) => {
-    console.log("Final Seller Data:", data);
+    if(!data.email || !data.password) return;
+    console.log(typeof data.email)
+    handleSignUp({
+      email: data.email,
+      password: data.password,
+      onSuccess: () => {
+        console.log("Sign up successful!");
+        createSellerProfile(data);
+      },
+      onError: (error) => {
+        console.error("Sign up error:", error);
+      }
+    });
   };
 
   const handleToggle = (cat) => {
@@ -53,6 +70,23 @@ export default function SignUp() {
     setValue("categories", next);
   };
 
+  const handleWhatsAppChange = (value) => {
+    // Remove all non-digit characters except +
+    let cleanedNumber = value.replace(/[^\d+]/g, "");
+    
+    // If it starts with 0, remove it
+    if (cleanedNumber.startsWith("0")) {
+      cleanedNumber = cleanedNumber.substring(1);
+    }
+    
+    // If it doesn't start with +234, add it
+    if (!cleanedNumber.startsWith("+234") && cleanedNumber.length > 0) {
+      cleanedNumber = "+234" + cleanedNumber;
+    }
+    
+    setValue("whatsapp", cleanedNumber);
+  };
+
   return (
     // <div className="b-20">
       <div className="h-screen px-4 py-6 space-y-6 pb-20">
@@ -60,6 +94,7 @@ export default function SignUp() {
           <GoArrowLeft className="text-2xl text-gray-600 cursor-pointer" />
           <span className="text-gray-600">Back</span>
         </Link>
+
         {/* Header */}
         <div className="text-center space-y-1">
           <h2 className="text-xl font-medium text-primary">
@@ -97,9 +132,12 @@ export default function SignUp() {
               rows={3}
             />
             {errors.description && (
-              <p className="text-red-600 text-sm bg-red-50 p-2 rounded">
-                {errors.description.message}
-              </p>
+              <div className="text-red-600 text-sm bg-red-50 p-2 rounded flex items-center gap-1">                  
+                  <VscError />
+                  <span>
+                    {errors.description.message}
+                  </span>
+                </div>
             )}
           </div>
 
@@ -167,9 +205,12 @@ export default function SignUp() {
                 )}
               </div>
               {errors.categories && (
-                <span className="text-red-600 text-sm bg-red-50 p-2 rounded">
-                  {errors.categories.message}
-                </span>
+                <div className="text-red-600 text-sm bg-red-50 p-2 rounded flex items-center gap-1">                  
+                  <VscError />
+                  <span>
+                    {errors.categories.message}
+                  </span>
+                </div>
               )}
             </div>
             )}
@@ -195,14 +236,15 @@ export default function SignUp() {
             forTag="whatsapp"
             labelName="WhatsApp Number"
             validation={{
-              value: /^\d{11}$/,
-              message: "WhatsApp must be exactly 11 digits",
+              value: /^\+234\d{10}$/,
+              message: "Must be +234 followed by 10 digits (11 digits total)",
             }}
-            placeholder="+234"
+            placeholder="+234 (e.g., +2349012345678)"
             type="tel"
-            errorMessage="Number must be 11 digits"
+            errorMessage="Enter a valid WhatsApp number"
             errors={errors}
             register={register}
+            onChange={(e) => handleWhatsAppChange(e.target.value)}
           />
 
           {/* PassWord */}
@@ -227,9 +269,11 @@ export default function SignUp() {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-primary font-medium text-white rounded-lg py-3 mb-3 cursor-pointer hover:bg-primary-light transition-colors duration-200"
+            className="w-full bg-primary font-medium text-white rounded-lg py-3 mb-3 cursor-pointer hover:shadow transition-all duration-200"
+            disabled={loading}
           >
-            Launch My Shop
+            {loading && <SpinnerMini />}
+            Create Seller Account
           </button>
         </form>
       </div>

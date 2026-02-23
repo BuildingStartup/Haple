@@ -1,4 +1,5 @@
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { VscError } from "react-icons/vsc";
 export default function Fields({
   labelName,
   forTag,
@@ -27,7 +28,12 @@ export default function Fields({
         className="w-full px-3 py-3 ring ring-gray-300 rounded-lg outline-none focus:ring focus:ring-primary transition-all duration-200"
       />
       {errors[forTag] && (
-        <p className="text-red-600 text-sm bg-red-50 p-2 rounded">{errors[forTag].message}</p>
+        <div className="text-red-600 text-sm bg-red-50 p-2 rounded flex items-center gap-1">                  
+          <VscError />
+          <span>
+            {errors[forTag].message}
+          </span>
+        </div>
       )}
       {forTag === "password" && (
         <button
