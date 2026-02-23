@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { FaWhatsapp } from "react-icons/fa";
-import { MdEmail } from "react-icons/md";
+import { useState, useEffect } from "react";
+import { FaWhatsapp, FaImage } from "react-icons/fa";
+import { MdEmail, MdDelete } from "react-icons/md";
 
 export default function SellersProfile() {
   // Original seller info (static, read-only)
@@ -23,35 +23,56 @@ export default function SellersProfile() {
   });
   const [showForm, setShowForm] = useState(false);
   const [preview, setPreview] = useState(null);
+  const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
+
     if (files) {
-      setNewProduct((prev) => ({ ...prev, [name]: files[0] }));
-      setPreview(URL.createObjectURL(files[0]));
+      const file = files[0];
+      setNewProduct((prev) => ({ ...prev, [name]: file }));
+      const imageUrl = URL.createObjectURL(file);
+      setPreview(imageUrl);
     } else {
       setNewProduct((prev) => ({ ...prev, [name]: value }));
     }
   };
 
-  const submitProduct = () => {
-    if (!newProduct.name || !newProduct.image || !newProduct.description) {
-      alert("All fields are required");
-      return;
-    }
-    if (products.length >= 3) {
-      alert("You can only add up to 3 products");
-      return;
-    }
+  useEffect(() => {
+    return () => {
+      if (preview) URL.revokeObjectURL(preview);
+    };
+  }, [preview]);
 
-    setProducts((prev) => [
-      ...prev,
-      { ...newProduct, image: URL.createObjectURL(newProduct.image) },
-    ]);
-    setNewProduct({ name: "", image: null, description: "" });
-    setShowForm(false);
+  const validate = () => {
+    let temp = {};
+    if (!newProduct.name) temp.name = "Product name is required";
+    if (!newProduct.image) temp.image = "Product image is required";
+    if (!newProduct.description)
+      temp.description = "Product description is required";
+
+    setErrors(temp);
+    return Object.keys(temp).length === 0;
   };
+
+  const submitProduct = () => {
+    if (!validate()) return;
+
+    const imageUrl = URL.createObjectURL(newProduct.image);
+
+    setProducts((prev) => [...prev, { ...newProduct, image: imageUrl }]);
+    setNewProduct({ name: "", image: null, description: "" });
+    setPreview(null);
+    setShowForm(false);
+    setErrors({});
+  };
+
+  const deleteProduct = (index) => {
+    setProducts((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const initials = sellerInfo.companyName.slice(0, 2).toUpperCase();
+  const remaining = 3 - products.length;
 
   return (
     <section className="min-h-screen px-2 pb-5 bg-white">
@@ -59,7 +80,7 @@ export default function SellersProfile() {
       <div className="pt-3 px-1 space-y-3">
         {/* Avatar */}
         <div
-          className="w-18 h-18 bg-white flex justify-center items-center rounded-2xl"
+          className="w-20 h-20 bg-white flex justify-center items-center rounded-2xl"
           style={{
             boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
           }}
@@ -74,7 +95,7 @@ export default function SellersProfile() {
           {sellerInfo.categories.map((category, id) => (
             <span
               key={id}
-              className="bg-gray-300 text-sm font-bold text-black rounded-3xl py-1 px-3"
+              className="bg-gray-100 text-sm font-bold text-black rounded-3xl py-1 px-3"
             >
               {category}
             </span>
@@ -82,7 +103,7 @@ export default function SellersProfile() {
         </div>
       </div>
       {/* Description */}
-      <div className="text-sm text-slate-600 text-justify pt-4 leading-relaxed">
+      <div className="text-sm text-slate-600 text-justify pt-4 leading-loose">
         {sellerInfo.description}
       </div>
       {/* Contact Row */}
@@ -118,15 +139,22 @@ export default function SellersProfile() {
         {products.map((prod, i) => (
           <div
             key={i}
-            className="w-60 rounded-2xl overflow-hidden bg-slate-50 border-[1.5px] border-slate-200 shadow-sm pb-2"
+            className="relative w-70 rounded-2xl overflow-hidden bg-slate-50 border-[1.5px] border-slate-200 shadow-sm"
           >
+            <button
+              onClick={() => deleteProduct(i)}
+              className="absolute top-2 right-2 bg-white rounded-full p-1 shadow hover:bg-red-50 transition"
+            >
+              <MdDelete className="text-red-500 text-sm" />
+            </button>
+
             <img
               src={prod.image}
               alt={prod.name}
               className="w-full h-48 object-cover"
             />
-            <div className="p-2">
-              <p className="m-0 text-base font-black text-slate-900 uppercase">
+            <div className="p-2 pb-4">
+              <p className="text-base font-black text-slate-900 uppercase">
                 {prod.name}
               </p>
               <p className="text-sm text-slate-500 leading-relaxed text-justify">
@@ -137,41 +165,32 @@ export default function SellersProfile() {
         ))}
       </div>
 
-      {/* Add Product Button */}
-      {products.length === 0 && !showForm && (
-        <p className="text-sm text-slate-600 text-justify pb-3 leading-normal">
-          Buyers need to see what you sell, click the button below to add your 3
-          main things you provide to them
-        </p>
-      )}
       {products.length < 3 && !showForm && (
-        <button
-          onClick={() => {
-            setShowForm(true);
-            setPreview(null);
-          }}
-          className="bg-blue-500 text-white px-3 py-1 rounded"
-        >
-          Add Item ({products.length}/3)
-        </button>
+        <div className="flex flex-col gap-2 mb-4">
+          <p className="text-sm text-slate-400">
+            You can add{" "}
+            <span className="font-bold text-[#1A55E3]">{remaining}</span> more
+            item{remaining !== 1 ? "s" : ""}
+          </p>
+          <button
+            onClick={() => {
+              setShowForm(true);
+              setPreview(null);
+            }}
+            className="bg-blue-500 text-white px-3 py-1 rounded text-sm"
+          >
+            Add Item ({products.length}/3)
+          </button>
+        </div>
       )}
 
       {/* Add Product Form */}
       {showForm && (
-        <div className="bg-slate-50 rounded-2xl border-[1.5px] border-slate-200 p-4 flex flex-col gap-3 animate-in slide-in-from-bottom-5 duration-300">
+        <div className="bg-slate-50 rounded-2xl border-[1.5px] border-slate-200 p-4 flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <span className="text-[14px] font-black text-slate-900">
               NEW LISTING
             </span>
-            <button
-              onClick={() => {
-                setShowForm(false);
-                setPreview(null);
-              }}
-              className="bg-slate-200 border-none rounded-lg w-7 h-7 flex items-center justify-center cursor-pointer text-slate-500 active:scale-90"
-            >
-              {/* <XIcon /> */}
-            </button>
           </div>
 
           {/* Image upload preview */}
@@ -184,7 +203,7 @@ export default function SellersProfile() {
               />
             ) : (
               <div className="flex flex-col items-center gap-1.5 text-slate-400">
-                {/* <ImageIcon /> */}
+                <FaImage />
                 <span className="text-[12px] font-bold">
                   Upload Product Photo
                 </span>
@@ -198,6 +217,9 @@ export default function SellersProfile() {
               className="hidden"
             />
           </label>
+          {errors.image && (
+            <p className="text-xs text-red-500">{errors.image}</p>
+          )}
 
           {/* Inputs */}
           <div className="space-y-2">
@@ -209,6 +231,9 @@ export default function SellersProfile() {
               placeholder="What are you selling?"
               className="w-full p-3.5 border-[1.5px] border-slate-200 rounded-xl text-[14px] outline-none focus:border-[#1A55E3] bg-white transition-colors"
             />
+            {errors.name && (
+              <p className="text-xs text-red-500">{errors.name}</p>
+            )}
 
             <textarea
               name="description"
@@ -218,6 +243,9 @@ export default function SellersProfile() {
               rows={2}
               className="w-full p-3.5 border-[1.5px] border-slate-200 rounded-xl text-[14px] outline-none resize-none focus:border-[#1A55E3] bg-white transition-colors"
             />
+            {errors.description && (
+              <p className="text-xs text-red-500">{errors.description}</p>
+            )}
           </div>
 
           <div className="flex gap-2 mt-1">
