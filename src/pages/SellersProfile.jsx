@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { FaWhatsapp, FaImage } from "react-icons/fa";
 import { MdEmail, MdDelete } from "react-icons/md";
+import { GoArrowLeft } from "react-icons/go";
+import { Link } from "react-router-dom";
 
 export default function SellersProfile() {
   // Original seller info (static, read-only)
@@ -27,12 +29,11 @@ export default function SellersProfile() {
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-
     if (files) {
+      if (!files[0]) return; // ← user opened picker and cancelled, do nothing
       const file = files[0];
       setNewProduct((prev) => ({ ...prev, [name]: file }));
-      const imageUrl = URL.createObjectURL(file);
-      setPreview(imageUrl);
+      setPreview(URL.createObjectURL(file));
     } else {
       setNewProduct((prev) => ({ ...prev, [name]: value }));
     }
@@ -75,9 +76,16 @@ export default function SellersProfile() {
   const remaining = 3 - products.length;
 
   return (
-    <section className="min-h-screen px-2 pb-5 bg-white">
+    <section className="min-h-screen px-4 pb-5 bg-white">
+      <Link
+        to="/signUp"
+        className="flex items-center gap-2 cursor-pointer py-5"
+      >
+        <GoArrowLeft className="text-2xl text-gray-600 cursor-pointer" />
+        <span className="text-gray-600">Back</span>
+      </Link>
       {/* Seller Info */}
-      <div className="pt-3 px-1 space-y-3">
+      <div className="pt-3 px-1 space-y-3 flex flex-col items-center">
         {/* Avatar */}
         <div
           className="w-20 h-20 bg-white flex justify-center items-center rounded-2xl"
@@ -85,7 +93,7 @@ export default function SellersProfile() {
             boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
           }}
         >
-          <span className="text-[#1A55E3] font-black text-2xl">{initials}</span>
+          <span className="text-primary font-black text-2xl">{initials}</span>
         </div>
 
         <h2 className="text-black text-2xl font-black">
@@ -95,7 +103,7 @@ export default function SellersProfile() {
           {sellerInfo.categories.map((category, id) => (
             <span
               key={id}
-              className="bg-gray-100 text-sm font-bold text-black rounded-3xl py-1 px-3"
+              className="bg-gray-100 font-bold text-black rounded-3xl py-1 px-3"
             >
               {category}
             </span>
@@ -103,7 +111,7 @@ export default function SellersProfile() {
         </div>
       </div>
       {/* Description */}
-      <div className="text-sm text-slate-600 text-justify pt-4 leading-loose">
+      <div className="text-slate-600 text-justify pt-4 leading-loose">
         {sellerInfo.description}
       </div>
       {/* Contact Row */}
@@ -117,7 +125,7 @@ export default function SellersProfile() {
           </div>
         </div>
         <div className="flex items-center gap-1 p-3 max-w-75">
-          <div className="text-[#1A55E3] text-lg">
+          <div className="text-primary text-lg">
             <MdEmail />
           </div>
           <div>
@@ -128,7 +136,7 @@ export default function SellersProfile() {
       {/* Catalog Text */}
       <div className="flex items-center gap-3 mb-3">
         <div className="flex-1 h-px bg-slate-400" />
-        <h3 className="text-sm font-bold text-slate-400 uppercase tracking-widest">
+        <h3 className="font-bold text-slate-400 uppercase tracking-widest">
           Your Catalog
         </h3>
         <div className="flex-1 h-px bg-slate-400" />
@@ -139,7 +147,7 @@ export default function SellersProfile() {
         {products.map((prod, i) => (
           <div
             key={i}
-            className="relative w-70 rounded-2xl overflow-hidden bg-slate-50 border-[1.5px] border-slate-200 shadow-sm"
+            className="relative w-72 rounded-2xl overflow-hidden bg-slate-50 border-[1.5px] border-slate-200 shadow-sm"
           >
             <button
               onClick={() => deleteProduct(i)}
@@ -167,9 +175,9 @@ export default function SellersProfile() {
 
       {products.length < 3 && !showForm && (
         <div className="flex flex-col gap-2 mb-4">
-          <p className="text-sm text-slate-400">
+          <p className="text-slate-400">
             You can add{" "}
-            <span className="font-bold text-[#1A55E3]">{remaining}</span> more
+            <span className="font-bold text-primary">{remaining}</span> more
             item{remaining !== 1 ? "s" : ""}
           </p>
           <button
@@ -177,7 +185,7 @@ export default function SellersProfile() {
               setShowForm(true);
               setPreview(null);
             }}
-            className="bg-blue-500 text-white px-3 py-1 rounded text-sm"
+            className="bg-primary text-white px-3 py-3 rounded-xl"
           >
             Add Item ({products.length}/3)
           </button>
@@ -187,26 +195,22 @@ export default function SellersProfile() {
       {/* Add Product Form */}
       {showForm && (
         <div className="bg-slate-50 rounded-2xl border-[1.5px] border-slate-200 p-4 flex flex-col gap-3">
-          <div className="flex items-center justify-between">
-            <span className="text-[14px] font-black text-slate-900">
-              NEW LISTING
-            </span>
+          <div>
+            <span className="font-black text-slate-900">NEW LISTING</span>
           </div>
 
           {/* Image upload preview */}
-          <label className="w-full h-48 rounded-2xl border-2 border-dashed border-slate-300 flex items-center justify-center cursor-pointer overflow-hidden bg-white hover:border-blue-400 transition-colors">
+          <label className="w-full h-48 rounded-2xl border-2 border-dashed border-slate-300 flex items-center justify-center cursor-pointer overflow-hidden bg-white">
             {preview ? (
               <img
                 src={preview}
                 alt="preview"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
               />
             ) : (
               <div className="flex flex-col items-center gap-1.5 text-slate-400">
                 <FaImage />
-                <span className="text-[12px] font-bold">
-                  Upload Product Photo
-                </span>
+                <span className=" font-bold">Upload Product Photo</span>
               </div>
             )}
             <input
@@ -229,7 +233,7 @@ export default function SellersProfile() {
               value={newProduct.name}
               onChange={handleChange}
               placeholder="What are you selling?"
-              className="w-full p-3.5 border-[1.5px] border-slate-200 rounded-xl text-[14px] outline-none focus:border-[#1A55E3] bg-white transition-colors"
+              className="w-full p-3.5 border-[1.5px] border-slate-200 rounded-xl outline-none focus:border-[#1A55E3] bg-white transition-colors"
             />
             {errors.name && (
               <p className="text-xs text-red-500">{errors.name}</p>
@@ -241,7 +245,7 @@ export default function SellersProfile() {
               onChange={handleChange}
               placeholder="Tell us more about it..."
               rows={2}
-              className="w-full p-3.5 border-[1.5px] border-slate-200 rounded-xl text-[14px] outline-none resize-none focus:border-[#1A55E3] bg-white transition-colors"
+              className="w-full p-3.5 border-[1.5px] border-slate-200 rounded-xl outline-none resize-none focus:border-[#1A55E3] bg-white transition-colors"
             />
             {errors.description && (
               <p className="text-xs text-red-500">{errors.description}</p>
@@ -251,7 +255,7 @@ export default function SellersProfile() {
           <div className="flex gap-2 mt-1">
             <button
               onClick={submitProduct}
-              className="flex-[2] p-3.5 bg-[#1A55E3] border-none rounded-xl text-white font-black text-[13px] cursor-pointer shadow-md active:scale-95 transition-all"
+              className="flex-2 p-3.5 bg-primary border-none rounded-xl text-white font-black text-xs cursor-pointer shadow-md active:scale-95 transition-all"
             >
               SAVE LISTING
             </button>
@@ -260,13 +264,16 @@ export default function SellersProfile() {
                 setShowForm(false);
                 setPreview(null);
               }}
-              className="flex-1 p-3.5 bg-slate-200 border-none rounded-xl text-slate-600 font-bold text-[13px] cursor-pointer active:scale-95 transition-all"
+              className="flex-1 p-3.5 bg-slate-200 border-none rounded-xl text-slate-600 font-bold text-xs cursor-pointer active:scale-95 transition-all"
             >
               CANCEL
             </button>
           </div>
         </div>
       )}
+      <div className="w-full bg-[#10B981] rounded-xl p-3.5 text-center text-white cursor-pointer">
+        Share Your Profile
+      </div>
     </section>
   );
 }
