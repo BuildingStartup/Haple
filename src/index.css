@@ -12,14 +12,12 @@ body {
   /* Helping All People Locate Entrepreneurs */
 }
 
-
-
 @theme {
-  --color-primary: #3B82F6;
-  --color-primary-light: #60A5FA;
+  --color-primary: #3b82f6;
+  --color-primary-light: #60a5fa;
   --color-primary-lighter: #93c5fd;
   --color-primary-lightest: #bfdbfe;
-  --color-accent: #F1F5F9;
+  --color-accent: #f1f5f9;
   --color-neutral: ;
-  --color-secondary: #25D366;
+  --color-secondary: #25d366;
 }
