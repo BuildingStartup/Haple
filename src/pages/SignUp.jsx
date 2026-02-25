@@ -122,6 +122,12 @@ export default function SignUp() {
             placeholder="DesignByJoel"
             type="text"
           />
+          {errors.description && (
+            <p className="text-red-600 text-sm bg-red-50 p-2 rounded">
+              {errors.description.message}
+            </p>
+          )}
+        </div>
 
           {/* Description */}
           <div className="flex flex-col gap-2">
@@ -147,43 +153,8 @@ export default function SignUp() {
             )}
           </div>
 
-          {/* Mode Toggle */}
-          <div className="space-y-4">
-            <label htmlFor="categories" className="text-gray-700 font-medium">Select Categories</label>
-            <div className="flex gap-4 mt-2">              
-              <button
-                type="button"
-                onClick={() => {
-                  setValue("mode", "product");
-                  setValue("categories", []);
-                }}
-                className={`flex-1 px-4 py-3 rounded-lg transition-all ring ring-gray-300 cursor-pointer ${
-                  currentMode === "product"
-                    ? "bg-primary-lightest text-primary font-medium ring-2 ring-primary"
-                    : "bg-white border-gray-300 text-gray-600"
-                }`}
-              >
-                Products
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setValue("mode", "service");
-                  setValue("categories", []);
-                }}
-                className={`flex-1 px-4 py-3 rounded-lg transition-all ring ring-gray-300 cursor-pointer ${
-                  currentMode === "service"
-                    ? "bg-primary-lightest text-primary font-medium ring-2 ring-primary"
-                    : "bg-white border-gray-300 text-gray-600"
-                }`}
-              >
-                Services
-              </button>
-            </div>
-
-            {/* Category Multi Select */}
-            {currentMode && (
+          {/* Category Multi Select */}
+          {currentMode && (
             <div className="space-y-2">
               <input
                 type="hidden"

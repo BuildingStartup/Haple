@@ -1,20 +1,23 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 // PAGES
-// import Home from "./Home/Home.jsx";
 import SignUp from "./pages/SignUp.jsx";
 import Home from "./pages/Home.jsx";
+import SellersProfile from "./pages/SellersProfile.jsx";
+import { AuthProvider } from "./context/AuthContext.jsx";
 
 function App() {
   return (
     <>
       <BrowserRouter>
-        <Routes>
-          {/* routes go in here */}
-          {/* <Route path="/" element={<Home />} /> */}
-          <Route path="/" element={<Home />} />
-          <Route path="/signUp" element={<SignUp />} />
-        </Routes>
+        <AuthProvider>        
+          <Routes>
+            {/* routes go in here */}
+            <Route path="/" element={<Home />} />
+            <Route path="/signUp" element={<SignUp />} />
+            <Route path="/sellersProfile" element={<SellersProfile />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
       <Toaster
         position="top-center"
@@ -35,7 +38,7 @@ function App() {
             color: "black",
           },
         }}
-      />
+        />
     </>
   );
 }
