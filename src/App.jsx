@@ -5,6 +5,7 @@ import SignUp from "./pages/SignUp.jsx";
 import Home from "./pages/Home.jsx";
 import SellersProfile from "./pages/SellersProfile.jsx";
 import { AuthProvider } from "./context/AuthContext.jsx";
+import Login from "./pages/Login.jsx";
 
 function App() {
   return (
@@ -12,10 +13,10 @@ function App() {
       <BrowserRouter>
         <AuthProvider>        
           <Routes>
-            {/* routes go in here */}
             <Route path="/" element={<Home />} />
             <Route path="/signUp" element={<SignUp />} />
-            <Route path="/sellersProfile" element={<SellersProfile />} />
+            <Route path="/profile" element={<SellersProfile />} />
+            <Route path="/signIn" element={<Login />} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>

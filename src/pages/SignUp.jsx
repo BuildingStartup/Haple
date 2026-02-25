@@ -126,8 +126,7 @@ export default function SignUp() {
             <p className="text-red-600 text-sm bg-red-50 p-2 rounded">
               {errors.description.message}
             </p>
-          )}
-        </div>
+          )}        
 
           {/* Description */}
           <div className="flex flex-col gap-2">
@@ -191,7 +190,7 @@ export default function SignUp() {
               )}
             </div>
             )}
-          </div>
+          
 
           {/* For email */}
           <Fields
@@ -252,7 +251,7 @@ export default function SignUp() {
             {loading && <SpinnerMini />}
             <span>Create Seller Account</span>
           </button>
-        </form>
+      </form>
       </div>
   );
 }

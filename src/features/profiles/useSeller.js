@@ -21,6 +21,7 @@ function useSeller(){
         }
     }
 
+    
     return {loading, error, seller, fetchSeller};
 }
 

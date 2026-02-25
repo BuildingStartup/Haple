@@ -1,25 +1,32 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FaWhatsapp } from "react-icons/fa";
-import { MdEmail, MdDelete } from "react-icons/md";
-import { GoArrowLeft, GoLink, GoLocation } from "react-icons/go";
+import { GoArrowLeft, GoLink } from "react-icons/go";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaShare } from "react-icons/fa";
+import { useAuth } from "../context/AuthContext";
+import useSeller from "../features/profiles/useSeller";
 import AddProductForm from "../ui/AddProductForm";
 import ViewProducts from "../ui/ViewProducts";
 import AddProductButton from "../ui/AddProductButton";
 import SellerContact from "../ui/SellerContact";
-import { useAuth } from "../context/AuthContext";
-import useSeller from "../features/profiles/useSeller";
+import Spinner from "../ui/Spinner";
+import useSellerCategory from "../features/categories/useSellerCategory";
 
 export default function SellersProfile() {
    const {user} = useAuth();
-   console.log(user)
-   const {fetchSeller, seller:sellerInfo, loading, error} = useSeller();
+   const {fetchSeller, seller: sellerInfo, loading, error} = useSeller();
+   const {fetchSellerCategory, loading: categoryLoading, error:categoryError, category} = useSellerCategory();
+   
 
    useEffect(()=> {
-    if(user) fetchSeller(user?.id);
-   }, [])
+    if(user?.id) fetchSeller(user.id);
+   }, [user])
+
+   useEffect(()=> {
+    if(sellerInfo?.category_id) fetchSellerCategory(sellerInfo.category_id);
+   }, [sellerInfo])
+
+   
 
 
 
@@ -90,11 +97,13 @@ export default function SellersProfile() {
     setPreview(null);
   }
 
+  if(loading || categoryLoading) return <Spinner />;
+  if(error || categoryError) return <p>Error: {error || categoryError}</p>;
+  if(!sellerInfo) return <p>No seller data found</p>;
+
   const initials = sellerInfo.business_name.slice(0, 2).toUpperCase();
   const remaining = 3 - products.length;
 
-  if(loading) return <p>Loading...</p>;
-  if(error) return <p>Error: {error}</p>;
   return (
     <section className="h-screen space-y-3">
       <div className="bg-primary p-5 relative h-45 mb-30">
@@ -129,9 +138,9 @@ export default function SellersProfile() {
           </h2>
 
           <div className="">
-              <span className="bg-stone-100 rounded-full py-1 px-4"
+              <span className="bg-stone-100 rounded-full py-1 px-4 capitalize"
               >
-                {sellerInfo.categories}
+                {category.name}
               </span>
           </div>
         </div>
@@ -172,7 +181,7 @@ export default function SellersProfile() {
       <AddProductForm showForm={showForm} handleSubmit={submitProduct} preview={preview} errors={errors} handleCancel={handleCancel} newProduct={newProduct} handleChange={handleChange} />
 
       {/* Contact Row */}
-      <SellerContact sellerInfo={sellerInfo} />    
+      <SellerContact sellerInfo={sellerInfo} category={category} />    
             
     </section>
   );

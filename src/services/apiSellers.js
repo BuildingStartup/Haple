@@ -44,6 +44,8 @@ export async function getSellerById(id){
         console.log(error.message);
         throw new Error(error);
     }
+
+    
     return seller;
 }; 
 
