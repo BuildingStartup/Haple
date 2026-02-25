@@ -4,12 +4,12 @@ import supabase from "./supabase";
 export async function createSellerProfile(form){
     const {data: seller, error} = await supabase
     .from("sellers")
-    .insert(form)
+    .insert({form})
     .select();
 
     if(error){
         console.log(error);
-        throw new Error(error);
+        throw new Error(error.message);
     }
 
     return seller;
@@ -25,8 +25,8 @@ export async function getSellerByUsername(username){
     .single();
     
     if(error){
-        console.log(error);
-        throw new Error(error);
+        console.log(error.message);
+        throw new Error(error.message);
     }
 
     return seller;
@@ -41,7 +41,7 @@ export async function getSellerById(id){
     .single();
 
     if(error){
-        console.log(error);
+        console.log(error.message);
         throw new Error(error);
     }
 

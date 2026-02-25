@@ -1,15 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { GoArrowLeft } from "react-icons/go";
 import { VscError } from "react-icons/vsc";
 import Fields from "../ui/Fields.jsx";
-import { createSellerProfile } from "../services/apiSellers.js";
-import useSignUp from "../features/authentication/useSignUp.js";
 import SpinnerMini from "../ui/SpinnerMini.jsx";
+import useSignUp from "../features/authentication/useSignUp.js";
+import useCategories from "../features/categories/useCategories.js";
 
 export default function SignUp() {
   const {loading, handleSignUp} = useSignUp();
+  const {categories, getAllCategories} = useCategories();
+  
   const {
     register,
     handleSubmit,
@@ -27,34 +29,37 @@ export default function SignUp() {
   const selectedCategories = watch("categories") || [];
   const [showPassword, setShowPassword] = useState(false);
 
-  const products = [
-    "Food",
-    "Clothes",
-    "Shoes",
-    "Accessories",
-    "Crotchet",
-    "Perfumes",
-    "Gift Packages",
-    "Skincare",
-  ];
+  useEffect(() => {
+    getAllCategories();
+  }, []);
 
-  const services = [
-    "Make-up",
-    "Nail Tech",
-    "Photography",
-    "Graphic design",
-    "Web design",
-  ];
+  // Filter categories based on current mode
+  const products = Array.isArray(categories) 
+    ? categories.filter(cat => cat?.catalog === "products")
+    : [];
+  const services = Array.isArray(categories) 
+    ? categories.filter(cat => cat?.catalog === "services")
+    : [];
 
+  // Get current category list based on mode
+  const currentCategories = currentMode === "product" ? products : services;
+
+  // Helper function to get category ID by name
+  const getCategoryIdByName = (name) => {
+    const category = currentCategories.find(cat => cat.name === name);
+    return category?.id;
+  };
+
+  //add display name to sign up form and update supabase profile with it after sign up
   const onSubmit = (data) => {
     if(!data.email || !data.password) return;
-    console.log(typeof data.email)
+    
     handleSignUp({
       email: data.email,
       password: data.password,
+      profileData: {...data, categories: data.categories[0]}, // pass the form data with category as UUID
       onSuccess: () => {
-        console.log("Sign up successful!");
-        createSellerProfile(data);
+        console.log("Sign up and profile creation successful!");
       },
       onError: (error) => {
         console.error("Sign up error:", error);
@@ -62,13 +67,14 @@ export default function SignUp() {
     });
   };
 
-  const handleToggle = (cat) => {
-    const next = selectedCategories.includes(cat)
-      ? selectedCategories.filter((c) => c !== cat)
-      : [...selectedCategories, cat];
-
+  const handleToggle = (categoryName) => {
+    const categoryId = getCategoryIdByName(categoryName);
+    if (!categoryId) return;
+    
+    const next = selectedCategories.includes(categoryId) ? [] : [categoryId];
     setValue("categories", next);
   };
+  
 
   const handleWhatsAppChange = (value) => {
     // Remove all non-digit characters except +
@@ -106,13 +112,13 @@ export default function SignUp() {
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mb-10">
-          {/* Company Name */}
+          {/* Business Name */}
           <Fields
             register={register}
-            labelName="Company Name"
-            forTag="companyName"
+            labelName="Business Name"
+            forTag="businessName"
             errors={errors}
-            errorMessage="Company Name is Required"
+            errorMessage="Business Name is Required"
             placeholder="DesignByJoel"
             type="text"
           />
@@ -187,19 +193,19 @@ export default function SignUp() {
                 })}
               />
               <div className="flex flex-wrap gap-3 p-1">
-                {(currentMode === "product" ? products : services).map(
-                  (service) => (
+                {currentCategories.map(
+                  (category) => (
                     <button
-                      key={service}
+                      key={category.id}
                       type="button"
-                      onClick={() => handleToggle(service)}
-                      className={`text-center text-gray-400 rounded-xl ring ring-gray-300 px-3 transition-all cursor-pointer ${
-                        selectedCategories.includes(service)
+                      onClick={() => handleToggle(category.name)}
+                      className={`text-center text-gray-400 rounded-xl ring ring-gray-300 px-6 py-1 transition-all cursor-pointer ${
+                        selectedCategories.includes(category.id)
                           ? "bg-primary-lightest text-primary font-medium "
                           : "bg-white border-gray-200 text-gray-600"
                       }`}
                     >
-                      {service}
+                      {category.name}
                     </button>
                   )
                 )}
@@ -269,11 +275,11 @@ export default function SignUp() {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-primary font-medium text-white rounded-lg py-3 mb-3 cursor-pointer hover:shadow transition-all duration-200"
+            className="w-full bg-primary font-medium text-white rounded-lg py-3 mb-3 cursor-pointer hover:shadow transition-all duration-200 flex items-center justify-center gap-2 disabled:cursor-not-allowed disabled:bg-gray-300"
             disabled={loading}
           >
             {loading && <SpinnerMini />}
-            Create Seller Account
+            <span>Create Seller Account</span>
           </button>
         </form>
       </div>
