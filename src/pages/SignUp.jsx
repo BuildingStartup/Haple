@@ -9,9 +9,9 @@ import useSignUp from "../features/authentication/useSignUp.js";
 import useCategories from "../features/categories/useCategories.js";
 
 export default function SignUp() {
-  const {loading, handleSignUp} = useSignUp();
-  const {categories, getAllCategories} = useCategories();
-  
+  const { loading, handleSignUp } = useSignUp();
+  const { categories, getAllCategories } = useCategories();
+
   const {
     register,
     handleSubmit,
@@ -34,11 +34,11 @@ export default function SignUp() {
   }, []);
 
   // Filter categories based on current mode
-  const products = Array.isArray(categories) 
-    ? categories.filter(cat => cat?.catalog === "products")
+  const products = Array.isArray(categories)
+    ? categories.filter((cat) => cat?.catalog === "products")
     : [];
-  const services = Array.isArray(categories) 
-    ? categories.filter(cat => cat?.catalog === "services")
+  const services = Array.isArray(categories)
+    ? categories.filter((cat) => cat?.catalog === "services")
     : [];
 
   // Get current category list based on mode
@@ -46,110 +46,144 @@ export default function SignUp() {
 
   // Helper function to get category ID by name
   const getCategoryIdByName = (name) => {
-    const category = currentCategories.find(cat => cat.name === name);
+    const category = currentCategories.find((cat) => cat.name === name);
     return category?.id;
   };
 
   //add display name to sign up form and update supabase profile with it after sign up
   const onSubmit = (data) => {
-    if(!data.email || !data.password) return;
-    
+    if (!data.email || !data.password) return;
+
     handleSignUp({
       email: data.email,
       password: data.password,
-      profileData: {...data, categories: data.categories[0]}, // pass the form data with category as UUID
+      profileData: { ...data, categories: data.categories[0] }, // pass the form data with category as UUID
       onSuccess: () => {
         console.log("Sign up and profile creation successful!");
       },
       onError: (error) => {
         console.error("Sign up error:", error);
-      }
+      },
     });
   };
 
   const handleToggle = (categoryName) => {
     const categoryId = getCategoryIdByName(categoryName);
     if (!categoryId) return;
-    
+
     const next = selectedCategories.includes(categoryId) ? [] : [categoryId];
     setValue("categories", next);
   };
-  
 
   const handleWhatsAppChange = (value) => {
     // Remove all non-digit characters except +
     let cleanedNumber = value.replace(/[^\d+]/g, "");
-    
+
     // If it starts with 0, remove it
     if (cleanedNumber.startsWith("0")) {
       cleanedNumber = cleanedNumber.substring(1);
     }
-    
+
     // If it doesn't start with +234, add it
     if (!cleanedNumber.startsWith("+234") && cleanedNumber.length > 0) {
       cleanedNumber = "+234" + cleanedNumber;
     }
-    
+
     setValue("whatsapp", cleanedNumber);
   };
 
   return (
     // <div className="b-20">
-      <div className="h-screen px-4 py-6 space-y-6 pb-20">
-        <Link to="/" className="flex items-center gap-2 cursor-pointer">
-          <GoArrowLeft className="text-2xl text-gray-600 cursor-pointer" />
-          <span className="text-gray-600">Back</span>
-        </Link>
+    <div className="h-screen px-4 py-6 space-y-6 pb-20">
+      <Link to="/" className="flex items-center gap-2 cursor-pointer">
+        <GoArrowLeft className="text-2xl text-gray-600 cursor-pointer" />
+        <span className="text-gray-600">Back</span>
+      </Link>
 
-        {/* Header */}
-        <div className="text-center space-y-1">
-          <h2 className="text-xl font-medium text-primary">
-            Create your Seller Profile
-          </h2>
-          <p className="text-gray-600">
-            Fill in your details to start reaching students
+      {/* Header */}
+      <div className="text-center space-y-1">
+        <h2 className="text-xl font-medium text-primary">
+          Create your Seller Profile
+        </h2>
+        <p className="text-gray-600">
+          Fill in your details to start reaching students
+        </p>
+      </div>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mb-10">
+        {/* Business Name */}
+        <Fields
+          register={register}
+          labelName="Business Name"
+          forTag="businessName"
+          errors={errors}
+          errorMessage="Business Name is Required"
+          placeholder="DesignByJoel"
+          type="text"
+        />
+        {errors.description && (
+          <p className="text-red-600 text-sm bg-red-50 p-2 rounded">
+            {errors.description.message}
           </p>
-        </div>
+        )}
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mb-10">
-          {/* Business Name */}
-          <Fields
-            register={register}
-            labelName="Business Name"
-            forTag="businessName"
-            errors={errors}
-            errorMessage="Business Name is Required"
-            placeholder="DesignByJoel"
-            type="text"
+        {/* Description */}
+        <div className="flex flex-col gap-2">
+          <label htmlFor="description" className="text-gray-700 font-medium">
+            Description
+          </label>
+          <textarea
+            id="description"
+            {...register("description", {
+              required: "Description is required",
+            })}
+            placeholder="What buyers will know about you"
+            className="w-full px-3 py-3 ring ring-gray-300 rounded-lg resize-none outline-none focus:ring focus:ring-primary transition-all duration-200"
+            rows={3}
           />
           {errors.description && (
-            <p className="text-red-600 text-sm bg-red-50 p-2 rounded">
-              {errors.description.message}
-            </p>
-          )}        
+            <div className="text-red-600 text-sm bg-red-50 p-2 rounded flex items-center gap-1">
+              <VscError />
+              <span>{errors.description.message}</span>
+            </div>
+          )}
+        </div>
 
-          {/* Description */}
-          <div className="flex flex-col gap-2">
-            <label htmlFor="description" className="text-gray-700 font-medium">
-              Description
-            </label>
-            <textarea
-              id="description"
-              {...register("description", {
-                required: "Description is required",
-              })}
-              placeholder="What buyers will know about you"
-              className="w-full px-3 py-3 ring ring-gray-300 rounded-lg resize-none outline-none focus:ring focus:ring-primary transition-all duration-200"
-              rows={3}
-            />
-            {errors.description && (
-              <div className="text-red-600 text-sm bg-red-50 p-2 rounded flex items-center gap-1">                  
-                  <VscError />
-                  <span>
-                    {errors.description.message}
-                  </span>
-                </div>
-            )}
+        {/* Mode Toggle */}
+        <div className="space-y-4">
+          <label htmlFor="categories" className="text-gray-700 font-medium">
+            Select Categories
+          </label>
+          <div className="flex gap-4 mt-2">
+            <button
+              type="button"
+              onClick={() => {
+                setValue("mode", "product");
+                setValue("categories", []);
+              }}
+              className={`flex-1 px-4 py-3 rounded-lg transition-all ring ring-gray-300 cursor-pointer ${
+                currentMode === "product"
+                  ? "bg-primary-lightest text-primary font-medium ring-2 ring-primary"
+                  : "bg-white border-gray-300 text-gray-600"
+              }`}
+            >
+              Products
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setValue("mode", "service");
+                setValue("categories", []);
+              }}
+              className={`flex-1 px-4 py-3 rounded-lg transition-all ring ring-gray-300 cursor-pointer ${
+                currentMode === "service"
+                  ? "bg-primary-lightest text-primary font-medium ring-2 ring-primary"
+                  : "bg-white border-gray-300 text-gray-600"
+              }`}
+            >
+              Services
+            </button>
           </div>
 
           {/* Category Multi Select */}
@@ -163,34 +197,29 @@ export default function SignUp() {
                 })}
               />
               <div className="flex flex-wrap gap-3 p-1">
-                {currentCategories.map(
-                  (category) => (
-                    <button
-                      key={category.id}
-                      type="button"
-                      onClick={() => handleToggle(category.name)}
-                      className={`text-center text-gray-400 rounded-xl ring ring-gray-300 px-6 py-1 transition-all cursor-pointer ${
-                        selectedCategories.includes(category.id)
-                          ? "bg-primary-lightest text-primary font-medium "
-                          : "bg-white border-gray-200 text-gray-600"
-                      }`}
-                    >
-                      {category.name}
-                    </button>
-                  )
-                )}
+                {currentCategories.map((category) => (
+                  <button
+                    key={category.id}
+                    type="button"
+                    onClick={() => handleToggle(category.name)}
+                    className={`text-center text-gray-400 rounded-xl ring ring-gray-300 px-6 py-1 transition-all cursor-pointer ${
+                      selectedCategories.includes(category.id)
+                        ? "bg-primary-lightest text-primary font-medium "
+                        : "bg-white border-gray-200 text-gray-600"
+                    }`}
+                  >
+                    {category.name}
+                  </button>
+                ))}
               </div>
               {errors.categories && (
-                <div className="text-red-600 text-sm bg-red-50 p-2 rounded flex items-center gap-1">                  
+                <div className="text-red-600 text-sm bg-red-50 p-2 rounded flex items-center gap-1">
                   <VscError />
-                  <span>
-                    {errors.categories.message}
-                  </span>
+                  <span>{errors.categories.message}</span>
                 </div>
               )}
             </div>
-            )}
-          
+          )}
 
           {/* For email */}
           <Fields
@@ -251,7 +280,8 @@ export default function SignUp() {
             {loading && <SpinnerMini />}
             <span>Create Seller Account</span>
           </button>
+        </div>
       </form>
-      </div>
+    </div>
   );
 }

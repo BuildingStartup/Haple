@@ -122,14 +122,9 @@ export default function Explore() {
       </div>
 
       <div className="space-y-8">
-        <CatalogDisplay
-          catalog={products}
-          name="Products"/>
-        <CatalogDisplay
-          catalog={services}
-          name="Services" />
+        <CatalogDisplay catalog={products} name="Products" />
+        <CatalogDisplay catalog={services} name="Services" />
       </div>
     </section>
   );
 }
-

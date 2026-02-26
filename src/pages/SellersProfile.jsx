@@ -13,22 +13,22 @@ import Spinner from "../ui/Spinner";
 import useSellerCategory from "../features/categories/useSellerCategory";
 
 export default function SellersProfile() {
-   const {user} = useAuth();
-   const {fetchSeller, seller: sellerInfo, loading, error} = useSeller();
-   const {fetchSellerCategory, loading: categoryLoading, error:categoryError, category} = useSellerCategory();
-   
+  const { user } = useAuth();
+  const { fetchSeller, seller: sellerInfo, loading, error } = useSeller();
+  const {
+    fetchSellerCategory,
+    loading: categoryLoading,
+    error: categoryError,
+    category,
+  } = useSellerCategory();
 
-   useEffect(()=> {
-    if(user?.id) fetchSeller(user.id);
-   }, [user])
+  useEffect(() => {
+    if (user?.id) fetchSeller(user.id);
+  }, [user]);
 
-   useEffect(()=> {
-    if(sellerInfo?.category_id) fetchSellerCategory(sellerInfo.category_id);
-   }, [sellerInfo])
-
-   
-
-
+  useEffect(() => {
+    if (sellerInfo?.category_id) fetchSellerCategory(sellerInfo.category_id);
+  }, [sellerInfo]);
 
   // Products added by user
   const [products, setProducts] = useState([]);
@@ -86,20 +86,19 @@ export default function SellersProfile() {
   const deleteProduct = (index) => {
     setProducts((prev) => prev.filter((_, i) => i !== index));
   };
-
-  const handleCancel = ()=>{
+  const handleCancel = () => {
     setShowForm(false);
     setPreview(null);
-  }
+  };
 
-  const handleAddItem = ()=>{
+  const handleAddItem = () => {
     setShowForm(true);
     setPreview(null);
-  }
+  };
 
-  if(loading || categoryLoading) return <Spinner />;
-  if(error || categoryError) return <p>Error: {error || categoryError}</p>;
-  if(!sellerInfo) return <p>No seller data found</p>;
+  if (loading || categoryLoading) return <Spinner />;
+  if (error || categoryError) return <p>Error: {error || categoryError}</p>;
+  if (!sellerInfo) return <p>No seller data found</p>;
 
   const initials = sellerInfo.business_name.slice(0, 2).toUpperCase();
   const remaining = 3 - products.length;
@@ -107,51 +106,53 @@ export default function SellersProfile() {
   return (
     <section className="h-screen space-y-3">
       <div className="bg-primary p-5 relative h-45 mb-30">
-        <div className="flex justify-between items-center">        
-          <Link to="/" className="flex items-center gap-2 cursor-pointer" >
+        <div className="flex justify-between items-center">
+          <Link to="/" className="flex items-center gap-2 cursor-pointer">
             <GoArrowLeft className="text-2xl text-stone-100 cursor-pointer" />
             <span className="text-stone-100">Back</span>
           </Link>
           <div className="relative">
-            <BsThreeDotsVertical className="text-lg text-stone-100 cursor-pointer" 
-            onClick={()=> setOpenOptions((value)=> !value)} />
-           {openOptions && (
-           <ul className="bg-white py-2 space-y-2 w-40 rounded-lg absolute top-7 -right-2 z-10 shadow">
-              <li className="px-4 py-3 hover:bg-stone-200 rounded cursor-pointer">Share</li>
-              <li className="px-4 py-3 hover:bg-stone-200 rounded cursor-pointer">Edit</li>
-              <li className="px-4 py-3 hover:bg-stone-200 rounded cursor-pointer">Logout</li>
-            </ul>
+            <BsThreeDotsVertical
+              className="text-lg text-stone-100 cursor-pointer"
+              onClick={() => setOpenOptions((value) => !value)}
+            />
+            {openOptions && (
+              <ul className="bg-white py-2 space-y-2 w-40 rounded-lg absolute top-7 -right-2 z-10 shadow">
+                <li className="px-4 py-3 hover:bg-stone-200 rounded cursor-pointer">
+                  Share
+                </li>
+                <li className="px-4 py-3 hover:bg-stone-200 rounded cursor-pointer">
+                  Edit
+                </li>
+                <li className="px-4 py-3 hover:bg-stone-200 rounded cursor-pointer">
+                  Logout
+                </li>
+              </ul>
             )}
           </div>
         </div>
-      
-      {/* Seller Info */}
+
+        {/* Seller Info */}
         <div className=" flex flex-col gap-3 items-center absolute -bottom-25 left-0 right-0 mx-auto">
           {/* Avatar */}
-          <div
-            className="bg-white w-25 h-25 flex justify-center items-center rounded-full shadow-lg inset-ring-3 inset-ring-primary-light">
+          <div className="bg-white w-25 h-25 flex justify-center items-center rounded-full shadow-lg inset-ring-3 inset-ring-primary-light">
             <span className="text-primary font-bold text-3xl">{initials}</span>
           </div>
 
-          <h2 className="text-2xl font-medium">
-            {sellerInfo.business_name}
-          </h2>
+          <h2 className="text-2xl font-medium">{sellerInfo.business_name}</h2>
 
           <div className="">
-              <span className="bg-stone-100 rounded-full py-1 px-4 capitalize"
-              >
-                {category.name}
-              </span>
+            <span className="bg-stone-100 rounded-full py-1 px-4 capitalize">
+              {category.name}
+            </span>
           </div>
         </div>
       </div>
 
       {/* Description */}
-      <div className="px-5 pt-3 text-stone-700">
-        {sellerInfo.description}
-      </div>
+      <div className="px-5 pt-3 text-stone-700">{sellerInfo.description}</div>
 
-    {/* actions */}
+      {/* actions */}
       <div className="flex gap-4 items-center justify-center p-5">
         <div className="flex-4 flex flex-col gap-2 items-center justify-center py-2 px-6 ring ring-stone-100 rounded cursor-pointer">
           <FaShare className="text-xl text-secondary" />
@@ -166,23 +167,33 @@ export default function SellersProfile() {
       {/* Catalog Text */}
       <div className="flex items-center gap-3 mb-3">
         <div className="flex-1 h-px bg-stone-200" />
-        <h3 className="text-stone-400 tracking-widest">
-          Catalog
-        </h3>
+        <h3 className="text-stone-400 tracking-widest">Catalog</h3>
         <div className="flex-1 h-px bg-stone-200" />
       </div>
 
       {/* How it looks like when added */}
       <ViewProducts products={products} handleDelete={deleteProduct} />
 
-      <AddProductButton products={products} handleAddItem={handleAddItem} showForm={showForm} remaining={remaining} />
+      <AddProductButton
+        products={products}
+        handleAddItem={handleAddItem}
+        showForm={showForm}
+        remaining={remaining}
+      />
 
       {/* Add Product Form */}
-      <AddProductForm showForm={showForm} handleSubmit={submitProduct} preview={preview} errors={errors} handleCancel={handleCancel} newProduct={newProduct} handleChange={handleChange} />
+      <AddProductForm
+        showForm={showForm}
+        handleSubmit={submitProduct}
+        preview={preview}
+        errors={errors}
+        handleCancel={handleCancel}
+        newProduct={newProduct}
+        handleChange={handleChange}
+      />
 
       {/* Contact Row */}
-      <SellerContact sellerInfo={sellerInfo} category={category} />    
-            
+      <SellerContact sellerInfo={sellerInfo} category={category} />
     </section>
   );
 }
