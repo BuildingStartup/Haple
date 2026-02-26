@@ -45,6 +45,22 @@ export async function getSellerCategoryById(category_id){
     return category;
 }
 
+export async function getCategoryByCatalogAndSlug(catalog, slug) {
+    const { data: category, error } = await supabase
+        .from("categories")
+        .select("*")
+        .eq("catalog", catalog)
+        .eq("slug", slug)
+        .single();
+    
+    if (error) {
+        console.log(error);
+        throw new Error(error.message);
+    }
+    
+    return category;
+}
+
 
 
 

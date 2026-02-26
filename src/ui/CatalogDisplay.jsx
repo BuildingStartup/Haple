@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 export default function CatalogDisplay({
   catalog,
   name,
-  // setSelectedCategory,
 }) {
   const [isExpanded, setIsExpanded] = useState(null);  
   const isOpen = isExpanded === name;
@@ -25,14 +24,14 @@ export default function CatalogDisplay({
       <div className="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-6 mt-5">
         {catalogLength.map((product, value) => (
           <Link 
-          to="/explore/:categoryName" 
+          to={`/explore/${name.toLowerCase()}/${product.slug}`} 
           key={value} className="bg-white min-w-40 h-auto flex flex-col items-center gap-3 rounded-lg justify-center text-base cursor-pointer shadow hover:-translate-y-1 transition-all duration-300 p-8">            
               <div
                 className={`h-15 w-15 flex items-center justify-center text-2xl ${product.color} ${product.bg} p-2 rounded-full`}
               >
                 {product.icon}
               </div>
-              <span className="text-gray-700 text-center">
+              <span className="text-gray-700 text-center capitalize">
                 {product.name}
               </span>
           </Link>
