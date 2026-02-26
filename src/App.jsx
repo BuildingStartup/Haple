@@ -1,22 +1,34 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
+import { useState } from "react";
+import { AuthProvider } from "./context/AuthContext.jsx";
+import Login from "./pages/Login.jsx";
 // PAGES
 import SignUp from "./pages/SignUp.jsx";
 import Home from "./pages/Home.jsx";
 import SellersProfile from "./pages/SellersProfile.jsx";
-import { AuthProvider } from "./context/AuthContext.jsx";
-import Login from "./pages/Login.jsx";
+import Explore from "./pages/Explore.jsx";
+import Sellers from "./pages/Sellers.jsx";
 
 function App() {
+  const [selectedCategory, setSelectedCategory] = useState("");
   return (
     <>
       <BrowserRouter>
-        <AuthProvider>        
+        <AuthProvider>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/signUp" element={<SignUp />} />
             <Route path="/profile" element={<SellersProfile />} />
             <Route path="/signIn" element={<Login />} />
+            <Route
+              path="/explore"
+              element={<Explore setSelectedCategory={setSelectedCategory} />}
+            />
+            <Route
+              path="/sellers"
+              element={<Sellers selectedCategory={selectedCategory} />}
+            />
           </Routes>
         </AuthProvider>
       </BrowserRouter>
@@ -39,7 +51,7 @@ function App() {
             color: "black",
           },
         }}
-        />
+      />
     </>
   );
 }
