@@ -5,26 +5,23 @@ import SignUp from "./pages/SignUp.jsx";
 import Home from "./pages/Home.jsx";
 import SellersProfile from "./pages/SellersProfile.jsx";
 import Explore from "./pages/Explore.jsx";
-import Sellers from "./pages/Sellers.jsx";
-import { useState } from "react";
+import CategorySellers from "./pages/CategorySellers.jsx";
 
 function App() {
-  const [selectedCategory, setSelectedCategory] = useState("");
   return (
     <>
       <BrowserRouter>
         <Routes>
-          {/* routes go in here */}
           <Route path="/" element={<Home />} />
           <Route path="/signUp" element={<SignUp />} />
           <Route path="/sellersProfile" element={<SellersProfile />} />
           <Route
             path="/explore"
-            element={<Explore setSelectedCategory={setSelectedCategory} />}
+            element={<Explore />}
           />
           <Route
-            path="/sellers"
-            element={<Sellers selectedCategory={selectedCategory} />}
+            path="/explore/:categoryName"
+            element={<CategorySellers />}
           />
         </Routes>
       </BrowserRouter>

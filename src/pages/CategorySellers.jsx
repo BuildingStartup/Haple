@@ -1,7 +1,7 @@
 import { IoIosSearch } from "react-icons/io";
 import { GoArrowLeft, GoArrowRight } from "react-icons/go";
 import { Link } from "react-router-dom";
-export default function Sellers({ selectedCategory }) {
+export default function CategorySellers({ selectedCategory = "Clothes" }) {
   const sellerInfo = [
     {
       business_name: "Chunkz",
@@ -44,23 +44,20 @@ export default function Sellers({ selectedCategory }) {
     seller.categories.includes(selectedCategory)
   );
   return (
-    <section className="py-5 px-2 ">
-      <Link to="/explore" className="flex items-center gap-2 cursor-pointer">
-        <GoArrowLeft className="text-2xl text-gray-600 cursor-pointer" />
+    <section className="p-5 space-y-6 ">
+      <Link to="/" className="flex items-center gap-2 cursor-pointer">
+        <GoArrowLeft className="text-xl text-gray-600 cursor-pointer" />
         <span className="text-gray-600">Back</span>
       </Link>
-      <div className="mt-5 relative">
-        <div className="absolute top-1/2 -translate-y-1/2 text-base pl-2">
-          <IoIosSearch />
-        </div>
+      
+      <div className="flex items-center gap-2 pl-4 py-1  rounded-full bg-stone-100">
+        <IoIosSearch className="text-xl text-stone-700" />
         <input
           type="text"
-          placeholder="Search"
-          className="w-full py-3 px-7 rounded-xl border border-slate-200 
-           focus:outline-none focus:border-[#1A55E3] 
-           bg-white shadow-sm"
-        />
+          placeholder="Search for businesses"
+          className="flex-6 focus:outline-none py-2 text-base"     />
       </div>
+
       <div className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-x-4 gap-y-2">
         {filtedData.map((seller, value) => {
           return (

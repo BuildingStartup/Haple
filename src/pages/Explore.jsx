@@ -1,15 +1,14 @@
+import { Link } from "react-router-dom";
 import { IoIosSearch } from "react-icons/io";
 import { GoArrowLeft } from "react-icons/go";
-import { Link } from "react-router-dom";
-import { useState } from "react";
+import CatalogDisplay from "../ui/CatalogDisplay";
 import { HiShoppingBag, HiSparkles, HiGift, HiHeart } from "react-icons/hi2";
 import { MdRestaurant, MdDesignServices, MdComputer } from "react-icons/md";
 import { GiRunningShoe, GiYarn, GiLipstick } from "react-icons/gi";
 import { TbPerfume } from "react-icons/tb";
 import { FaHandSparkles, FaCameraRetro, FaEllipsisH } from "react-icons/fa";
 
-export default function Explore({ setSelectedCategory }) {
-  const [isExpanded, setIsExpanded] = useState(null);
+export default function Explore() {
   const products = [
     {
       name: "Food",
@@ -107,80 +106,30 @@ export default function Explore({ setSelectedCategory }) {
     },
   ];
   return (
-    <section className="py-5 px-4">
+    <section className="p-5 space-y-6">
       <Link to="/" className="flex items-center gap-2 cursor-pointer">
-        <GoArrowLeft className="text-2xl text-gray-600 cursor-pointer" />
+        <GoArrowLeft className="text-xl text-gray-600 cursor-pointer" />
         <span className="text-gray-600">Back</span>
       </Link>
-      <div className="mt-5 relative">
-        <div className="absolute top-1/2 -translate-y-1/2 text-base pl-2">
-          <IoIosSearch />
-        </div>
+
+      <div className="flex items-center gap-2 pl-4 py-1  rounded-full bg-stone-100">
+        <IoIosSearch className="text-xl text-stone-700" />
         <input
           type="text"
-          placeholder="Search"
-          className="w-full py-3 px-7 rounded-xl border border-slate-200 
-                 focus:outline-none focus:border-[#1A55E3] 
-                 bg-white shadow-sm"
+          placeholder="Search for businesses"
+          className="flex-6 focus:outline-none py-2 text-base"
         />
       </div>
-      <CatalogDisplay
-        isExpanded={isExpanded}
-        setIsExpanded={setIsExpanded}
-        setSelectedCategory={setSelectedCategory}
-        catalog={products}
-        name="Products"
-      />
-      <CatalogDisplay
-        isExpanded={isExpanded}
-        setIsExpanded={setIsExpanded}
-        setSelectedCategory={setSelectedCategory}
-        catalog={services}
-        name="Services"
-      />
+
+      <div className="space-y-8">
+        <CatalogDisplay
+          catalog={products}
+          name="Products"/>
+        <CatalogDisplay
+          catalog={services}
+          name="Services" />
+      </div>
     </section>
   );
 }
 
-function CatalogDisplay({
-  catalog,
-  name,
-  isExpanded,
-  setIsExpanded,
-  setSelectedCategory,
-}) {
-  const isOpen = isExpanded === name;
-  const catalogLength = isOpen ? catalog : catalog.slice(0, 3);
-  return (
-    <div className="mt-8">
-      <div className="flex justify-between items-center mb-5 font-extrabold">
-        <h2 className="text-xl text-black tracking-tight">{name}</h2>
-        <button
-          className="text-primary tracking-widest cursor-pointer"
-          onClick={() => setIsExpanded(isOpen ? null : name)}
-        >
-          {isOpen ? "View Less" : "View More"}
-        </button>
-      </div>
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(160px,1fr))] gap-4 mt-5">
-        {catalogLength.map((product, value) => (
-          <Link to="/sellers" key={value}>
-            <div
-              className="bg-white min-w-40 h-28 flex flex-col items-center rounded-2xl justify-center text-base cursor-pointer shadow-sm hover:-translate-y-1"
-              onClick={() => setSelectedCategory(product.name)}
-            >
-              <div
-                className={`h-12 w-12 flex items-center justify-center text-2xl ${product.color} ${product.bg} p-2 rounded-full mb-1`}
-              >
-                {product.icon}
-              </div>
-              <span className="text-sm font-extrabold text-gray-700 uppercase tracking-tight">
-                {product.name}
-              </span>
-            </div>
-          </Link>
-        ))}
-      </div>
-    </div>
-  );
-}
