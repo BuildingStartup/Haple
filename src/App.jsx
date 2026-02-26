@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
+import { AuthProvider } from "./context/AuthContext.jsx";
 // PAGES
 import SignUp from "./pages/SignUp.jsx";
 import Home from "./pages/Home.jsx";
@@ -15,20 +16,16 @@ function App() {
   return (
     <>
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/signUp" element={<SignUp />} />
-          <Route path="/sellersProfile" element={<SellersProfile />} />
-          <Route path="/explore" element={<Explore />} />
-          <Route path="/explore/:categoryName" element={<CategorySellers />} />
-          <Route path="/profile" element={<Profile />} />
-        </Routes>
-        <AuthProvider>
+        <AuthProvider>        
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/signUp" element={<SignUp />} />
             <Route path="/sellersProfile" element={<SellersProfile />} />
             <Route path="/signIn" element={<Login />} />
+            <Route path="/sellersProfile" element={<SellersProfile />} />
+            <Route path="/explore" element={<Explore />}/>
+            <Route path="/explore/:catalog/:slug" element={<CategorySellers />}
+            />
           </Routes>
         </AuthProvider>
       </BrowserRouter>
