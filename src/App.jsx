@@ -9,6 +9,7 @@ import Home from "./pages/Home.jsx";
 import SellersProfile from "./pages/SellersProfile.jsx";
 import Explore from "./pages/Explore.jsx";
 import Sellers from "./pages/Sellers.jsx";
+import Profile from "./pages/Profile.jsx";
 
 function App() {
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -29,6 +30,7 @@ function App() {
               path="/sellers"
               element={<Sellers selectedCategory={selectedCategory} />}
             />
+            <Route path="/sellerProfile" element={<Profile />} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>

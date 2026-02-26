@@ -64,23 +64,22 @@ export default function Sellers({ selectedCategory }) {
       <div className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-x-4 gap-y-2">
         {filtedData.map((seller, value) => {
           return (
-            <div
-              key={value}
-              className="mt-5 flex gap-2 p-1 rounded-xl shadow-sm"
-            >
-              <div className="p-6 rounded-xl bg-primary text-white flex items-center justify-center font-semibold text-base shrink-0">
-                {seller.business_name.slice(0, 2).toUpperCase()}
+            <Link key={value} to="/sellerProfile">
+              <div className="mt-5 flex gap-2 p-1 rounded-xl shadow-sm">
+                <div className="p-6 rounded-xl bg-primary text-white flex items-center justify-center font-semibold text-base shrink-0">
+                  {seller.business_name.slice(0, 2).toUpperCase()}
+                </div>
+                <div className="flex flex-col justify-center py-1">
+                  <p className="font-semibold text-black text-base">
+                    {seller.business_name}
+                  </p>
+                  <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">
+                    {seller.description}
+                  </p>
+                </div>
+                <GoArrowRight className="text-slate-500 text-xl shrink-0" />
               </div>
-              <div className="flex flex-col justify-center py-1">
-                <p className="font-semibold text-black text-base">
-                  {seller.business_name}
-                </p>
-                <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">
-                  {seller.description}
-                </p>
-              </div>
-              <GoArrowRight className="text-slate-500 text-xl shrink-0" />
-            </div>
+            </Link>
           );
         })}
       </div>
