@@ -7,9 +7,9 @@ import SellersProfile from "./pages/SellersProfile.jsx";
 import Explore from "./pages/Explore.jsx";
 import CategorySellers from "./pages/CategorySellers.jsx";
 import Profile from "./pages/Profile.jsx";
+import Login from "./pages/Login.jsx";
 //
 import { AuthProvider } from "./context/AuthContext.jsx";
-import Login from "./pages/Login.jsx";
 
 function App() {
   return (
