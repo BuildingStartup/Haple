@@ -1,20 +1,34 @@
 import { useState, useEffect } from "react";
-import { FaWhatsapp, FaImage } from "react-icons/fa";
-import { MdEmail, MdDelete } from "react-icons/md";
-import { GoArrowLeft } from "react-icons/go";
 import { Link } from "react-router-dom";
+import { GoArrowLeft, GoLink } from "react-icons/go";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { FaShare } from "react-icons/fa";
+import { useAuth } from "../context/AuthContext";
+import useSeller from "../features/profiles/useSeller";
+import AddProductForm from "../ui/AddProductForm";
+import ViewProducts from "../ui/ViewProducts";
+import AddProductButton from "../ui/AddProductButton";
+import SellerContact from "../ui/SellerContact";
+import Spinner from "../ui/Spinner";
+import useSellerCategory from "../features/categories/useSellerCategory";
 
 export default function SellersProfile() {
-  // Original seller info (static, read-only)
-  const sellerInfo = {
-    companyName: "Chunkz",
-    description:
-      "GitHub users are now required to enable two-factor authentication as an additional security measure. Your activity on GitHub includes you in this requirement. You will need to enable two-factor authentication on your account before April 07, 2026, or be restricted from account actions.",
-    whatsapp: "+2348135503380",
-    email: "jayzeeohiozoje@gmail.com",
-    categories: ["Food", "Clothes"],
-    mode: "product",
-  };
+   const {user} = useAuth();
+   const {fetchSeller, seller: sellerInfo, loading, error} = useSeller();
+   const {fetchSellerCategory, loading: categoryLoading, error:categoryError, category} = useSellerCategory();
+   
+
+   useEffect(()=> {
+    if(user?.id) fetchSeller(user.id);
+   }, [user])
+
+   useEffect(()=> {
+    if(sellerInfo?.category_id) fetchSellerCategory(sellerInfo.category_id);
+   }, [sellerInfo])
+
+   
+
+
 
   // Products added by user
   const [products, setProducts] = useState([]);
@@ -24,6 +38,7 @@ export default function SellersProfile() {
     description: "",
   });
   const [showForm, setShowForm] = useState(false);
+  const [openOptions, setOpenOptions] = useState(false);
   const [preview, setPreview] = useState(null);
   const [errors, setErrors] = useState({});
 
@@ -47,10 +62,10 @@ export default function SellersProfile() {
 
   const validate = () => {
     let temp = {};
-    if (!newProduct.name) temp.name = "Product name is required";
-    if (!newProduct.image) temp.image = "Product image is required";
+    if (!newProduct.name) temp.name = "Listing name is required";
+    if (!newProduct.image) temp.image = "Listing image is required";
     if (!newProduct.description)
-      temp.description = "Product description is required";
+      temp.description = "Listing description is required";
 
     setErrors(temp);
     return Object.keys(temp).length === 0;
@@ -72,208 +87,102 @@ export default function SellersProfile() {
     setProducts((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const initials = sellerInfo.companyName.slice(0, 2).toUpperCase();
+  const handleCancel = ()=>{
+    setShowForm(false);
+    setPreview(null);
+  }
+
+  const handleAddItem = ()=>{
+    setShowForm(true);
+    setPreview(null);
+  }
+
+  if(loading || categoryLoading) return <Spinner />;
+  if(error || categoryError) return <p>Error: {error || categoryError}</p>;
+  if(!sellerInfo) return <p>No seller data found</p>;
+
+  const initials = sellerInfo.business_name.slice(0, 2).toUpperCase();
   const remaining = 3 - products.length;
 
   return (
-    <section className="min-h-screen px-4 pb-5 bg-white">
-      <Link
-        to="/signUp"
-        className="flex items-center gap-2 cursor-pointer py-5"
-      >
-        <GoArrowLeft className="text-2xl text-gray-600 cursor-pointer" />
-        <span className="text-gray-600">Back</span>
-      </Link>
-      {/* Seller Info */}
-      <div className="pt-3 px-1 space-y-3 flex flex-col items-center">
-        {/* Avatar */}
-        <div
-          className="w-20 h-20 bg-white flex justify-center items-center rounded-2xl"
-          style={{
-            boxShadow: "0 8px 24px rgba(0,0,0,0.2)",
-          }}
-        >
-          <span className="text-primary font-black text-2xl">{initials}</span>
+    <section className="h-screen space-y-3">
+      <div className="bg-primary p-5 relative h-45 mb-30">
+        <div className="flex justify-between items-center">        
+          <Link to="/" className="flex items-center gap-2 cursor-pointer" >
+            <GoArrowLeft className="text-2xl text-stone-100 cursor-pointer" />
+            <span className="text-stone-100">Back</span>
+          </Link>
+          <div className="relative">
+            <BsThreeDotsVertical className="text-lg text-stone-100 cursor-pointer" 
+            onClick={()=> setOpenOptions((value)=> !value)} />
+           {openOptions && (
+           <ul className="bg-white py-2 space-y-2 w-40 rounded-lg absolute top-7 -right-2 z-10 shadow">
+              <li className="px-4 py-3 hover:bg-stone-200 rounded cursor-pointer">Share</li>
+              <li className="px-4 py-3 hover:bg-stone-200 rounded cursor-pointer">Edit</li>
+              <li className="px-4 py-3 hover:bg-stone-200 rounded cursor-pointer">Logout</li>
+            </ul>
+            )}
+          </div>
         </div>
+      
+      {/* Seller Info */}
+        <div className=" flex flex-col gap-3 items-center absolute -bottom-25 left-0 right-0 mx-auto">
+          {/* Avatar */}
+          <div
+            className="bg-white w-25 h-25 flex justify-center items-center rounded-full shadow-lg inset-ring-3 inset-ring-primary-light">
+            <span className="text-primary font-bold text-3xl">{initials}</span>
+          </div>
 
-        <h2 className="text-black text-2xl font-black">
-          {sellerInfo.companyName}
-        </h2>
-        <div className="flex gap-2 flex-wrap">
-          {sellerInfo.categories.map((category, id) => (
-            <span
-              key={id}
-              className="bg-gray-100 font-bold text-black rounded-3xl py-1 px-3"
-            >
-              {category}
-            </span>
-          ))}
+          <h2 className="text-2xl font-medium">
+            {sellerInfo.business_name}
+          </h2>
+
+          <div className="">
+              <span className="bg-stone-100 rounded-full py-1 px-4 capitalize"
+              >
+                {category.name}
+              </span>
+          </div>
         </div>
       </div>
+
       {/* Description */}
-      <div className="text-slate-600 text-justify pt-4 leading-loose">
+      <div className="px-5 pt-3 text-stone-700">
         {sellerInfo.description}
       </div>
-      {/* Contact Row */}
-      <div className="flex gap-4 flex-wrap my-6">
-        <div className="flex items-center gap-1 p-3 max-w-75">
-          <div className="text-[#25D366] text-lg">
-            <FaWhatsapp />
-          </div>
-          <div>
-            <p className="text-xs text-slate-400">{sellerInfo.whatsapp}</p>
-          </div>
+
+    {/* actions */}
+      <div className="flex gap-4 items-center justify-center p-5">
+        <div className="flex-4 flex flex-col gap-2 items-center justify-center py-2 px-6 ring ring-stone-100 rounded cursor-pointer">
+          <FaShare className="text-xl text-secondary" />
+          <span className="text-secondary">Share</span>
         </div>
-        <div className="flex items-center gap-1 p-3 max-w-75">
-          <div className="text-primary text-lg">
-            <MdEmail />
-          </div>
-          <div>
-            <p className="text-xs text-slate-400">{sellerInfo.email}</p>
-          </div>
+        <div className="flex-4 flex flex-col gap-2 items-center justify-center py-2 px-6 ring ring-stone-200 rounded cursor-pointer">
+          <GoLink className="text-xl text-primary" />
+          <span className="text-primary">Copy Link</span>
         </div>
       </div>
+
       {/* Catalog Text */}
       <div className="flex items-center gap-3 mb-3">
-        <div className="flex-1 h-px bg-slate-400" />
-        <h3 className="font-bold text-slate-400 uppercase tracking-widest">
-          Your Catalog
+        <div className="flex-1 h-px bg-stone-200" />
+        <h3 className="text-stone-400 tracking-widest">
+          Catalog
         </h3>
-        <div className="flex-1 h-px bg-slate-400" />
+        <div className="flex-1 h-px bg-stone-200" />
       </div>
 
       {/* How it looks like when added */}
-      <div className="flex flex-wrap justify-center gap-3 mb-4">
-        {products.map((prod, i) => (
-          <div
-            key={i}
-            className="relative w-72 rounded-2xl overflow-hidden bg-slate-50 border-[1.5px] border-slate-200 shadow-sm"
-          >
-            <button
-              onClick={() => deleteProduct(i)}
-              className="absolute top-2 right-2 bg-white rounded-full p-1 shadow hover:bg-red-50 transition"
-            >
-              <MdDelete className="text-red-500 text-sm" />
-            </button>
+      <ViewProducts products={products} handleDelete={deleteProduct} />
 
-            <img
-              src={prod.image}
-              alt={prod.name}
-              className="w-full h-48 object-cover"
-            />
-            <div className="p-2 pb-4">
-              <p className="text-base font-black text-slate-900 uppercase">
-                {prod.name}
-              </p>
-              <p className="text-sm text-slate-500 leading-relaxed text-justify">
-                {prod.description}
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {products.length < 3 && !showForm && (
-        <div className="flex flex-col gap-2 mb-4">
-          <p className="text-slate-400">
-            You can add{" "}
-            <span className="font-bold text-primary">{remaining}</span> more
-            item{remaining !== 1 ? "s" : ""}
-          </p>
-          <button
-            onClick={() => {
-              setShowForm(true);
-              setPreview(null);
-            }}
-            className="bg-primary text-white px-3 py-3 rounded-xl"
-          >
-            Add Item ({products.length}/3)
-          </button>
-        </div>
-      )}
+      <AddProductButton products={products} handleAddItem={handleAddItem} showForm={showForm} remaining={remaining} />
 
       {/* Add Product Form */}
-      {showForm && (
-        <div className="bg-slate-50 rounded-2xl border-[1.5px] border-slate-200 p-4 flex flex-col gap-3">
-          <div>
-            <span className="font-black text-slate-900">NEW LISTING</span>
-          </div>
+      <AddProductForm showForm={showForm} handleSubmit={submitProduct} preview={preview} errors={errors} handleCancel={handleCancel} newProduct={newProduct} handleChange={handleChange} />
 
-          {/* Image upload preview */}
-          <label className="w-full h-48 rounded-2xl border-2 border-dashed border-slate-300 flex items-center justify-center cursor-pointer overflow-hidden bg-white">
-            {preview ? (
-              <img
-                src={preview}
-                alt="preview"
-                className="w-full h-full object-contain"
-              />
-            ) : (
-              <div className="flex flex-col items-center gap-1.5 text-slate-400">
-                <FaImage />
-                <span className=" font-bold">Upload Product Photo</span>
-              </div>
-            )}
-            <input
-              type="file"
-              name="image"
-              accept="image/*"
-              onChange={handleChange}
-              className="hidden"
-            />
-          </label>
-          {errors.image && (
-            <p className="text-xs text-red-500">{errors.image}</p>
-          )}
-
-          {/* Inputs */}
-          <div className="space-y-2">
-            <input
-              type="text"
-              name="name"
-              value={newProduct.name}
-              onChange={handleChange}
-              placeholder="What are you selling?"
-              className="w-full p-3.5 border-[1.5px] border-slate-200 rounded-xl outline-none focus:border-[#1A55E3] bg-white transition-colors"
-            />
-            {errors.name && (
-              <p className="text-xs text-red-500">{errors.name}</p>
-            )}
-
-            <textarea
-              name="description"
-              value={newProduct.description}
-              onChange={handleChange}
-              placeholder="Tell us more about it..."
-              rows={2}
-              className="w-full p-3.5 border-[1.5px] border-slate-200 rounded-xl outline-none resize-none focus:border-[#1A55E3] bg-white transition-colors"
-            />
-            {errors.description && (
-              <p className="text-xs text-red-500">{errors.description}</p>
-            )}
-          </div>
-
-          <div className="flex gap-2 mt-1">
-            <button
-              onClick={submitProduct}
-              className="flex-2 p-3.5 bg-primary border-none rounded-xl text-white font-black text-xs cursor-pointer shadow-md active:scale-95 transition-all"
-            >
-              SAVE LISTING
-            </button>
-            <button
-              onClick={() => {
-                setShowForm(false);
-                setPreview(null);
-              }}
-              className="flex-1 p-3.5 bg-slate-200 border-none rounded-xl text-slate-600 font-bold text-xs cursor-pointer active:scale-95 transition-all"
-            >
-              CANCEL
-            </button>
-          </div>
-        </div>
-      )}
-      <div className="w-full bg-[#10B981] rounded-xl p-3.5 text-center text-white cursor-pointer">
-        Share Your Profile
-      </div>
+      {/* Contact Row */}
+      <SellerContact sellerInfo={sellerInfo} category={category} />    
+            
     </section>
   );
 }

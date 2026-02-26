@@ -6,6 +6,8 @@ import Home from "./pages/Home.jsx";
 import SellersProfile from "./pages/SellersProfile.jsx";
 import Explore from "./pages/Explore.jsx";
 import CategorySellers from "./pages/CategorySellers.jsx";
+import { AuthProvider } from "./context/AuthContext.jsx";
+import Login from "./pages/Login.jsx";
 
 function App() {
   return (
@@ -24,6 +26,14 @@ function App() {
             element={<CategorySellers />}
           />
         </Routes>
+        <AuthProvider>        
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/signUp" element={<SignUp />} />
+            <Route path="/profile" element={<SellersProfile />} />
+            <Route path="/signIn" element={<Login />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
       <Toaster
         position="top-center"
@@ -44,7 +54,7 @@ function App() {
             color: "black",
           },
         }}
-      />
+        />
     </>
   );
 }

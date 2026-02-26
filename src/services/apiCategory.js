@@ -29,3 +29,22 @@ export async function getCategoryBySlug(slug){
 };
 
 
+export async function getSellerCategoryById(category_id){
+    const {data: category, error} = await supabase
+    .from("categories")
+    .select("*")
+    .eq("id", category_id)
+    .single();
+
+
+    if(error){
+        console.log(error);
+        throw new Error(error);
+    }
+
+    return category;
+}
+
+
+
+
