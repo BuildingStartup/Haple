@@ -40,13 +40,14 @@ export default function CategorySellers() {
         <GoArrowLeft className="text-xl text-gray-600 cursor-pointer" />
         <span className="text-gray-600">Back</span>
       </Link>
-      
+
       <div className="flex items-center gap-2 pl-4 py-1  rounded-full bg-stone-100">
         <IoIosSearch className="text-xl text-stone-700" />
         <input
           type="text"
           placeholder="Search for businesses"
-          className="flex-6 focus:outline-none py-2 text-base"     />
+          className="flex-6 focus:outline-none py-2 text-base"
+        />
       </div>
 
       <div className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))]">

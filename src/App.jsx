@@ -7,7 +7,10 @@ import Home from "./pages/Home.jsx";
 import SellersProfile from "./pages/SellersProfile.jsx";
 import Explore from "./pages/Explore.jsx";
 import CategorySellers from "./pages/CategorySellers.jsx";
+import Profile from "./pages/Profile.jsx";
 import Login from "./pages/Login.jsx";
+//
+import { AuthProvider } from "./context/AuthContext.jsx";
 
 function App() {
   return (
@@ -17,7 +20,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/signUp" element={<SignUp />} />
-            <Route path="/profile" element={<SellersProfile />} />
+            <Route path="/sellersProfile" element={<SellersProfile />} />
             <Route path="/signIn" element={<Login />} />
             <Route path="/sellersProfile" element={<SellersProfile />} />
             <Route path="/explore" element={<Explore />}/>
@@ -45,7 +48,7 @@ function App() {
             color: "black",
           },
         }}
-        />
+      />
     </>
   );
 }
