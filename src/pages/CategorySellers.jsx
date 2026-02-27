@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { IoIosSearch } from "react-icons/io";
-import { GoArrowLeft, GoArrowRight } from "react-icons/go";
-import { BsChat } from "react-icons/bs";
+import { GoArrowLeft } from "react-icons/go";
 import Spinner from "../ui/Spinner";
-import useCategories from "../features/categories/useCategories";
+import SellersList from "../ui/SellersList";
 import useSellersCategorySlug from "../features/profiles/useSellersCategorySlug";
+import useCategories from "../features/categories/useCategories";
 
 
 
@@ -50,37 +50,8 @@ export default function CategorySellers() {
         />
       </div>
 
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))]">
-        {sellers.length === 0 ? <p className="text-center w-full py-10 text-base text-stone-700">No sellers found in this category</p> 
-        :sellers?.map((seller, value) => {
-          return (
-            <div
-              key={value}
-              className="relative flex items-center rounded-xl shadow">
-
-              <div className="p-6 rounded-xl bg-primary text-white flex items-center justify-center font-medium text-base">
-                {seller.business_name.slice(0, 2).toUpperCase()}
-              </div>
-
-              <div className="px-2">
-                <p className="font-medium text-lg">
-                  {seller.business_name}
-                </p>
-                <span className="text-stone-500 line-clamp-1 first-letter:uppercase">
-                  {seller.description}
-                </span>
-              </div>
-
-              <GoArrowRight className="text-slate-500 text-xl shrink-0 absolute right-4 top-1" />
-
-              {/* <div className="bg-secondary rounded-full p-2 absolute right-4 top-1">
-                <BsChat className="text-stone-50 text-lg shrink-0 " />
-              </div> */}
-
-            </div>
-          );
-        })}
-      </div>
+      <SellersList sellers={sellers}/>
+      
     </section>
   );
 }

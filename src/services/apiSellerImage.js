@@ -55,6 +55,62 @@ export async function uploadSellerImage(imageFile, sellerId, position){
         return data;
 };  
 
+export async function uploadSellerAvatar(avatarFile, userId){
+   //1. validate user
+   if(!userId) throw new Error("User not authenticated");
+   
+   //2. validate file
+   if(!avatarFile) throw new Error("No file selected");
+
+   const allowedTypes = ["image/jpeg", "image/png", "image/webp"]
+   if(!allowedTypes.includes(avatarFile.type)) throw new Error("Only JPG, PNG and WEBP files are allowed");
+
+   //3. create file path
+   const fileExtension = avatarFile.name.split(".").pop();
+   const filePath = `${userId}/avatar.${fileExtension}`
+
+   //4. upload to storage bucket
+  const { error: uploadError } = await supabase.storage
+    .from("seller-avatars")
+    .upload(filePath, avatarFile, {
+      upsert: true
+    })
+
+  if (uploadError) {
+    throw new Error(uploadError.message);
+  }
+
+  //5. get public url
+  const { data: publicUrlData, error: publicUrlError } =  supabase.storage
+    .from("seller-avatars")
+    .getPublicUrl(filePath);
+
+    if(publicUrlError){
+        throw new Error(publicUrlError)
+    }
+
+    const avatarUrl = publicUrlData.publicUrl;
+
+    //6. update sellers table
+    const {data: updatedSeller, error: updatedError} = await supabase
+    .from("sellers")
+    .update({avatar_url: avatarUrl})
+    .eq("id", userId)
+    .select()
+    .single()
+
+    if(updatedError){
+        throw new Error(updatedError);
+    }
+    
+
+    return updatedSeller;
+
+  
+}
+
+
+
 export async function getSellerImage(sellerId){
     const {data, error} = await supabase
     .from("seller_images")
@@ -103,5 +159,14 @@ export async function deleteSellerImage(sellerId, imageId){
     }
     
 };
+
+
+
+
+
+
+
+
+
 
 

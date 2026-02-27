@@ -1,16 +1,16 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "./context/AuthContext.jsx";
+
 // PAGES
-import SignUp from "./pages/SignUp.jsx";
 import Home from "./pages/Home.jsx";
-import SellersProfile from "./pages/SellersProfile.jsx";
+import SignUp from "./pages/SignUp.jsx";
+import Login from "./pages/Login.jsx";
+import MyProfile from "./pages/MyProfile.jsx";
 import Explore from "./pages/Explore.jsx";
 import CategorySellers from "./pages/CategorySellers.jsx";
-import Profile from "./pages/Profile.jsx";
-import Login from "./pages/Login.jsx";
+import SellerProfile from "./pages/SellerProfile.jsx";
 //
-import { AuthProvider } from "./context/AuthContext.jsx";
 
 function App() {
   return (
@@ -19,13 +19,16 @@ function App() {
         <AuthProvider>        
           <Routes>
             <Route path="/" element={<Home />} />
+
+            {/* seller flow */}
             <Route path="/signUp" element={<SignUp />} />
-            <Route path="/sellersProfile" element={<SellersProfile />} />
             <Route path="/signIn" element={<Login />} />
-            <Route path="/sellersProfile" element={<SellersProfile />} />
+            <Route path="/myProfile" element={<MyProfile />} />
+
+            {/* buyer flow */}
             <Route path="/explore" element={<Explore />}/>
-            <Route path="/explore/:catalog/:slug" element={<CategorySellers />}
-            />
+            <Route path="/explore/:catalog/:slug" element={<CategorySellers />} />
+            <Route path="/seller/:username" element={<SellerProfile />} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>

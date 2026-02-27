@@ -14,7 +14,7 @@ function useLogin(){
         try{
             await signInSeller({email, password});
             toast.success("Successfully logged in!");
-            navigate("/profile");
+            navigate("/myProfile");
         }
         catch(err){
             console.log(err?.message);

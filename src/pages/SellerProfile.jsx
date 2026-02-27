@@ -1,9 +1,29 @@
-import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { GoArrowLeft } from "react-icons/go";
 import { FaWhatsapp } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
-export default function Profile() {
+import Spinner from "../ui/Spinner";
+import useSeller from "../features/profiles/useSeller";
+import useSellerCategory from "../features/categories/useSellerCategory";
+
+
+export default function SellerProfile() {
+  const {username} = useParams();
+  const {loading: sellerLoading, error: sellerError, seller: sellerInfo,  fetchSellerByUsername} = useSeller();
+  const {fetchSellerCategory, loading: categoryLoading, error: categoryError, category, } = useSellerCategory();
   const navigate = useNavigate();
+
+  useEffect(()=> {
+    if(username) fetchSellerByUsername(username);
+  }, [username, fetchSellerByUsername]);
+
+  useEffect(() => {
+      if (sellerInfo?.category_id) fetchSellerCategory(sellerInfo.category_id);
+    }, [sellerInfo?.category_id, fetchSellerCategory]);
+
+ 
+
   const products = [
     {
       name: "Oversized Tee",
@@ -17,17 +37,14 @@ export default function Profile() {
     },
   ];
 
-  const sellerInfo = {
-    business_name: "Chunkz",
-    description:
-      "GitHub users are now required to enable two-factor authentication as an additional security measure. Your activity on GitHub includes you in this requirement. You will need to enable two-factor authentication on your account before April 07, 2026, or be restricted from account actions.",
-    whatsapp_number: "+2348135503380",
-    categories: "Clothes",
-    mode: "product",
-  };
+  
+  if(sellerLoading || categoryLoading ) return <Spinner />;
+  if(sellerError || categoryError) return <p>Error</p>
+  if(!sellerInfo || !category) return <p>Seller not found</p>;
+  
   const whatsappNumber = sellerInfo.whatsapp_number.replace(/\D/g, "");
   const message = encodeURIComponent(
-    `Hi ${sellerInfo.business_name}, I found you on Haple and I'm interested in your products!`
+    `Hi ${sellerInfo?.business_name}, I found you on Haple and I'm interested in your products!`
   );
   return (
     <section className="min-h-screen space-y-5">
@@ -58,7 +75,7 @@ export default function Profile() {
 
             <div className="">
               <span className="bg-stone-100 rounded-full py-1 px-4 capitalize">
-                {sellerInfo.categories}
+                {category.name}
               </span>
             </div>
           </div>
@@ -102,7 +119,7 @@ export default function Profile() {
           target="_blank"
           rel="noreferrer"
         >
-          <button className="bg-secondary w-full text-white py-3 text-base rounded flex items-center justify-center gap-2 cursor-pointer">
+          <button className="bg-secondary-light w-full text-white py-3 text-base rounded flex items-center justify-center gap-2 cursor-pointer hover:bg-secondary transition-all duration-300">
             <FaWhatsapp className="text-xl" />
             Message on Whatsapp
           </button>

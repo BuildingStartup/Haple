@@ -9,7 +9,7 @@ export default function SellerContact({sellerInfo, category}){
             <div className="flex items-center gap-3">          
             <MdOutlineCategory className="text-stone-500 text-xl"/>
             <p className="capitalize">
-                {category.catalog} ({category.name})
+                {category?.catalog ?? "General"} ({category?.name ?? "Uncategorized"})
             </p>
             </div>
 

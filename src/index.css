@@ -20,4 +20,7 @@ body {
   --color-accent: #f1f5f9;
   --color-neutral: ;
   --color-secondary: #25d366;
+  --color-secondary-darker: #075E54;
+  --color-secondary-icon: #25D366;
+  --color-secondary-light: #128C7E;
 }

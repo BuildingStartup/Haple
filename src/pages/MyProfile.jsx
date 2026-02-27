@@ -5,16 +5,16 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaShare } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 import useSeller from "../features/profiles/useSeller";
+import useSellerCategory from "../features/categories/useSellerCategory";
 import AddProductForm from "../ui/AddProductForm";
 import ViewProducts from "../ui/ViewProducts";
 import AddProductButton from "../ui/AddProductButton";
 import SellerContact from "../ui/SellerContact";
 import Spinner from "../ui/Spinner";
-import useSellerCategory from "../features/categories/useSellerCategory";
 
-export default function SellersProfile() {
+export default function MyProfile() {
   const { user } = useAuth();
-  const { fetchSeller, seller: sellerInfo, loading, error } = useSeller();
+  const { fetchSellerById, seller: sellerInfo, loading, error } = useSeller();
   const {
     fetchSellerCategory,
     loading: categoryLoading,
@@ -23,12 +23,12 @@ export default function SellersProfile() {
   } = useSellerCategory();
 
   useEffect(() => {
-    if (user?.id) fetchSeller(user.id);
-  }, [user]);
+    if (user?.id) fetchSellerById(user.id);
+  }, [user, fetchSellerById]);
 
   useEffect(() => {
     if (sellerInfo?.category_id) fetchSellerCategory(sellerInfo.category_id);
-  }, [sellerInfo]);
+  }, [sellerInfo?.category_id, fetchSellerCategory]);
 
   // Products added by user
   const [products, setProducts] = useState([]);
@@ -143,7 +143,7 @@ export default function SellersProfile() {
 
           <div className="">
             <span className="bg-stone-100 rounded-full py-1 px-4 capitalize">
-              {category.name}
+              {category?.name ?? "Uncategorized"}
             </span>
           </div>
         </div>

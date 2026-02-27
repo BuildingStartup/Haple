@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { getSellerCategoryById } from "../../services/apiCategory";
 
 function useSellerCategory(){
@@ -6,7 +6,7 @@ function useSellerCategory(){
     const [category, setCategory] = useState(null);
     const [error, setError] = useState(null);
 
-    async function fetchSellerCategory(category_id){
+    const fetchSellerCategory = useCallback(async (category_id) => {
         setLoading(true);
         setError(null);
         try{
@@ -21,7 +21,7 @@ function useSellerCategory(){
         finally{
             setLoading(false);
         }
-    }
+    }, []);
 
     
 

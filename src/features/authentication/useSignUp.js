@@ -19,7 +19,7 @@ function useSignUp(){
             });
             toast.success("Profile created successfully!.");
             if(typeof onSuccess === "function") onSuccess();
-            navigate("/profile");
+            navigate("/myProfile");
         } catch (err) {
             setError(err.message);
             toast.error(`Sign up failed: ${err.message}`);
