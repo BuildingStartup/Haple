@@ -103,6 +103,24 @@ export default function MyProfile() {
   const initials = sellerInfo.business_name.slice(0, 2).toUpperCase();
   const remaining = 3 - products.length;
 
+  // Share and Copy
+  // Share and copy
+  const profileUrl = window.location.href;
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      await navigator.share({
+        title: sellerInfo.business_name,
+        text: `Check out ${sellerInfo.business_name} on Haple!`,
+        url: profileUrl,
+      });
+    }
+  };
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(profileUrl).then(() => alert("Link copied!"));
+  };
+
   return (
     <section className="h-screen space-y-3">
       <div className="bg-primary p-5 relative h-45 mb-30">
@@ -154,14 +172,20 @@ export default function MyProfile() {
 
       {/* actions */}
       <div className="flex gap-4 items-center justify-center p-5">
-        <div className="flex-4 flex flex-col gap-2 items-center justify-center py-2 px-6 ring ring-stone-100 rounded cursor-pointer">
+        <button
+          onClick={handleShare}
+          className="flex-4 flex flex-col gap-2 items-center justify-center py-2 px-6 ring ring-stone-100 rounded cursor-pointer"
+        >
           <FaShare className="text-xl text-secondary" />
           <span className="text-secondary">Share</span>
-        </div>
-        <div className="flex-4 flex flex-col gap-2 items-center justify-center py-2 px-6 ring ring-stone-200 rounded cursor-pointer">
+        </button>
+        <button
+          onClick={handleCopyLink}
+          className="flex-4 flex flex-col gap-2 items-center justify-center py-2 px-6 ring ring-stone-200 rounded cursor-pointer"
+        >
           <GoLink className="text-xl text-primary" />
           <span className="text-primary">Copy Link</span>
-        </div>
+        </button>
       </div>
 
       {/* Catalog Text */}
