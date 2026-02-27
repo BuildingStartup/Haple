@@ -1,11 +1,11 @@
-import supabase from "./supabase";
+import supabase, {supabaseUrl} from "./supabase";
 
 
 export async function uploadSellerImage(imageFile, sellerId, position){
-    //validate file type
-    if(!imageFile.type.startsWith("image/")){
-        throw new Error("Only image files are allowed")
-    }
+    const hasImagePath = 
+
+
+    //https://mnojffbasafjsyamcbqw.supabase.co/storage/v1/object/public/seller-images/team3.jpg
 
     //create a unque file name
     const fileExt = imageFile.name.split(".").pop();
@@ -65,6 +65,8 @@ export async function uploadSellerAvatar(avatarFile, userId){
    const allowedTypes = ["image/jpeg", "image/png", "image/webp"]
    if(!allowedTypes.includes(avatarFile.type)) throw new Error("Only JPG, PNG and WEBP files are allowed");
 
+
+   //https://mnojffbasafjsyamcbqw.supabase.co/storage/v1/object/public/seller-avatar/team3.jpg
    //3. create file path
    const fileExtension = avatarFile.name.split(".").pop();
    const filePath = `${userId}/avatar.${fileExtension}`
@@ -124,6 +126,7 @@ export async function getSellerImage(sellerId){
 
     return data;
 };
+
 
 export async function deleteSellerImage(sellerId, imageId){
     //get the image record

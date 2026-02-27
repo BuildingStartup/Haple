@@ -121,9 +121,9 @@ export default function MyProfile() {
                 <li className="px-4 py-3 hover:bg-stone-200 rounded cursor-pointer">
                   Share
                 </li>
-                <li className="px-4 py-3 hover:bg-stone-200 rounded cursor-pointer">
-                  Edit
-                </li>
+                <Link to="edit">
+                  <li className="px-4 py-3 hover:bg-stone-200 rounded cursor-pointer">Edit</li>
+                </Link>
                 <li className="px-4 py-3 hover:bg-stone-200 rounded cursor-pointer">
                   Logout
                 </li>
@@ -135,8 +135,12 @@ export default function MyProfile() {
         {/* Seller Info */}
         <div className=" flex flex-col gap-3 items-center absolute -bottom-25 left-0 right-0 mx-auto">
           {/* Avatar */}
-          <div className="bg-white w-25 h-25 flex justify-center items-center rounded-full shadow-lg inset-ring-3 inset-ring-primary-light">
-            <span className="text-primary font-bold text-3xl">{initials}</span>
+          <div className="bg-white w-25 h-25 flex justify-center items-center rounded-full shadow-lg inset-ring-3 inset-ring-primary-light overflow-hidden">
+            {sellerInfo.avatar_url ? (
+              <img src={sellerInfo.avatar_url} alt={sellerInfo.business_name} className="w-full h-full object-cover" />
+            ) : (
+              <span className="text-primary font-bold text-3xl">{initials}</span>
+            )}
           </div>
 
           <h2 className="text-2xl font-medium">{sellerInfo.business_name}</h2>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { signInSeller } from "../../services/apiAuth";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -8,13 +8,14 @@ function useLogin(){
     const [error, setError] = useState(null);
     const navigate = useNavigate();
 
-    async function loginSeller({email, password}){
+    const loginSeller = useCallback(async ({email, password}) => {
         setLoading(true);
         setError(null);
         try{
-            await signInSeller({email, password});
-            toast.success("Successfully logged in!");
-            navigate("/myProfile");
+            const {user} = await signInSeller({email, password});
+            const username = user.user_metadata.username;
+            toast.success("Successfully logged in!");    
+            navigate(`/profile/${username}`);
         }
         catch(err){
             console.log(err?.message);
@@ -24,7 +25,7 @@ function useLogin(){
         finally{
             setLoading(false);
         }
-    }
+    }, [navigate]);
 
     return {loading, error, loginSeller};
 }
