@@ -6,6 +6,7 @@ import { FaShare } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 import useSeller from "../features/profiles/useSeller";
 import useSellerCategory from "../features/categories/useSellerCategory";
+import useSellerImages from "../features/profiles/useSellerImages";
 import AddProductForm from "../ui/AddProductForm";
 import ViewProducts from "../ui/ViewProducts";
 import AddProductButton from "../ui/AddProductButton";
@@ -15,27 +16,28 @@ import Spinner from "../ui/Spinner";
 export default function MyProfile() {
   const { user } = useAuth();
   const { fetchSellerById, seller: sellerInfo, loading, error } = useSeller();
-  const {
-    fetchSellerCategory,
-    loading: categoryLoading,
-    error: categoryError,
-    category,
-  } = useSellerCategory();
+  const { fetchSellerCategory, loading: categoryLoading, error:categoryError, category} = useSellerCategory();
+  const { handleUploadImage, handleDeleteImage, handleGetImages, images, loading: imageLoading, error: imageError } = useSellerImages();
 
   useEffect(() => {
     if (user?.id) fetchSellerById(user.id);
-  }, [user, fetchSellerById]);
+  }, [user]);
 
   useEffect(() => {
     if (sellerInfo?.category_id) fetchSellerCategory(sellerInfo.category_id);
-  }, [sellerInfo?.category_id, fetchSellerCategory]);
+  }, [sellerInfo?.category_id]);
+
+
+  useEffect(() => {
+    if (sellerInfo?.id) handleGetImages(sellerInfo.id);
+  }, [sellerInfo?.id]);
+
 
   // Products added by user
-  const [products, setProducts] = useState([]);
   const [newProduct, setNewProduct] = useState({
     name: "",
-    image: null,
-    description: "",
+    image_url: null,
+    caption: "",
   });
   const [showForm, setShowForm] = useState(false);
   const [openOptions, setOpenOptions] = useState(false);
@@ -63,9 +65,9 @@ export default function MyProfile() {
   const validate = () => {
     let temp = {};
     if (!newProduct.name) temp.name = "Listing name is required";
-    if (!newProduct.image) temp.image = "Listing image is required";
-    if (!newProduct.description)
-      temp.description = "Listing description is required";
+    if (!newProduct.image_url) temp.image_url = "Listing image is required";
+    if (!newProduct.caption)
+      temp.caption = "Listing caption is required";
 
     setErrors(temp);
     return Object.keys(temp).length === 0;
@@ -74,18 +76,20 @@ export default function MyProfile() {
   const submitProduct = () => {
     if (!validate()) return;
 
-    const imageUrl = URL.createObjectURL(newProduct.image);
-
-    setProducts((prev) => [...prev, { ...newProduct, image: imageUrl }]);
-    setNewProduct({ name: "", image: null, description: "" });
+    const position = images.length + 1;
+    
+    handleUploadImage(newProduct.image_url, sellerInfo.id, position, newProduct.caption, newProduct.name);
+    setNewProduct({ name: "", image_url: null, caption: "" });
     setPreview(null);
     setShowForm(false);
-    setErrors({});
+    setErrors({});    
   };
 
-  const deleteProduct = (index) => {
-    setProducts((prev) => prev.filter((_, i) => i !== index));
+  const deleteProduct = (imageId) => {
+    if (!imageId) return;
+    handleDeleteImage(sellerInfo.id, imageId);    
   };
+
   const handleCancel = () => {
     setShowForm(false);
     setPreview(null);
@@ -96,12 +100,12 @@ export default function MyProfile() {
     setPreview(null);
   };
 
-  if (loading || categoryLoading) return <Spinner />;
-  if (error || categoryError) return <p>Error: {error || categoryError}</p>;
+  if (loading || categoryLoading || imageLoading) return <Spinner />;
+  if (error || categoryError || imageError) return <p>Error: {error || categoryError || imageError}</p>;
   if (!sellerInfo) return <p>No seller data found</p>;
 
   const initials = sellerInfo.business_name.slice(0, 2).toUpperCase();
-  const remaining = 3 - products.length;
+  const remaining = 3 - images.length;
 
   return (
     <section className="h-screen space-y-3">
@@ -176,10 +180,10 @@ export default function MyProfile() {
       </div>
 
       {/* How it looks like when added */}
-      <ViewProducts products={products} handleDelete={deleteProduct} />
+      <ViewProducts products={images} handleDelete={(imageId) => deleteProduct(imageId)} />
 
       <AddProductButton
-        products={products}
+        products={images}
         handleAddItem={handleAddItem}
         showForm={showForm}
         remaining={remaining}

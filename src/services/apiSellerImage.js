@@ -1,16 +1,26 @@
 import supabase, {supabaseUrl} from "./supabase";
 
 
-export async function uploadSellerImage(imageFile, sellerId, position){
-    const hasImagePath = 
+export async function uploadSellerImage(imageFile, sellerId, position, name, caption){
+     //1. checking if it has an image path already
+        const hasImagePath = imageFile?.startsWith?.(supabaseUrl);
+    
+        //2. create an image name
+        //choose a base for the image name: existing path, string name, file.name or fallback image.
+    
+        const imageBase = hasImagePath ? imageFile
+        : (typeof imageFile === "string" 
+            ? imageFile : imageFile?.name
+            || "image");
+        
+        const imageName = `${Math.random()}-${imageBase}`.replaceAll("/", "");
+        
+        
+
+        const filePath = `seller-${sellerId}/${imageName}`;
 
 
-    //https://mnojffbasafjsyamcbqw.supabase.co/storage/v1/object/public/seller-images/team3.jpg
-
-    //create a unque file name
-    const fileExt = imageFile.name.split(".").pop();
-    const fileName = `${Date.now()}.${fileExt}`;
-    const filePath = `${sellerId}/${fileName}`;
+    
     
     //upload to supabase storage
     const {error: uploadError, } = await supabase.storage
@@ -38,7 +48,9 @@ export async function uploadSellerImage(imageFile, sellerId, position){
         .insert([{
             seller_id: sellerId,
             image_url: imageUrl,
-            position: position
+            position: position,
+            name: name,
+            caption: caption,
             },
         ])
         .select()
@@ -54,62 +66,6 @@ export async function uploadSellerImage(imageFile, sellerId, position){
 
         return data;
 };  
-
-export async function uploadSellerAvatar(avatarFile, userId){
-   //1. validate user
-   if(!userId) throw new Error("User not authenticated");
-   
-   //2. validate file
-   if(!avatarFile) throw new Error("No file selected");
-
-   const allowedTypes = ["image/jpeg", "image/png", "image/webp"]
-   if(!allowedTypes.includes(avatarFile.type)) throw new Error("Only JPG, PNG and WEBP files are allowed");
-
-
-   //https://mnojffbasafjsyamcbqw.supabase.co/storage/v1/object/public/seller-avatar/team3.jpg
-   //3. create file path
-   const fileExtension = avatarFile.name.split(".").pop();
-   const filePath = `${userId}/avatar.${fileExtension}`
-
-   //4. upload to storage bucket
-  const { error: uploadError } = await supabase.storage
-    .from("seller-avatars")
-    .upload(filePath, avatarFile, {
-      upsert: true
-    })
-
-  if (uploadError) {
-    throw new Error(uploadError.message);
-  }
-
-  //5. get public url
-  const { data: publicUrlData, error: publicUrlError } =  supabase.storage
-    .from("seller-avatars")
-    .getPublicUrl(filePath);
-
-    if(publicUrlError){
-        throw new Error(publicUrlError)
-    }
-
-    const avatarUrl = publicUrlData.publicUrl;
-
-    //6. update sellers table
-    const {data: updatedSeller, error: updatedError} = await supabase
-    .from("sellers")
-    .update({avatar_url: avatarUrl})
-    .eq("id", userId)
-    .select()
-    .single()
-
-    if(updatedError){
-        throw new Error(updatedError);
-    }
-    
-
-    return updatedSeller;
-
-  
-}
 
 
 
@@ -135,6 +91,7 @@ export async function deleteSellerImage(sellerId, imageId){
     .select("*")
     .eq("id", imageId)
     .eq("seller_id", sellerId)
+    .select()
     .single();
     
     if(fetchError){
@@ -142,7 +99,7 @@ export async function deleteSellerImage(sellerId, imageId){
     }
 
     //delete the image from storage
-    const filePath = imageData.image_url.split("/").pop();
+    const filePath = `seller-${sellerId}/${imageData.image_url.split("/").pop()}`;
     const {error: deleteStorageError} = await supabase.storage
         .from("seller-images")
         .remove([filePath]);
@@ -153,9 +110,9 @@ export async function deleteSellerImage(sellerId, imageId){
 
     //delete the image record from database
     const {error: deleteDbError} = await supabase
-        .from("seller_images")
-        .delete()
-        .eq("id", imageId);
+    .from("seller_images")
+    .delete()
+    .eq("id", imageId);
 
     if(deleteDbError){
         throw new Error(deleteDbError.message);

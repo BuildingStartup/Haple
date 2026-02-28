@@ -12,13 +12,13 @@ export default function SellersList({sellers}){
               key={value}
               className="relative flex items-center rounded-xl shadow">
 
-              <div className="p-6 rounded-xl bg-primary text-white flex items-center justify-center font-medium text-base overflow-hidden w-25 h-25">
-                {seller.avatar_url ? (
-                  <img src={seller.avatar_url} alt={seller.business_name} className="w-full h-full object-cover" />
-                ) : (
-                  seller.business_name.slice(0, 2).toUpperCase()
-                )}
-              </div>
+              {seller.avatar_url ? (
+                <img src={seller.avatar_url} alt={seller.business_name} className="w-25 h-25 rounded-xl object-cover" />
+              ) : (
+                <div className="p-6 rounded-xl bg-primary text-white flex items-center justify-center font-medium text-base overflow-hidden w-25 h-25">
+                  {seller.business_name.slice(0, 2).toUpperCase()}
+                </div>
+              )}
 
               <div className="px-2">
                 <p className="font-medium text-lg">

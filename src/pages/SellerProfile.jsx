@@ -6,40 +6,32 @@ import { FaWhatsapp } from "react-icons/fa";
 import Spinner from "../ui/Spinner";
 import useSeller from "../features/profiles/useSeller";
 import useSellerCategory from "../features/categories/useSellerCategory";
+import useSellerImages from "../features/profiles/useSellerImages";
 
 
 export default function SellerProfile() {
   const {username} = useParams();
   const {loading: sellerLoading, error: sellerError, seller: sellerInfo,  fetchSellerByUsername} = useSeller();
   const {fetchSellerCategory, loading: categoryLoading, error: categoryError, category, } = useSellerCategory();
+  const {loading: imagesLoading, error: imagesError, images: sellerImages, handleGetImages} = useSellerImages();
   const navigate = useNavigate();
 
   useEffect(()=> {
     if(username) fetchSellerByUsername(username);
-  }, [username, fetchSellerByUsername]);
+  }, [username]);
 
   useEffect(() => {
       if (sellerInfo?.category_id) fetchSellerCategory(sellerInfo.category_id);
-    }, [sellerInfo?.category_id, fetchSellerCategory]);
+    }, [sellerInfo?.category_id]);
+
+  useEffect(() => {
+    if (sellerInfo?.id) handleGetImages(sellerInfo.id);
+  }, [sellerInfo?.id]);
 
  
 
-  const products = [
-    {
-      name: "Oversized Tee",
-      description: "100% cotton, very comfy",
-      image: "https://placehold.co/200x150",
-    },
-    {
-      name: "Oversized Tee",
-      description: "100% cotton, very comfy",
-      image: "https://placehold.co/200x150",
-    },
-  ];
-
-  
-  if(sellerLoading || categoryLoading ) return <Spinner />;
-  if(sellerError || categoryError) return <p>Error</p>
+  if(sellerLoading || categoryLoading || imagesLoading) return <Spinner />;
+  if(sellerError || categoryError || imagesError) return <p>Error</p>
   if(!sellerInfo || !category) return <p>Seller not found</p>;
   
   const whatsappNumber = sellerInfo.whatsapp_number.replace(/\D/g, "");
@@ -101,19 +93,23 @@ export default function SellerProfile() {
 
       {/* How it looks like when added */}
       <div className="flex flex-wrap gap-3 p-5">
-        {products.map((prod, i) => (
-          <div key={i} className="w-50 rounded-lg overflow-hidden bg-stone-50">
-            <img
-              src={prod.image}
-              alt={prod.name}
-              className="w-full h-35 object-cover"
-            />
-            <div className="p-2">
-              <p className="text-stone-900 capitalize">{prod.name}</p>
-              <p className="text-stone-600">{prod.description}</p>
+        {sellerImages.length === 0 ? (
+          <p className="text-center w-full text-stone-500">No images available</p>
+        ) : (
+          sellerImages.map((prod) => (
+            <div key={prod.id} className="w-50 rounded-lg overflow-hidden bg-stone-50">
+              <img
+                src={prod.image_url}
+                alt={prod.name}
+                className="w-full h-35 object-cover"
+              />
+              <div className="p-2">
+                <p className="text-stone-900 capitalize">{prod.name}</p>
+                <p className="text-stone-600">{prod.caption}</p>
+              </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
       {/* Contact Row */}

@@ -25,6 +25,7 @@ export default function ProfileEdit(){
     const navigate = useNavigate(); 
     
     const [preview, setPreview] = useState(null);
+    const [fileError, setFileError] = useState(null);
     
     //watch the file input for changes
     const selectedFile = watch("avatarFile");
@@ -38,6 +39,26 @@ export default function ProfileEdit(){
         //if a new file is selected, creates a preview with url
         if(selectedFile && selectedFile[0]){
             const file = selectedFile[0];
+            
+            // File type validation
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+            if(!validTypes.includes(file.type)){
+                setFileError('Please upload a valid image file (JPG, PNG, or WEBP)');
+                setPreview(null);
+                return;
+            }
+            
+            // File size validation (5MB max)
+            const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+            if(file.size > maxSize){
+                setFileError('Image size must be less than 5MB');
+                setPreview(null);
+                return;
+            }
+            
+            // Clear error if validation passes
+            setFileError(null);
+            
             const objectUrl = URL.createObjectURL(file);
             setPreview(objectUrl);
 
@@ -49,6 +70,9 @@ export default function ProfileEdit(){
 
     const onSubmit = (data) => {
         if (!data.business_name || !data.description || !data.whatsapp_number) return; 
+        
+        // Don't submit if there's a file error
+        if(fileError) return;
         
         const updateData = {
         username: data.business_name.toLowerCase().replace(/\s+/g, ""), //generate username from business name
@@ -78,7 +102,7 @@ export default function ProfileEdit(){
       cleanedNumber = "+234" + cleanedNumber;
     }
 
-    setValue("whatsapp", cleanedNumber);
+    setValue("whatsapp_number", cleanedNumber);
   };  
 
   const handleGoBack = ()=>{
@@ -124,13 +148,16 @@ export default function ProfileEdit(){
                         <input
                         type="file"
                         name="image"
-                        accept="image/*"
+                        accept="image/jpeg,image/jpg,image/png,image/webp"
                         {...register("avatarFile")}
                         className="hidden"
                         />
                     </label>
-                    {errors.image && (
-                        <p className="text-xs text-red-500">{errors.image}</p>
+                    {(errors.image || fileError) && (
+                        <div className="text-red-600 text-sm bg-red-50 p-2 rounded flex items-center gap-1">
+                            <VscError />
+                            <span>{errors.image?.message || fileError}</span>
+                        </div>
                         )}
                 </div>
                 
