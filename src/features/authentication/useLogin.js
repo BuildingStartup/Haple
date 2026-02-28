@@ -12,10 +12,9 @@ function useLogin(){
         setLoading(true);
         setError(null);
         try{
-            const {user} = await signInSeller({email, password});
-            const username = user.user_metadata.username;
+            await signInSeller({email, password});
             toast.success("Successfully logged in!");    
-            navigate(`/profile/${username}`);
+            navigate(`/my-profile`);
         }
         catch(err){
             console.log(err?.message);

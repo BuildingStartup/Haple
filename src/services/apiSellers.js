@@ -132,6 +132,20 @@ export async function updateSellerProfile(sellerId, profileData){
 };
 
 
+export async function updateUserMetadata(updates){
+    const {data, error} = await supabase.auth.updateUser({
+        data: updates
+    });
+
+    if(error){
+        console.log(error);
+        throw new Error(error.message || "User metadata could not be updated!");
+    }
+
+    return data;
+};
+
+
 
 
 

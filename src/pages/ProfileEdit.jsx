@@ -1,18 +1,19 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { GoArrowLeft } from "react-icons/go";
 import { FaImage } from "react-icons/fa";
 import { VscError } from "react-icons/vsc";
 import Fields from "../ui/Fields.jsx";
 import SpinnerMini from "../ui/SpinnerMini";
 import Spinner from "../ui/Spinner.jsx";
+import { useAuth } from "../context/AuthContext";
 import useSeller from "../features/profiles/useSeller.js";
 import useUpdateSeller from "../features/profiles/useUpdateSeller.js";
 
 export default function ProfileEdit(){
-    const {username} = useParams();
-    const {loading, seller, fetchSellerByUsername } = useSeller();
+    const { user } = useAuth();
+    const {loading, seller, fetchSellerById } = useSeller();
     const {loading: updateLoading, updateSeller} = useUpdateSeller();
     const { register, setValue, watch, handleSubmit, formState: { errors },} = useForm({
         values: seller || {},
@@ -32,8 +33,8 @@ export default function ProfileEdit(){
     
 
     useEffect(()=> {
-        if(username) fetchSellerByUsername(username);
-    }, [username, fetchSellerByUsername])
+        if(user?.id) fetchSellerById(user.id);
+    }, [user, fetchSellerById])
     
     useEffect(()=>{
         //if a new file is selected, creates a preview with url

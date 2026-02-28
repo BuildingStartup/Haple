@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { updateSellerProfile } from "../../services/apiSellers";
+import { updateSellerProfile, updateUserMetadata } from "../../services/apiSellers";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
@@ -13,9 +13,15 @@ function useUpdateSeller(){
         setLoading(true);
         setError(null);
         try{
-            const seller = await updateSellerProfile(id, formData);
+            await updateSellerProfile(id, formData);
+            
+            // Update user metadata if username changed
+            if(formData.username){
+                await updateUserMetadata({username: formData.username});
+            }
+            
             toast.success("Profile updated successfully!");
-            navigate(`/profile/${seller?.username}`, {replace: true});
+            navigate(`/my-profile`, {replace: true});
         }
         catch(err){
             const message = err?.message || "An error occurred while updating the profile.";

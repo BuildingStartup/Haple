@@ -24,9 +24,9 @@ function App() {
             {/* seller flow */}
             <Route path="/signUp" element={<SignUp />} />
             <Route path="/signIn" element={<Login />} />
-            <Route path="/profile/:username" element={<MyProfile />} />
+            <Route path="/my-profile" element={<MyProfile />} />
             {/* protected route here */}
-            <Route path="/profile/:username/edit" element={<ProfileEdit/>} />
+            <Route path="/my-profile/edit" element={<ProfileEdit/>} />
 
             {/* buyer flow * //use relative paths/ */}
             <Route path="/explore" element={<Explore />}/>
