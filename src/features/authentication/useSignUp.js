@@ -17,7 +17,7 @@ function useSignUp(){
                 password: password,
                 profileData: profileData,
             });
-            toast.success("Profile created successfully!.");
+            toast.success("Your Profile is Live!.");
             if(typeof onSuccess === "function") onSuccess();
             navigate(`/profile/${profileData?.username}`);
         } catch (err) {
