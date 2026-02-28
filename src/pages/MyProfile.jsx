@@ -4,31 +4,35 @@ import { GoArrowLeft, GoLink } from "react-icons/go";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaShare } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
-import useSeller from "../features/profiles/useSeller";
-import useSellerCategory from "../features/categories/useSellerCategory";
-import useSellerImages from "../features/profiles/useSellerImages";
 import AddProductForm from "../ui/AddProductForm";
 import ViewProducts from "../ui/ViewProducts";
 import AddProductButton from "../ui/AddProductButton";
 import SellerContact from "../ui/SellerContact";
 import Spinner from "../ui/Spinner";
+import SellerInfo from "../ui/SellerInfo";
+import useSeller from "../features/profiles/useSeller";
+import useSellerCategory from "../features/categories/useSellerCategory";
+import useSellerImages from "../features/profiles/useSellerImages";
+import useSignOut from "../features/authentication/useSignOut";
+import SpinnerMini from "../ui/SpinnerMini";
 
 export default function MyProfile() {
   const { user } = useAuth();
   const { fetchSellerById, seller: sellerInfo, loading, error } = useSeller();
   const { fetchSellerCategory, loading: categoryLoading, error:categoryError, category} = useSellerCategory();
   const { handleUploadImage, handleDeleteImage, handleGetImages, images, loading: imageLoading, error: imageError } = useSellerImages();
+  const { loading: signOutLoading, handleSignOut } = useSignOut();
 
-  useEffect(() => {
+  useEffect(() => {    
     if (user?.id) fetchSellerById(user.id);
   }, [user]);
 
-  useEffect(() => {
+  useEffect(() => {    
     if (sellerInfo?.category_id) fetchSellerCategory(sellerInfo.category_id);
   }, [sellerInfo?.category_id]);
 
 
-  useEffect(() => {
+  useEffect(() => {    
     if (sellerInfo?.id) handleGetImages(sellerInfo.id);
   }, [sellerInfo?.id]);
 
@@ -100,11 +104,15 @@ export default function MyProfile() {
     setPreview(null);
   };
 
+  const handleLogout = () => {
+    handleSignOut();
+  }
+
   if (loading || categoryLoading || imageLoading) return <Spinner />;
   if (error || categoryError || imageError) return <p>Error: {error || categoryError || imageError}</p>;
   if (!sellerInfo) return <p>No seller data found</p>;
 
-  const initials = sellerInfo.business_name.slice(0, 2).toUpperCase();
+  
   const remaining = 3 - images.length;
 
   return (
@@ -128,43 +136,30 @@ export default function MyProfile() {
                 <Link to="edit">
                   <li className="px-4 py-3 hover:bg-stone-200 rounded cursor-pointer">Edit</li>
                 </Link>
-                <li className="px-4 py-3 hover:bg-stone-200 rounded cursor-pointer">
-                  Logout
+                <li className="px-4 py-3 hover:bg-stone-200 rounded cursor-pointer flex items-center gap-1 disabled:cursor-not-allowed disabled:text-stone-500" disabled={signOutLoading} onClick={handleLogout}>
+                  {signOutLoading && <SpinnerMini /> }
+                  <span className="text-red-500">Logout</span>
                 </li>
               </ul>
             )}
           </div>
         </div>
 
+        
+
         {/* Seller Info */}
-        <div className=" flex flex-col gap-3 items-center absolute -bottom-25 left-0 right-0 mx-auto">
-          {/* Avatar */}
-          <div className="bg-white w-25 h-25 flex justify-center items-center rounded-full shadow-lg inset-ring-3 inset-ring-primary-light overflow-hidden">
-            {sellerInfo.avatar_url ? (
-              <img src={sellerInfo.avatar_url} alt={sellerInfo.business_name} className="w-full h-full object-cover" />
-            ) : (
-              <span className="text-primary font-bold text-3xl">{initials}</span>
-            )}
-          </div>
-
-          <h2 className="text-2xl font-medium">{sellerInfo.business_name}</h2>
-
-          <div className="">
-            <span className="bg-stone-100 rounded-full py-1 px-4 capitalize">
-              {category?.name ?? "Uncategorized"}
-            </span>
-          </div>
-        </div>
+        <SellerInfo sellerInfo={sellerInfo} category={category} />
       </div>
 
+      
       {/* Description */}
       <div className="px-5 pt-3 text-stone-700">{sellerInfo.description}</div>
 
       {/* actions */}
       <div className="flex gap-4 items-center justify-center p-5">
-        <div className="flex-4 flex flex-col gap-2 items-center justify-center py-2 px-6 ring ring-stone-100 rounded cursor-pointer">
-          <FaShare className="text-xl text-secondary" />
-          <span className="text-secondary">Share</span>
+        <div className="flex-4 flex flex-col gap-2 items-center justify-center py-2 px-6 ring ring-stone-100 rounded cursor-pointer bg-secondary">
+          <FaShare className="text-xl text-stone-50" />
+          <span className="text-stone-50">Share</span>
         </div>
         <div className="flex-4 flex flex-col gap-2 items-center justify-center py-2 px-6 ring ring-stone-200 rounded cursor-pointer">
           <GoLink className="text-xl text-primary" />
@@ -172,6 +167,7 @@ export default function MyProfile() {
         </div>
       </div>
 
+      
       {/* Catalog Text */}
       <div className="flex items-center gap-3 mb-3">
         <div className="flex-1 h-px bg-stone-200" />

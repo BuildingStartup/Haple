@@ -91,6 +91,9 @@ export default function Login(){
                 <span>Sign in</span>
             </button>
         </form>
+        <p className="text-center text-gray-600">
+          Don't have an account? <Link to="/signUp" className="text-primary font-medium">Sign up</Link>
+        </p>
       </div>
       </div>
     )

@@ -12,29 +12,29 @@ export default function SellerContact({sellerInfo, category}){
         <div className="flex flex-col gap-6 p-5">
 
             <div className="flex items-center gap-3">          
-            <MdOutlineCategory className="text-stone-500 text-xl"/>
-            <p className="capitalize">
+            <MdOutlineCategory className="text-stone-500 text-lg"/>
+            <p className="text-sm text-stone-700 capitalize">
                 {category?.catalog ?? "General"} ({category?.name ?? "Uncategorized"})
             </p>
             </div>
 
             <div className="flex items-center gap-3">          
-            <FaWhatsapp className="text-stone-500 text-xl"/>
-            <p className="">
+            <FaWhatsapp className="text-stone-500 text-lg"/>
+            <p className="text-sm text-stone-700">
                 {sellerInfo.whatsapp_number}
             </p>
             </div>
 
             <div className="flex items-center gap-3">
-            <FcCalendar className="text-stone-500 text-xl" />
-            <p className="">
+            <FcCalendar className="text-stone-500 text-lg" />
+            <p className="text-sm text-stone-700">
                 {date_created}
             </p>
             </div>
 
             <div className="flex items-center gap-3">
-            <GoLocation className="text-stone-500 text-xl" />
-            <p className="">
+            <GoLocation className="text-stone-500 text-lg" />
+            <p className="text-sm text-stone-700">
                 {sellerInfo.campus}
             </p>
             </div>

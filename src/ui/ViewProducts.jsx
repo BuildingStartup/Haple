@@ -3,11 +3,11 @@ import { MdDelete } from "react-icons/md";
 export default function ViewProducts({products, handleDelete}){
     return (
         <>
-        <div className="flex flex-wrap gap-3 p-5">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-5 place-items-center">
                 {products.map((prod) => (
                   <div
                     key={prod.id}
-                    className="relative w-50 rounded-lg overflow-hidden bg-stone-50"
+                    className="relative w-40 rounded-lg overflow-hidden bg-stone-50"
                   >
                     <button
                       onClick={() => handleDelete(prod.id)}

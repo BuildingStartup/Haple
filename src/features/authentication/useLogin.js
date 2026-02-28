@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
-import { signInSeller } from "../../services/apiAuth";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { signInSeller } from "../../services/apiAuth";
 
 function useLogin(){
     const [loading, setLoading] = useState(false);

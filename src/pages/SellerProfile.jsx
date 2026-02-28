@@ -92,7 +92,7 @@ export default function SellerProfile() {
       </div>
 
       {/* How it looks like when added */}
-      <div className="flex flex-wrap gap-3 p-5">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-5 place-items-center">
         {sellerImages.length === 0 ? (
           <p className="text-center w-full text-stone-500">No images available</p>
         ) : (

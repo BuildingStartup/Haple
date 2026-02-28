@@ -9,7 +9,6 @@ function useUpdateSeller(){
     const navigate = useNavigate();
 
     const updateSeller = async (id, formData) => {
-        console.log(formData)
         setLoading(true);
         setError(null);
         try{
