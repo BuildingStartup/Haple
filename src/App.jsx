@@ -16,20 +16,37 @@ function App() {
   return (
     <>
       <BrowserRouter>
-        <AuthProvider>        
-          <Routes>
-            <Route path="/" element={<Home />} />
+        <AuthProvider>
+          <div className="block md:hidden">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              {/* seller flow */}
+              <Route path="/signUp" element={<SignUp />} />
+              <Route path="/signIn" element={<Login />} />
+              <Route path="/myProfile" element={<MyProfile />} />
 
-            {/* seller flow */}
-            <Route path="/signUp" element={<SignUp />} />
-            <Route path="/signIn" element={<Login />} />
-            <Route path="/myProfile" element={<MyProfile />} />
-
-            {/* buyer flow */}
-            <Route path="/explore" element={<Explore />}/>
-            <Route path="/explore/:catalog/:slug" element={<CategorySellers />} />
-            <Route path="/seller/:username" element={<SellerProfile />} />
-          </Routes>
+              {/* buyer flow */}
+              <Route path="/explore" element={<Explore />} />
+              <Route
+                path="/explore/:catalog/:slug"
+                element={<CategorySellers />}
+              />
+              <Route path="/seller/:username" element={<SellerProfile />} />
+            </Routes>
+          </div>
+          <div className="hidden md:flex min-h-screen items-center justify-center bg-slate-50">
+            <div className="text-center space-y-3 px-6">
+              <p className="text-4xl">📱</p>
+              <h2 className="text-2xl font-bold text-primary">
+                Mobile Only Experience
+              </h2>
+              <p className="text-slate-700 text-base">
+                <span className="text-primary text-lg">Haple</span> is designed
+                for mobile. Please open it on your phone for the best
+                experience.
+              </p>
+            </div>
+          </div>
         </AuthProvider>
       </BrowserRouter>
       <Toaster
