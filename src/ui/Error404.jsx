@@ -4,7 +4,7 @@ export default function Error404() {
     <section className="h-screen flex flex-col items-center justify-center">
       <div className="flex flex-1 justify-center flex-col">
         <img
-          src="Error404.png"
+          src="./Error404.png"
           alt="Saying 404 error in black and red"
           className="w-80 h-80 object-cover hover:cursor-not-allowed"
         />

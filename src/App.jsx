@@ -14,6 +14,7 @@ import BigScreen from "./ui/BigScreen.jsx";
 import SmallScreen from "./ui/SmallScreen.jsx";
 import ProfileEdit from "./pages/ProfileEdit.jsx";
 import Error404 from "./ui/Error404.jsx";
+import ProtectedRoute from "./ui/ProtectedRoute.jsx";
 //
 
 function App() {
@@ -26,15 +27,16 @@ function App() {
             <Route path="/" element={<Home />} />
               {/* seller flow */}
             <Route path="/signUp" element={<SignUp />} />
-            <Route path="/signIn" element={<Login />} />
-            <Route path="/my-profile" element={<MyProfile />} />
-            {/* protected route here */}
-            <Route path="/my-profile/edit" element={<ProfileEdit/>} />
+            <Route path="/signIn" element={<Login />} />            
+            <Route path="/my-profile" element={<ProtectedRoute><MyProfile /></ProtectedRoute>} />
+            <Route path="/my-profile/edit" element={<ProtectedRoute><ProfileEdit/></ProtectedRoute>} />
 
             {/* buyer flow * //use relative paths/ */}
             <Route path="/explore" element={<Explore />}/>
             <Route path="/explore/:catalog/:slug" element={<CategorySellers />} />
             <Route path="/seller/:username" element={<SellerProfile />} />
+
+
 
             {/* fallback route */}
             <Route path="*" element={<Error404 />} />

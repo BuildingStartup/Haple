@@ -48,19 +48,19 @@ export async function signOut(){
 
     if(error){
         console.log(error);
-        throw new Error(error);
+        throw new Error(error.message);
     }
 };
 
-// export async function getCurrentUser(){
-//     const {data: {user}, error} = await supabase.auth.getUser();
+export async function getCurrentUser(){
+    const {data: {user}, error} = await supabase.auth.getUser();
 
-//     if(error){
-//         console.log(error);
-//         throw new Error(error);
-//     }
+    if(error){
+        console.log(error);
+        throw new Error(error.message);
+    }
 
-//     return user;
-// };
+    return user;
+};
 
 
