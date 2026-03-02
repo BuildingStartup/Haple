@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { IoIosSearch } from "react-icons/io";
 import { GoArrowLeft } from "react-icons/go";
@@ -6,6 +6,9 @@ import Spinner from "../ui/Spinner";
 import SellersList from "../ui/SellersList";
 import useSellersCategorySlug from "../features/profiles/useSellersCategorySlug";
 import useCategories from "../features/categories/useCategories";
+import useSearchSeller from "../features/profiles/useSearchSeller";
+import SearchBar from "../ui/SearchBar";
+import NetworkError from "../ui/NetworkError";
 
 
 
@@ -13,6 +16,13 @@ export default function CategorySellers() {
   const { catalog, slug } = useParams();
   const { loading: categoryLoading, getCategoryByCatalogAndSlug } = useCategories();
   const { loading: sellersLoading, sellers, fetchSellersById } = useSellersCategorySlug();
+  const { loading: searchLoading, error: searchError, sellers: searchSellers, searchSellers: performSearch } = useSearchSeller();
+  const [query, setQuery] = useState("");
+
+  const handleSearch = (searchQuery) => {
+    setQuery(searchQuery);
+    performSearch(searchQuery);
+  };
 
   // Fetch category and then sellers
   useEffect(() => {
@@ -41,16 +51,23 @@ export default function CategorySellers() {
         <span className="text-gray-600">Back</span>
       </Link>
 
-      <div className="flex items-center gap-2 pl-4 py-1  rounded-full bg-stone-100">
-        <IoIosSearch className="text-xl text-stone-700" />
-        <input
-          type="text"
-          placeholder="Search for businesses"
-          className="flex-6 focus:outline-none py-2 text-base"
-        />
-      </div>
+      <SearchBar query={query} onSearch={handleSearch} />
 
-      <SellersList sellers={sellers}/>
+      {query.length > 0 ? (
+        // Show search results
+        <div>
+          {searchLoading && <Spinner />}
+          {searchError && <NetworkError />}
+          {searchSellers.length > 0 ? (
+            <SellersList sellers={searchSellers} />
+          ) : (
+            !searchLoading && <p className="text-center text-stone-500">No sellers found</p>
+          )}
+        </div>
+      ) : (
+        // Show category sellers
+        <SellersList sellers={sellers}/>
+      )}
       
     </section>
   );
