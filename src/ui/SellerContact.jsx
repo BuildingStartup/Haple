@@ -51,14 +51,14 @@ export default function SellerContact({sellerInfo, category}){
             <div className="flex items-center gap-3">
             <GoLocation className="text-stone-500 text-lg" />
             <p className="text-sm text-stone-700">
-                {stats?.profile_views}(profile views)
+                {stats?.profile_views || 0}(profile views)
             </p>
             </div>
 
             <div className="flex items-center gap-3">
             <GoLocation className="text-stone-500 text-lg" />
             <p className="text-sm text-stone-700">
-                {stats?.whatsapp_clicks}(whatsapp clicks)
+                {stats?.whatsapp_clicks || 0}(whatsapp clicks)
             </p>
             </div>
 

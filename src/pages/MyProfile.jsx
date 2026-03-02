@@ -54,6 +54,19 @@ export default function MyProfile() {
     if (files) {
       if (!files[0]) return; // ← user opened picker and cancelled, do nothing
       const file = files[0];
+      
+      // Check file size (4MB = 4 * 1024 * 1024 bytes)
+      const MAX_FILE_SIZE = 4 * 1024 * 1024;
+      if (file.size > MAX_FILE_SIZE) {
+        setErrors({ ...errors, image_url: "Image size must not exceed 4MB" });
+        return;
+      }
+      
+      // Clear any previous image_url errors
+      const newErrors = { ...errors };
+      delete newErrors.image_url;
+      setErrors(newErrors);
+      
       setNewProduct((prev) => ({ ...prev, [name]: file }));
       setPreview(URL.createObjectURL(file));
     } else {
@@ -141,8 +154,16 @@ export default function MyProfile() {
 
   return (
     <section className="h-screen space-y-3">
-      <div className="bg-primary p-5 relative h-45 mb-30">
-        <div className="flex justify-between items-center">
+      <div 
+        className={`p-5 relative h-45 mb-30 ${!sellerInfo.avatar_url ? 'bg-primary' : 'bg-cover bg-center'}`}
+        style={sellerInfo.avatar_url ? { backgroundImage: `url(${sellerInfo.avatar_url})` } : {}}
+      >
+        {/* Dark overlay */}
+        {sellerInfo.avatar_url && (
+          <div className="absolute inset-0 bg-black opacity-50 rounded-t"></div>
+        )}
+        
+        <div className="flex justify-between items-center relative z-10">
           <Link to="/" className="flex items-center gap-2 cursor-pointer">
             <GoArrowLeft className="text-2xl text-stone-100 cursor-pointer" />
             <span className="text-stone-100">Back</span>
@@ -172,7 +193,9 @@ export default function MyProfile() {
         
 
         {/* Seller Info */}
-        <SellerInfo sellerInfo={sellerInfo} category={category} />
+        <div className="z-10">
+          <SellerInfo sellerInfo={sellerInfo} category={category} />
+        </div>
       </div>
 
       

@@ -52,9 +52,16 @@ export default function SellerProfile() {
   return (
     <section className="min-h-screen space-y-5">
       
-        <div className="bg-primary p-5 relative h-45 mb-30">
+        <div 
+          className={`p-5 relative h-45 mb-30 ${!sellerInfo.avatar_url ? 'bg-primary' : 'bg-cover bg-center'}`}
+          style={sellerInfo.avatar_url ? { backgroundImage: `url(${sellerInfo.avatar_url})` } : {}}
+        >
+          {/* Dark overlay */}
+          {sellerInfo.avatar_url && (
+            <div className="absolute inset-0 bg-black opacity-40"></div>
+          )}
 
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center relative z-10">
             <button
               onClick={() => navigate(-1)}
               className="flex items-center gap-2 cursor-pointer">
