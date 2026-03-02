@@ -7,12 +7,14 @@ import Spinner from "../ui/Spinner";
 import useSeller from "../features/profiles/useSeller";
 import useSellerCategory from "../features/categories/useSellerCategory";
 import useSellerImages from "../features/profiles/useSellerImages";
+import useStats from "../features/stats/useStats";
 
 
 export default function SellerProfile() {
   const {username} = useParams();
   const {loading: sellerLoading, error: sellerError, seller: sellerInfo,  fetchSellerByUsername} = useSeller();
   const {fetchSellerCategory, loading: categoryLoading, error: categoryError, category, } = useSellerCategory();
+  const {handleIncrementWhatsappClicks, handleIncrementProfileViews} = useStats();
   const {loading: imagesLoading, error: imagesError, images: sellerImages, handleGetImages} = useSellerImages();
   const navigate = useNavigate();
 
@@ -27,6 +29,14 @@ export default function SellerProfile() {
   useEffect(() => {
     if (sellerInfo?.id) handleGetImages(sellerInfo.id);
   }, [sellerInfo?.id]);
+
+  useEffect(()=> {
+    if(sellerInfo?.id) handleIncrementProfileViews(sellerInfo.id);
+  }, [sellerInfo?.id])
+
+  const handleChatClick = () => {
+    if(sellerInfo?.id) handleIncrementWhatsappClicks(sellerInfo.id);
+  }
 
  
 
@@ -118,10 +128,11 @@ export default function SellerProfile() {
           href={`https://wa.me/${whatsappNumber}?text=${message}`}
           target="_blank"
           rel="noreferrer"
+          onClick={handleChatClick}
         >
           <button className="bg-secondary-light w-full text-white py-3 text-base rounded flex items-center justify-center gap-2 cursor-pointer hover:bg-secondary transition-all duration-300">
             <FaWhatsapp className="text-xl" />
-            Message on Whatsapp
+            Chat on Whatsapp
           </button>
         </a>
       </div>
