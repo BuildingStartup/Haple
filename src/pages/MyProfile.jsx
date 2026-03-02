@@ -133,6 +133,24 @@ export default function MyProfile() {
     navigator.clipboard.writeText(profileUrl).then(() => alert("Link copied!"));
   };
 
+  // Share and Copy
+  // Share and copy
+  const profileUrl = window.location.href;
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      await navigator.share({
+        title: sellerInfo.business_name,
+        text: `Check out ${sellerInfo.business_name} on Haple!`,
+        url: profileUrl,
+      });
+    }
+  };
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(profileUrl).then(() => alert("Link copied!"));
+  };
+
   return (
     <section className="h-screen space-y-3">
       <div className="bg-primary p-5 relative h-45 mb-30">
