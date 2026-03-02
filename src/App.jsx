@@ -10,6 +10,8 @@ import MyProfile from "./pages/MyProfile.jsx";
 import Explore from "./pages/Explore.jsx";
 import CategorySellers from "./pages/CategorySellers.jsx";
 import SellerProfile from "./pages/SellerProfile.jsx";
+import BigScreen from "./ui/BigScreen.jsx";
+import SmallScreen from "./ui/SmallScreen.jsx";
 //
 
 function App() {
@@ -17,7 +19,7 @@ function App() {
     <>
       <BrowserRouter>
         <AuthProvider>
-          <div className="block md:hidden">
+          <SmallScreen>
             <Routes>
               <Route path="/" element={<Home />} />
               {/* seller flow */}
@@ -30,23 +32,11 @@ function App() {
               <Route
                 path="/explore/:catalog/:slug"
                 element={<CategorySellers />}
-              />
+                />
               <Route path="/seller/:username" element={<SellerProfile />} />
             </Routes>
-          </div>
-          <div className="hidden md:flex min-h-screen items-center justify-center bg-slate-50">
-            <div className="text-center space-y-3 px-6">
-              <p className="text-4xl">📱</p>
-              <h2 className="text-2xl font-bold text-primary">
-                Mobile Only Experience
-              </h2>
-              <p className="text-slate-700 text-base">
-                <span className="text-primary text-lg">Haple</span> is designed
-                for mobile. Please open it on your phone for the best
-                experience.
-              </p>
-            </div>
-          </div>
+          </SmallScreen>
+          <BigScreen />
         </AuthProvider>
       </BrowserRouter>
       <Toaster
