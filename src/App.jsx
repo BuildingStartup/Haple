@@ -10,25 +10,35 @@ import MyProfile from "./pages/MyProfile.jsx";
 import Explore from "./pages/Explore.jsx";
 import CategorySellers from "./pages/CategorySellers.jsx";
 import SellerProfile from "./pages/SellerProfile.jsx";
+import BigScreen from "./ui/BigScreen.jsx";
+import SmallScreen from "./ui/SmallScreen.jsx";
+import ProfileEdit from "./pages/ProfileEdit.jsx";
 //
 
 function App() {
   return (
     <>
       <BrowserRouter>
-        <AuthProvider>        
-          <Routes>
-            <Route path="/" element={<Home />} />
-
-            {/* seller flow */}
+        <AuthProvider>
+          <SmallScreen>
+            <Routes>
+              {/* seller flow */}
             <Route path="/signUp" element={<SignUp />} />
             <Route path="/signIn" element={<Login />} />
-            <Route path="/myProfile" element={<MyProfile />} />
+            <Route path="/my-profile" element={<MyProfile />} />
+            {/* protected route here */}
+            <Route path="/my-profile/edit" element={<ProfileEdit/>} />
 
-            {/* buyer flow */}
+            {/* buyer flow * //use relative paths/ */}
             <Route path="/explore" element={<Explore />}/>
             <Route path="/explore/:catalog/:slug" element={<CategorySellers />} />
             <Route path="/seller/:username" element={<SellerProfile />} />
+
+            {/* fallback route */}
+            <Route path="*" element={<h1>404: Page Not Found</h1>} />
+            </Routes>
+          </SmallScreen>
+          <BigScreen />            
           </Routes>
         </AuthProvider>
       </BrowserRouter>

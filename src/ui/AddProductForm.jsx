@@ -25,14 +25,14 @@ export default function AddProductForm({showForm, preview, handleChange, errors,
                         )}
                         <input
                         type="file"
-                        name="image"
+                        name="image_url"
                         accept="image/*"
                         onChange={handleChange}
                         className="hidden"
                         />
                     </label>
-                    {errors.image && (
-                        <p className="text-xs text-red-500">{errors.image}</p>
+                    {errors.image_url && (
+                        <p className="text-xs text-red-500">{errors.image_url}</p>
                         )}
                     </div>
         
@@ -54,15 +54,15 @@ export default function AddProductForm({showForm, preview, handleChange, errors,
 
                     <div className="flex flex-col gap-1">
                         <textarea
-                        name="description"
-                        value={newProduct.description}
+                        name="caption"
+                        value={newProduct.caption}
                         onChange={handleChange}
                         placeholder="Tell us more about it..."
                         rows={2}
                         className="p-3 ring ring-stone-200 rounded outline-none focus:ring-primary bg-white transition-all duration-300"
                         />
-                        {errors.description && (
-                            <p className="text-xs text-red-500">{errors.description}</p>
+                        {errors.caption && (
+                            <p className="text-xs text-red-500">{errors.caption}</p>
                         )}
                     </div>    
                   </div>
