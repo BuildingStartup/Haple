@@ -5,14 +5,14 @@ export default function Error404() {
       <div className="flex flex-1 justify-center flex-col">
         <img
           src="Error404.png"
-          alt="Saying 404 eror in black and red"
-          className="w-80 h-80 object-cover"
+          alt="Saying 404 error in black and red"
+          className="w-80 h-80 object-cover hover:cursor-not-allowed"
         />
       </div>
-      <div className="p-6 w-5/6">
+      <div className="p-6 w-full max-w-md text-center">
         <Link to="/">
           <button className="w-full bg-primary text-white py-3 rounded-xl text-base cursor-pointer">
-            Home Page
+            Back to Home
           </button>
         </Link>
       </div>

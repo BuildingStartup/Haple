@@ -146,6 +146,20 @@ export async function updateUserMetadata(updates){
 };
 
 
+export async function searchSellersByName(query){
+  const { data, error } = await supabase
+    .from("sellers")
+    .select("*")
+    .ilike("business_name", `%${query}%`)
+    .eq("is_active", true)
+
+  if (error){
+    throw new Error(error.message || "Error searching sellers by name");
+  }
+
+  return data
+};
+
 
 
 

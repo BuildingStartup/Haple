@@ -1,22 +1,31 @@
 import { Link } from "react-router-dom";
-import { IoIosSearch } from "react-icons/io";
+import { useEffect, useState } from "react";
 import { GoArrowLeft } from "react-icons/go";
-import CatalogDisplay from "../ui/CatalogDisplay";
-import useCategories from "../features/categories/useCategories";
+import { TbPerfume } from "react-icons/tb";
+import { GiRunningShoe, GiYarn, GiLipstick } from "react-icons/gi";
 import { HiShoppingBag, HiSparkles, HiGift, HiHeart } from "react-icons/hi2";
 import { MdRestaurant, MdDesignServices, MdComputer } from "react-icons/md";
-import { GiRunningShoe, GiYarn, GiLipstick } from "react-icons/gi";
-import { TbPerfume } from "react-icons/tb";
 import { FaHandSparkles, FaCameraRetro, FaEllipsisH } from "react-icons/fa";
-import { useEffect } from "react";
+import useCategories from "../features/categories/useCategories";
+import useSearchSeller from "../features/profiles/useSearchSeller";
+import CatalogDisplay from "../ui/CatalogDisplay";
+import SellersList from "../ui/SellersList";
 import Spinner from "../ui/Spinner";
+import SearchBar from "../ui/SearchBar";
 
 export default function Explore() {
+  const [query, setQuery] = useState("");
   const {loading, categories, getAllCategories } = useCategories();
+  const {loading: searchLoading, error: searchError, sellers, searchSellers} = useSearchSeller();
 
   useEffect(() => {
     getAllCategories();
   }, []);
+
+  const handleSearch = (searchQuery) => {
+    setQuery(searchQuery);
+    searchSellers(searchQuery);
+  };
 
   const iconMap = {
     MdRestaurant: <MdRestaurant />,
@@ -94,21 +103,28 @@ export default function Explore() {
         <span className="text-gray-600">Back</span>
       </Link>
 
-      <div className="flex items-center gap-2 pl-4 py-1  rounded-full bg-stone-100">
-        <IoIosSearch className="text-xl text-stone-700" />
-        <input
-          type="text"
-          placeholder="Search for businesses"
-          className="flex-6 focus:outline-none py-2 text-base"
-        />
-      </div>
+      <SearchBar query={query} onSearch={handleSearch} />
 
-      {loading ? <Spinner /> : (
-        <div className="space-y-8">
-        <CatalogDisplay catalog={products} name="Products" />
-        <CatalogDisplay catalog={services} name="Services" />
-      </div>
-    )}
+      {query.length > 0 ? (
+        // Show search results
+        <div>
+          {searchLoading && <Spinner />}
+          {searchError && <p className="text-red-600">Error: {searchError}</p>}
+          {sellers.length > 0 ? (
+            <SellersList sellers={sellers} />
+          ) : (
+            !searchLoading && <p className="text-center text-stone-500">No sellers found</p>
+          )}
+        </div>
+      ) : (
+        // Show categories
+        loading ? <Spinner /> : (
+          <div className="space-y-8">
+            <CatalogDisplay catalog={products} name="Products" />
+            <CatalogDisplay catalog={services} name="Services" />
+          </div>
+        )
+      )}
     </section>
   );
 }

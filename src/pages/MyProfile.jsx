@@ -10,11 +10,12 @@ import AddProductButton from "../ui/AddProductButton";
 import SellerContact from "../ui/SellerContact";
 import Spinner from "../ui/Spinner";
 import SellerInfo from "../ui/SellerInfo";
+import SpinnerMini from "../ui/SpinnerMini";
+import NetworkError from "../ui/NetworkError";
 import useSeller from "../features/profiles/useSeller";
 import useSellerCategory from "../features/categories/useSellerCategory";
 import useSellerImages from "../features/profiles/useSellerImages";
 import useSignOut from "../features/authentication/useSignOut";
-import SpinnerMini from "../ui/SpinnerMini";
 
 export default function MyProfile() {
   const { user } = useAuth();
@@ -109,7 +110,7 @@ export default function MyProfile() {
   }
 
   if (loading || categoryLoading || imageLoading) return <Spinner />;
-  if (error || categoryError || imageError) return <p>Error: {error || categoryError || imageError}</p>;
+  if (error || categoryError || imageError) return <NetworkError />;
   if (!sellerInfo) return <p>No seller data found</p>;
 
   
@@ -117,7 +118,10 @@ export default function MyProfile() {
 
   // Share and Copy
   // Share and copy
-  const profileUrl = window.location.href;
+  const profilePath = `/seller/${sellerInfo?.username}`;
+  const profileUrl = `${window.location.origin}${profilePath}`;
+// e.g. http://localhost:5173/seller/john
+// or https://yourdomain.com/seller/john in production
 
   const handleShare = async () => {
     if (navigator.share) {
@@ -133,23 +137,7 @@ export default function MyProfile() {
     navigator.clipboard.writeText(profileUrl).then(() => alert("Link copied!"));
   };
 
-  // Share and Copy
-  // Share and copy
-  const profileUrl = window.location.href;
-
-  const handleShare = async () => {
-    if (navigator.share) {
-      await navigator.share({
-        title: sellerInfo.business_name,
-        text: `Check out ${sellerInfo.business_name} on Haple!`,
-        url: profileUrl,
-      });
-    }
-  };
-
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(profileUrl).then(() => alert("Link copied!"));
-  };
+  
 
   return (
     <section className="h-screen space-y-3">

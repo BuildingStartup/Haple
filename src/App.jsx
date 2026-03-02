@@ -13,6 +13,7 @@ import SellerProfile from "./pages/SellerProfile.jsx";
 import BigScreen from "./ui/BigScreen.jsx";
 import SmallScreen from "./ui/SmallScreen.jsx";
 import ProfileEdit from "./pages/ProfileEdit.jsx";
+import Error404 from "./ui/Error404.jsx";
 //
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
         <AuthProvider>
           <SmallScreen>
             <Routes>
+            <Route path="/" element={<Home />} />
               {/* seller flow */}
             <Route path="/signUp" element={<SignUp />} />
             <Route path="/signIn" element={<Login />} />
@@ -35,11 +37,10 @@ function App() {
             <Route path="/seller/:username" element={<SellerProfile />} />
 
             {/* fallback route */}
-            <Route path="*" element={<h1>404: Page Not Found</h1>} />
+            <Route path="*" element={<Error404 />} />
             </Routes>
           </SmallScreen>
-          <BigScreen />            
-          </Routes>
+          <BigScreen />   
         </AuthProvider>
       </BrowserRouter>
       <Toaster

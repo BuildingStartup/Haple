@@ -4,10 +4,12 @@ import { useNavigate } from "react-router-dom";
 import { GoArrowLeft } from "react-icons/go";
 import { FaWhatsapp } from "react-icons/fa";
 import Spinner from "../ui/Spinner";
+import NetworkError from "../ui/NetworkError";
 import useSeller from "../features/profiles/useSeller";
 import useSellerCategory from "../features/categories/useSellerCategory";
 import useSellerImages from "../features/profiles/useSellerImages";
 import useStats from "../features/stats/useStats";
+
 
 export default function SellerProfile() {
   const {username} = useParams();
@@ -40,7 +42,7 @@ export default function SellerProfile() {
  
 
   if(sellerLoading || categoryLoading || imagesLoading) return <Spinner />;
-  if(sellerError || categoryError || imagesError) return <p>Error</p>
+  if(sellerError || categoryError || imagesError) return <NetworkError />;
   if(!sellerInfo || !category) return <p>Seller not found</p>;
   
   const whatsappNumber = sellerInfo.whatsapp_number.replace(/\D/g, "");
@@ -49,24 +51,16 @@ export default function SellerProfile() {
   );
   return (
     <section className="min-h-screen space-y-5">
-      <div className="bg-primary p-5 relative h-45 mb-30">
-        <div className="flex justify-between items-center">
-          <button
-            onClick={() => navigate(-1)}
-            className="flex items-center gap-2 cursor-pointer"
-          >
-            <GoArrowLeft className="text-2xl text-stone-100" />
-            <span className="text-stone-100">Back</span>
-          </button>
-        </div>
+      
+        <div className="bg-primary p-5 relative h-45 mb-30">
 
-        {/* Seller Info */}
-        <div className=" flex flex-col gap-3 items-center absolute -bottom-25 left-0 right-0 mx-auto">
-          {/* Avatar */}
-          <div className="bg-white w-25 h-25 flex justify-center items-center rounded-full shadow-lg inset-ring-3 inset-ring-primary-light">
-            <span className="text-primary font-bold text-3xl">
-              {sellerInfo.business_name.slice(0, 2).toUpperCase()}
-            </span>
+          <div className="flex justify-between items-center">
+            <button
+              onClick={() => navigate(-1)}
+              className="flex items-center gap-2 cursor-pointer">
+              <GoArrowLeft className="text-2xl text-stone-100" />
+              <span className="text-stone-100">Back</span>
+            </button>
           </div>
 
           {/* Seller Info */}
@@ -86,23 +80,25 @@ export default function SellerProfile() {
               {sellerInfo.business_name}
             </h2>
 
-          <div className="">
-            <span className="bg-stone-100 rounded-full py-1 px-4 capitalize">
-              {category.name}
-            </span>
+            <div className="">
+              <span className="bg-stone-100 rounded-full py-1 px-4 capitalize">
+                {category.name}
+              </span>
+            </div>
           </div>
-        </div>
-      </div>
 
-      {/* Description */}
-      <div className="px-5 pt-2 text-stone-700 leading-loose">
-        {sellerInfo.description}
-      </div>
+        </div>
+
+        {/* Description */}
+        <div className="px-5 pt-2 text-stone-700 leading-loose">
+          {sellerInfo.description}
+        </div>
+
 
       {/* Catalog Text */}
       <div className="flex items-center gap-3 mb-3">
         <div className="flex-1 h-px bg-stone-200" />
-        <h3 className="text-stone-400 tracking-widest">Catalog</h3>
+          <h3 className="text-stone-400 tracking-widest">Catalog</h3>
         <div className="flex-1 h-px bg-stone-200" />
       </div>
 
@@ -141,6 +137,7 @@ export default function SellerProfile() {
           </button>
         </a>
       </div>
+
     </section>
   );
 }
