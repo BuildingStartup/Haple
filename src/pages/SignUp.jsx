@@ -282,6 +282,10 @@ export default function SignUp() {
           </button>
         </div>
       </form>
+
+      <p className="text-center text-gray-600"> 
+        Already have an account? <Link to="/signIn" className="text-primary font-medium">Sign in</Link>
+      </p>
     </div>
   );
 }

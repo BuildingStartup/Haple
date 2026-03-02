@@ -4,38 +4,44 @@ import { GoArrowLeft, GoLink } from "react-icons/go";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaShare } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
-import useSeller from "../features/profiles/useSeller";
-import useSellerCategory from "../features/categories/useSellerCategory";
 import AddProductForm from "../ui/AddProductForm";
 import ViewProducts from "../ui/ViewProducts";
 import AddProductButton from "../ui/AddProductButton";
 import SellerContact from "../ui/SellerContact";
 import Spinner from "../ui/Spinner";
+import SellerInfo from "../ui/SellerInfo";
+import useSeller from "../features/profiles/useSeller";
+import useSellerCategory from "../features/categories/useSellerCategory";
+import useSellerImages from "../features/profiles/useSellerImages";
+import useSignOut from "../features/authentication/useSignOut";
+import SpinnerMini from "../ui/SpinnerMini";
 
 export default function MyProfile() {
   const { user } = useAuth();
   const { fetchSellerById, seller: sellerInfo, loading, error } = useSeller();
-  const {
-    fetchSellerCategory,
-    loading: categoryLoading,
-    error: categoryError,
-    category,
-  } = useSellerCategory();
+  const { fetchSellerCategory, loading: categoryLoading, error:categoryError, category} = useSellerCategory();
+  const { handleUploadImage, handleDeleteImage, handleGetImages, images, loading: imageLoading, error: imageError } = useSellerImages();
+  const { loading: signOutLoading, handleSignOut } = useSignOut();
 
-  useEffect(() => {
+  useEffect(() => {    
     if (user?.id) fetchSellerById(user.id);
-  }, [user, fetchSellerById]);
+  }, [user]);
 
-  useEffect(() => {
+  useEffect(() => {    
     if (sellerInfo?.category_id) fetchSellerCategory(sellerInfo.category_id);
-  }, [sellerInfo?.category_id, fetchSellerCategory]);
+  }, [sellerInfo?.category_id]);
+
+
+  useEffect(() => {    
+    if (sellerInfo?.id) handleGetImages(sellerInfo.id);
+  }, [sellerInfo?.id]);
+
 
   // Products added by user
-  const [products, setProducts] = useState([]);
   const [newProduct, setNewProduct] = useState({
     name: "",
-    image: null,
-    description: "",
+    image_url: null,
+    caption: "",
   });
   const [showForm, setShowForm] = useState(false);
   const [openOptions, setOpenOptions] = useState(false);
@@ -63,9 +69,9 @@ export default function MyProfile() {
   const validate = () => {
     let temp = {};
     if (!newProduct.name) temp.name = "Listing name is required";
-    if (!newProduct.image) temp.image = "Listing image is required";
-    if (!newProduct.description)
-      temp.description = "Listing description is required";
+    if (!newProduct.image_url) temp.image_url = "Listing image is required";
+    if (!newProduct.caption)
+      temp.caption = "Listing caption is required";
 
     setErrors(temp);
     return Object.keys(temp).length === 0;
@@ -74,18 +80,20 @@ export default function MyProfile() {
   const submitProduct = () => {
     if (!validate()) return;
 
-    const imageUrl = URL.createObjectURL(newProduct.image);
-
-    setProducts((prev) => [...prev, { ...newProduct, image: imageUrl }]);
-    setNewProduct({ name: "", image: null, description: "" });
+    const position = images.length + 1;
+    
+    handleUploadImage(newProduct.image_url, sellerInfo.id, position, newProduct.caption, newProduct.name);
+    setNewProduct({ name: "", image_url: null, caption: "" });
     setPreview(null);
     setShowForm(false);
-    setErrors({});
+    setErrors({});    
   };
 
-  const deleteProduct = (index) => {
-    setProducts((prev) => prev.filter((_, i) => i !== index));
+  const deleteProduct = (imageId) => {
+    if (!imageId) return;
+    handleDeleteImage(sellerInfo.id, imageId);    
   };
+
   const handleCancel = () => {
     setShowForm(false);
     setPreview(null);
@@ -96,12 +104,16 @@ export default function MyProfile() {
     setPreview(null);
   };
 
-  if (loading || categoryLoading) return <Spinner />;
-  if (error || categoryError) return <p>Error: {error || categoryError}</p>;
+  const handleLogout = () => {
+    handleSignOut();
+  }
+
+  if (loading || categoryLoading || imageLoading) return <Spinner />;
+  if (error || categoryError || imageError) return <p>Error: {error || categoryError || imageError}</p>;
   if (!sellerInfo) return <p>No seller data found</p>;
 
-  const initials = sellerInfo.business_name.slice(0, 2).toUpperCase();
-  const remaining = 3 - products.length;
+  
+  const remaining = 3 - images.length;
 
   // Share and Copy
   // Share and copy
@@ -139,34 +151,25 @@ export default function MyProfile() {
                 <li className="px-4 py-3 hover:bg-stone-200 rounded cursor-pointer">
                   Share
                 </li>
-                <li className="px-4 py-3 hover:bg-stone-200 rounded cursor-pointer">
-                  Edit
-                </li>
-                <li className="px-4 py-3 hover:bg-stone-200 rounded cursor-pointer">
-                  Logout
+                <Link to="edit">
+                  <li className="px-4 py-3 hover:bg-stone-200 rounded cursor-pointer">Edit</li>
+                </Link>
+                <li className="px-4 py-3 hover:bg-stone-200 rounded cursor-pointer flex items-center gap-1 disabled:cursor-not-allowed disabled:text-stone-500" disabled={signOutLoading} onClick={handleLogout}>
+                  {signOutLoading && <SpinnerMini /> }
+                  <span className="text-red-500">Logout</span>
                 </li>
               </ul>
             )}
           </div>
         </div>
 
+        
+
         {/* Seller Info */}
-        <div className=" flex flex-col gap-3 items-center absolute -bottom-25 left-0 right-0 mx-auto">
-          {/* Avatar */}
-          <div className="bg-white w-25 h-25 flex justify-center items-center rounded-full shadow-lg inset-ring-3 inset-ring-primary-light">
-            <span className="text-primary font-bold text-3xl">{initials}</span>
-          </div>
-
-          <h2 className="text-2xl font-medium">{sellerInfo.business_name}</h2>
-
-          <div className="">
-            <span className="bg-stone-100 rounded-full py-1 px-4 capitalize">
-              {category?.name ?? "Uncategorized"}
-            </span>
-          </div>
-        </div>
+        <SellerInfo sellerInfo={sellerInfo} category={category} />
       </div>
 
+      
       {/* Description */}
       <div className="px-5 pt-3 text-stone-700">{sellerInfo.description}</div>
 
@@ -188,6 +191,7 @@ export default function MyProfile() {
         </button>
       </div>
 
+      
       {/* Catalog Text */}
       <div className="flex items-center gap-3 mb-3">
         <div className="flex-1 h-px bg-stone-200" />
@@ -196,10 +200,10 @@ export default function MyProfile() {
       </div>
 
       {/* How it looks like when added */}
-      <ViewProducts products={products} handleDelete={deleteProduct} />
+      <ViewProducts products={images} handleDelete={(imageId) => deleteProduct(imageId)} />
 
       <AddProductButton
-        products={products}
+        products={images}
         handleAddItem={handleAddItem}
         showForm={showForm}
         remaining={remaining}
