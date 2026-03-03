@@ -20,23 +20,33 @@ import useSignOut from "../features/authentication/useSignOut";
 export default function MyProfile() {
   const { user } = useAuth();
   const { fetchSellerById, seller: sellerInfo, loading, error } = useSeller();
-  const { fetchSellerCategory, loading: categoryLoading, error:categoryError, category} = useSellerCategory();
-  const { handleUploadImage, handleDeleteImage, handleGetImages, images, loading: imageLoading, error: imageError } = useSellerImages();
+  const {
+    fetchSellerCategory,
+    loading: categoryLoading,
+    error: categoryError,
+    category,
+  } = useSellerCategory();
+  const {
+    handleUploadImage,
+    handleDeleteImage,
+    handleGetImages,
+    images,
+    loading: imageLoading,
+    error: imageError,
+  } = useSellerImages();
   const { loading: signOutLoading, handleSignOut } = useSignOut();
 
-  useEffect(() => {    
+  useEffect(() => {
     if (user?.id) fetchSellerById(user.id);
   }, [user]);
 
-  useEffect(() => {    
+  useEffect(() => {
     if (sellerInfo?.category_id) fetchSellerCategory(sellerInfo.category_id);
   }, [sellerInfo?.category_id]);
 
-
-  useEffect(() => {    
+  useEffect(() => {
     if (sellerInfo?.id) handleGetImages(sellerInfo.id);
   }, [sellerInfo?.id]);
-
 
   // Products added by user
   const [newProduct, setNewProduct] = useState({
@@ -54,19 +64,19 @@ export default function MyProfile() {
     if (files) {
       if (!files[0]) return; // ← user opened picker and cancelled, do nothing
       const file = files[0];
-      
+
       // Check file size (4MB = 4 * 1024 * 1024 bytes)
       const MAX_FILE_SIZE = 4 * 1024 * 1024;
       if (file.size > MAX_FILE_SIZE) {
         setErrors({ ...errors, image_url: "Image size must not exceed 4MB" });
         return;
       }
-      
+
       // Clear any previous image_url errors
       const newErrors = { ...errors };
       delete newErrors.image_url;
       setErrors(newErrors);
-      
+
       setNewProduct((prev) => ({ ...prev, [name]: file }));
       setPreview(URL.createObjectURL(file));
     } else {
@@ -84,8 +94,7 @@ export default function MyProfile() {
     let temp = {};
     if (!newProduct.name) temp.name = "Listing name is required";
     if (!newProduct.image_url) temp.image_url = "Listing image is required";
-    if (!newProduct.caption)
-      temp.caption = "Listing caption is required";
+    if (!newProduct.caption) temp.caption = "Listing caption is required";
 
     setErrors(temp);
     return Object.keys(temp).length === 0;
@@ -95,17 +104,23 @@ export default function MyProfile() {
     if (!validate()) return;
 
     const position = images.length + 1;
-    
-    handleUploadImage(newProduct.image_url, sellerInfo.id, position, newProduct.caption, newProduct.name);
+
+    handleUploadImage(
+      newProduct.image_url,
+      sellerInfo.id,
+      position,
+      newProduct.caption,
+      newProduct.name
+    );
     setNewProduct({ name: "", image_url: null, caption: "" });
     setPreview(null);
     setShowForm(false);
-    setErrors({});    
+    setErrors({});
   };
 
   const deleteProduct = (imageId) => {
     if (!imageId) return;
-    handleDeleteImage(sellerInfo.id, imageId);    
+    handleDeleteImage(sellerInfo.id, imageId);
   };
 
   const handleCancel = () => {
@@ -120,21 +135,20 @@ export default function MyProfile() {
 
   const handleLogout = () => {
     handleSignOut();
-  }
+  };
 
   if (loading || categoryLoading || imageLoading) return <Spinner />;
   if (error || categoryError || imageError) return <NetworkError />;
   if (!sellerInfo) return <p>No seller data found</p>;
 
-  
   const remaining = 3 - images.length;
 
   // Share and Copy
   // Share and copy
   const profilePath = `/seller/${sellerInfo?.username}`;
   const profileUrl = `${window.location.origin}${profilePath}`;
-// e.g. http://localhost:5173/seller/john
-// or https://yourdomain.com/seller/john in production
+  // e.g. http://localhost:5173/seller/john
+  // or https://yourdomain.com/seller/john in production
 
   const handleShare = async () => {
     if (navigator.share) {
@@ -150,19 +164,23 @@ export default function MyProfile() {
     navigator.clipboard.writeText(profileUrl).then(() => alert("Link copied!"));
   };
 
-  
-
   return (
     <section className="h-screen space-y-3">
-      <div 
-        className={`p-5 relative h-45 mb-30 ${!sellerInfo.avatar_url ? 'bg-primary' : 'bg-cover bg-center'}`}
-        style={sellerInfo.avatar_url ? { backgroundImage: `url(${sellerInfo.avatar_url})` } : {}}
+      <div
+        className={`p-5 relative h-45 mb-30 ${
+          !sellerInfo.avatar_url ? "bg-primary" : "bg-cover bg-center"
+        }`}
+        style={
+          sellerInfo.avatar_url
+            ? { backgroundImage: `url(${sellerInfo.avatar_url})` }
+            : {}
+        }
       >
         {/* Dark overlay */}
         {sellerInfo.avatar_url && (
           <div className="absolute inset-0 bg-black opacity-50 rounded-t"></div>
         )}
-        
+
         <div className="flex justify-between items-center relative z-10">
           <Link to="/" className="flex items-center gap-2 cursor-pointer">
             <GoArrowLeft className="text-2xl text-stone-100 cursor-pointer" />
@@ -179,10 +197,16 @@ export default function MyProfile() {
                   Share
                 </li>
                 <Link to="edit">
-                  <li className="px-4 py-3 hover:bg-stone-200 rounded cursor-pointer">Edit</li>
+                  <li className="px-4 py-3 hover:bg-stone-200 rounded cursor-pointer">
+                    Edit
+                  </li>
                 </Link>
-                <li className="px-4 py-3 hover:bg-stone-200 rounded cursor-pointer flex items-center gap-1 disabled:cursor-not-allowed disabled:text-stone-500" disabled={signOutLoading} onClick={handleLogout}>
-                  {signOutLoading && <SpinnerMini /> }
+                <li
+                  className="px-4 py-3 hover:bg-stone-200 rounded cursor-pointer flex items-center gap-1 disabled:cursor-not-allowed disabled:text-stone-500"
+                  disabled={signOutLoading}
+                  onClick={handleLogout}
+                >
+                  {signOutLoading && <SpinnerMini />}
                   <span className="text-red-500">Logout</span>
                 </li>
               </ul>
@@ -190,15 +214,12 @@ export default function MyProfile() {
           </div>
         </div>
 
-        
-
         {/* Seller Info */}
         <div className="z-10">
           <SellerInfo sellerInfo={sellerInfo} category={category} />
         </div>
       </div>
 
-      
       {/* Description */}
       <div className="px-5 pt-3 text-stone-700">{sellerInfo.description}</div>
 
@@ -220,7 +241,6 @@ export default function MyProfile() {
         </button>
       </div>
 
-      
       {/* Catalog Text */}
       <div className="flex items-center gap-3 mb-3">
         <div className="flex-1 h-px bg-stone-200" />
@@ -229,7 +249,10 @@ export default function MyProfile() {
       </div>
 
       {/* How it looks like when added */}
-      <ViewProducts products={images} handleDelete={(imageId) => deleteProduct(imageId)} />
+      <ViewProducts
+        products={images}
+        handleDelete={(imageId) => deleteProduct(imageId)}
+      />
 
       <AddProductButton
         products={images}
