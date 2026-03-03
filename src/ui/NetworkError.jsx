@@ -4,7 +4,7 @@ export default function NetworkError() {
       <div className="flex flex-1 justify-center flex-col">
         <div className="p-5 bg-blue-50 rounded-full">
           <img
-            src="Phone-WIFI.png"
+            src="./Phone-WIFI.png"
             alt="Phone displaying No signal"
             className="w-60 h-60 object-cover"
           />
