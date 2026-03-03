@@ -63,7 +63,7 @@ export default function SellerProfile() {
 
           <div className="flex justify-between items-center relative z-10">
             <button
-              onClick={() => navigate(-1)}
+              onClick={() => navigate(`/explore/${category.catalog}/${category.slug}`)}
               className="flex items-center gap-2 cursor-pointer">
               <GoArrowLeft className="text-2xl text-stone-100" />
               <span className="text-stone-100">Back</span>
