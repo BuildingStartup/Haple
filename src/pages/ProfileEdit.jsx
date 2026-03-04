@@ -10,6 +10,7 @@ import Spinner from "../ui/Spinner.jsx";
 import { useAuth } from "../context/AuthContext";
 import useSeller from "../features/profiles/useSeller.js";
 import useUpdateSeller from "../features/profiles/useUpdateSeller.js";
+import FieldDescription from "../ui/FieldDescription.jsx";
 
 export default function ProfileEdit(){
     const { user } = useAuth();
@@ -35,6 +36,13 @@ export default function ProfileEdit(){
     useEffect(()=> {
         if(user?.id) fetchSellerById(user.id);
     }, [user, fetchSellerById])
+
+    useEffect(() => {
+      if (seller?.whatsapp_number) {
+        const localDigits = seller.whatsapp_number.replace(/^\+234/, "").replace(/\D/g, "").slice(0, 10);
+        setValue("whatsapp_number", localDigits);
+      }
+    }, [seller?.whatsapp_number, setValue]);
     
     useEffect(()=>{
         //if a new file is selected, creates a preview with url
@@ -75,12 +83,14 @@ export default function ProfileEdit(){
         // Don't submit if there's a file error
         if(fileError) return;
         
+        const whatsappDigits = (data.whatsapp_number || "").replace(/\D/g, "").slice(0, 10);
+
         const updateData = {
         username: data.business_name.toLowerCase().replace(/\s+/g, ""), //generate username from business name
         business_name: data.business_name,
         description: data.description,
-        whatsapp_number: data.whatsapp_number,
-        avatar_url: data.avatarFile ? data.avatarFile[0] : null // Pass the file
+        whatsapp_number: `+234${whatsappDigits}`,
+        avatar_url: data.avatarFile ? data.avatarFile[0] : (seller?.avatar_url || null) // Keep existing avatar if no new file selected
         };
 
         //api call;
@@ -90,18 +100,7 @@ export default function ProfileEdit(){
     
 
     const handleWhatsAppChange = (value) => {
-    // Remove all non-digit characters except +
-    let cleanedNumber = value.replace(/[^\d+]/g, "");
-
-    // If it starts with 0, remove it
-    if (cleanedNumber.startsWith("0")) {
-      cleanedNumber = cleanedNumber.substring(1);
-    }
-
-    // If it doesn't start with +234, add it
-    if (!cleanedNumber.startsWith("+234") && cleanedNumber.length > 0) {
-      cleanedNumber = "+234" + cleanedNumber;
-    }
+    const cleanedNumber = value.replace(/\D/g, "").slice(0, 10);
 
     setValue("whatsapp_number", cleanedNumber);
   };  
@@ -113,6 +112,8 @@ export default function ProfileEdit(){
         navigate("/", {replace: true});
     }
   }
+
+  
 
     if(loading) return <Spinner />;
     return (
@@ -133,9 +134,9 @@ export default function ProfileEdit(){
                     {/* Image upload preview */}
                 <div className="flex flex-col gap-1">
                     <label className="w-45 h-45 rounded-full border-2 border-dashed border-stone-300 flex items-center justify-center cursor-pointer overflow-hidden bg-white mx-auto">
-                        {preview ? (
+                    {(preview || seller?.avatar_url) ? (
                         <img
-                            src={preview || seller?.avatar_url || "/default-placeholder.png"}
+                      src={preview || seller?.avatar_url || "/default-placeholder.png"}
                             alt="avatar preview"
                             className="w-full h-full rounded-full object-cover"
                             />
@@ -154,10 +155,10 @@ export default function ProfileEdit(){
                         className="hidden"
                         />
                     </label>
-                    {(errors.image || fileError) && (
+                    {(errors.avatarFile || fileError) && (
                         <div className="text-red-600 text-sm bg-red-50 p-2 rounded flex items-center gap-1">
                             <VscError />
-                            <span>{errors.image?.message || fileError}</span>
+                        <span>{errors.avatarFile?.message || fileError}</span>
                         </div>
                         )}
                 </div>
@@ -174,49 +175,32 @@ export default function ProfileEdit(){
                   placeholder="DesignByJoel"
                   type="text"
                 />
-                {errors.description && (
-                  <p className="text-red-600 text-sm bg-red-50 p-2 rounded">
-                    {errors.description.message}
-                  </p>
-                )}
         
                 {/* Description */}
-                <div className="flex flex-col gap-2">
-                  <label htmlFor="description" className="text-gray-700 font-medium">
-                    Description
-                  </label>
-                  <textarea
-                    id="description"
-                    {...register("description", {
-                      required: "Description is required",
-                    })}
-                    placeholder="What buyers will know about you"
-                    className="w-full px-3 py-3 ring ring-gray-300 rounded-lg resize-none outline-none focus:ring focus:ring-primary transition-all duration-200"
-                    rows={3}
-                  />
-                  {errors.description && (
-                    <div className="text-red-600 text-sm bg-red-50 p-2 rounded flex items-center gap-1">
-                      <VscError />
-                      <span>{errors.description.message}</span>
-                    </div>
-                  )}
-                </div>
-        
-                       
-                {/* Contact Info */}
-        
+                <FieldDescription
+                  register={register}
+                  labelName="Description"
+                  forTag="description"
+                  errors={errors}
+                  errorMessage="Description is Required"
+                  placeholder="What buyers will know about you"
+                  type="text"
+                />
+
+                {/* Contact Info */}        
                 <Fields
                     forTag="whatsapp_number"
                     labelName="WhatsApp Number"
                     validation={{
-                      value: /^\+234\d{10}$/,
-                      message: "Must be +234 followed by 10 digits (11 digits total)",
+                      value: /^\d{10}$/,
+                      message: "Enter 10 digits after +234",
                     }}
-                    placeholder="+234 (e.g., +2349012345678)"
+                    placeholder="9012345678"
                     type="tel"
                     errorMessage="Enter a valid WhatsApp number"
                     errors={errors}
                     register={register}
+                    prefix="+234"
                     onChange={(e) => handleWhatsAppChange(e.target.value)}
                   />
         
@@ -228,7 +212,7 @@ export default function ProfileEdit(){
                     disabled={updateLoading}
                   >
                     {updateLoading && <SpinnerMini />}
-                    <span>Create Seller Account</span>
+                    <span>Edit Seller Account</span>
                   </button>
 
             </form>

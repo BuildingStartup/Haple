@@ -1,11 +1,11 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 
 export default function CatalogDisplay({
   catalog,
   name,
+  isExpanded,
+  setIsExpanded,
 }) {
-  const [isExpanded, setIsExpanded] = useState(null);  
   const isOpen = isExpanded === name;
   const catalogLength = isOpen ? catalog : catalog.slice(0, 3);
   return (

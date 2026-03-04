@@ -5,10 +5,11 @@ import { useState } from "react";
 import useLogin from "../features/authentication/useLogin";
 import Fields from "../ui/Fields";
 import SpinnerMini from "../ui/SpinnerMini";
+import { VscError } from "react-icons/vsc";
 
 export default function Login(){
     const [showPassword, setShowPassword] = useState(false);
-    const {loading, loginSeller} = useLogin();
+    const {loading, error: loginError, loginSeller} = useLogin();
     const {
         register,
         handleSubmit,        
@@ -90,6 +91,13 @@ export default function Login(){
                 {loading && <SpinnerMini />}
                 <span>Sign in</span>
             </button>
+            {/* Show error message if login fails */}
+            {loginError && (
+              <div className="text-red-600 text-sm bg-red-50 p-3 rounded flex items-center gap-2">
+                <VscError />
+                <span>{loginError}</span>
+              </div>
+            )}
         </form>
         <p className="text-center text-gray-600">
           Don't have an account? <Link to="/signUp" className="text-primary font-medium">Sign up</Link>

@@ -37,7 +37,7 @@ export async function signInSeller({email, password}){
     
     if(error){
         console.log(error);
-        throw new Error(error.message);
+        throw new Error("Wrong email or password");
     }
 
     return seller;
