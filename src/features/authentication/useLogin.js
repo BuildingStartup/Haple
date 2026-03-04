@@ -19,6 +19,7 @@ function useLogin(){
         catch(err){
             console.log(err?.message);
             setError(err?.message);
+            toast.error(err?.message || "An error occurred during login");
             throw new Error(err?.message);
         }
         finally{

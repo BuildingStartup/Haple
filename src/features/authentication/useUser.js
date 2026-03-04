@@ -21,7 +21,7 @@ function useUser(){
         }
     }
 
-    console.log(user)
+    
     return {user, loading, error, loadUser}
 }
 

@@ -9,6 +9,8 @@ export default function Fields({
   errors,
   type,
   validation,
+  onChange,
+  prefix,
   showPassword,
   setShowPassword,
 }) {
@@ -17,16 +19,24 @@ export default function Fields({
       <label htmlFor={forTag} className="text-gray-700 font-medium">
         {labelName}
       </label>
-      <input
-        id={forTag}
-        type={type}
-        {...register(forTag, {
-          required: errorMessage,
-          pattern: validation,
-        })}
-        placeholder={placeholder}
-        className="w-full px-3 py-3 ring ring-gray-300 rounded-lg outline-none focus:ring focus:ring-primary transition-all duration-200"
-      />
+      <div className="relative">
+        {prefix && (
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">
+            {prefix}
+          </span>
+        )}
+        <input
+          id={forTag}
+          type={type}
+          {...register(forTag, {
+            required: errorMessage,
+            pattern: validation,
+          })}
+          onChange={onChange}
+          placeholder={placeholder}
+          className={`w-full px-3 py-3 ring ring-gray-300 rounded-lg outline-none focus:ring focus:ring-primary transition-all duration-200 ${prefix ? "pl-14" : ""}`}
+        />
+      </div>
       {errors[forTag] && (
         <div className="text-red-600 text-sm bg-red-50 p-2 rounded flex items-center gap-1">                  
           <VscError />

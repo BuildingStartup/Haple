@@ -115,15 +115,22 @@ export default function SellerProfile() {
           <p className="text-center w-full text-stone-500">No images available</p>
         ) : (
           sellerImages.map((prod) => (
-            <div key={prod.id} className="w-50 rounded-lg overflow-hidden bg-stone-50">
+            <div
+              key={prod.id}
+              className="relative w-40 rounded-lg overflow-hidden bg-stone-50"
+            >
               <img
                 src={prod.image_url}
                 alt={prod.name}
                 className="w-full h-35 object-cover"
               />
               <div className="p-2">
-                <p className="text-stone-900 capitalize">{prod.name}</p>
-                <p className="text-stone-600">{prod.caption}</p>
+                <p className="text-stone-900 capitalize">
+                  {prod.name}
+                </p>
+                <p className="text-stone-600">
+                  {prod.caption}
+                </p>
               </div>
             </div>
           ))

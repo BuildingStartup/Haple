@@ -15,6 +15,7 @@ import SearchBar from "../ui/SearchBar";
 
 export default function Explore() {
   const [query, setQuery] = useState("");
+  const [isExpanded, setIsExpanded] = useState(null);
   const {loading, categories, getAllCategories } = useCategories();
   const {loading: searchLoading, error: searchError, sellers, searchSellers} = useSearchSeller();
 
@@ -120,8 +121,8 @@ export default function Explore() {
         // Show categories
         loading ? <Spinner /> : (
           <div className="space-y-8">
-            <CatalogDisplay catalog={products} name="Products" />
-            <CatalogDisplay catalog={services} name="Services" />
+            <CatalogDisplay catalog={products} name="Products" isExpanded={isExpanded} setIsExpanded={setIsExpanded} />
+            <CatalogDisplay catalog={services} name="Services" isExpanded={isExpanded} setIsExpanded={setIsExpanded} />
           </div>
         )
       )}

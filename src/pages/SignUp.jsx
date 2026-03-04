@@ -7,6 +7,7 @@ import Fields from "../ui/Fields.jsx";
 import SpinnerMini from "../ui/SpinnerMini.jsx";
 import useSignUp from "../features/authentication/useSignUp.js";
 import useCategories from "../features/categories/useCategories.js";
+import FieldDescription from "../ui/FieldDescription.jsx";
 
 export default function SignUp() {
   const { loading, handleSignUp } = useSignUp();
@@ -54,10 +55,16 @@ export default function SignUp() {
   const onSubmit = (data) => {
     if (!data.email || !data.password) return;
 
+    const whatsappDigits = (data.whatsapp || "").replace(/\D/g, "").slice(0, 10);
+
     handleSignUp({
       email: data.email,
       password: data.password,
-      profileData: { ...data, categories: data.categories[0] }, // pass the form data with category as UUID
+      profileData: {
+        ...data,
+        whatsapp: `+234${whatsappDigits}`,
+        categories: data.categories[0],
+      }, // pass the form data with category as UUID
       onSuccess: () => {
         console.log("Sign up and profile creation successful!");
       },
@@ -76,19 +83,7 @@ export default function SignUp() {
   };
 
   const handleWhatsAppChange = (value) => {
-    // Remove all non-digit characters except +
-    let cleanedNumber = value.replace(/[^\d+]/g, "");
-
-    // If it starts with 0, remove it
-    if (cleanedNumber.startsWith("0")) {
-      cleanedNumber = cleanedNumber.substring(1);
-    }
-
-    // If it doesn't start with +234, add it
-    if (!cleanedNumber.startsWith("+234") && cleanedNumber.length > 0) {
-      cleanedNumber = "+234" + cleanedNumber;
-    }
-
+    const cleanedNumber = value.replace(/\D/g, "").slice(0, 10);
     setValue("whatsapp", cleanedNumber);
   };
 
@@ -121,33 +116,17 @@ export default function SignUp() {
           placeholder="DesignByJoel"
           type="text"
         />
-        {errors.description && (
-          <p className="text-red-600 text-sm bg-red-50 p-2 rounded">
-            {errors.description.message}
-          </p>
-        )}
 
         {/* Description */}
-        <div className="flex flex-col gap-2">
-          <label htmlFor="description" className="text-gray-700 font-medium">
-            Description
-          </label>
-          <textarea
-            id="description"
-            {...register("description", {
-              required: "Description is required",
-            })}
-            placeholder="What buyers will know about you"
-            className="w-full px-3 py-3 ring ring-gray-300 rounded-lg resize-none outline-none focus:ring focus:ring-primary transition-all duration-200"
-            rows={3}
-          />
-          {errors.description && (
-            <div className="text-red-600 text-sm bg-red-50 p-2 rounded flex items-center gap-1">
-              <VscError />
-              <span>{errors.description.message}</span>
-            </div>
-          )}
-        </div>
+        <FieldDescription
+          register={register}
+          labelName="Description"
+          forTag="description"
+          errors={errors}
+          errorMessage="Description is Required"
+          placeholder="What buyers will know about you"
+          type="text"
+        />
 
         {/* Mode Toggle */}
         <div className="space-y-4">
@@ -241,14 +220,15 @@ export default function SignUp() {
             forTag="whatsapp"
             labelName="WhatsApp Number"
             validation={{
-              value: /^\+234\d{10}$/,
-              message: "Must be +234 followed by 10 digits (11 digits total)",
+              value: /^\d{10}$/,
+              message: "Enter 10 digits after +234",
             }}
-            placeholder="+234 (e.g., +2349012345678)"
+            placeholder="9012345678"
             type="tel"
             errorMessage="Enter a valid WhatsApp number"
             errors={errors}
             register={register}
+            prefix="+234"
             onChange={(e) => handleWhatsAppChange(e.target.value)}
           />
 
