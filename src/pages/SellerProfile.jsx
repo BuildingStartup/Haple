@@ -60,45 +60,22 @@ export default function SellerProfile() {
 
   const whatsappNumber = sellerInfo.whatsapp_number.replace(/\D/g, "");
   const message = encodeURIComponent(
-    `Hi ${sellerInfo?.business_name}, I found you on Haple and I'm interested in your products!`
+    `Hi ${sellerInfo?.business_name}, I found you on Haple and I'm interested in your ${category?.catalog}!`
   );
   return (
     <section className="min-h-screen space-y-5">
-      
-        <div 
-          className={`p-5 relative h-45 mb-30 ${!sellerInfo.avatar_url ? 'bg-primary' : 'bg-cover bg-center'}`}
-          style={sellerInfo.avatar_url ? { backgroundImage: `url(${sellerInfo.avatar_url})` } : {}}
-        >
-          {/* Dark overlay */}
-          {sellerInfo.avatar_url && (
-            <div className="absolute inset-0 bg-black opacity-40"></div>
-          )}
-
-          <div className="flex justify-between items-center relative z-10">
-            <button
-              onClick={() => navigate(`/explore/${category.catalog}/${category.slug}`)}
-              className="flex items-center gap-2 cursor-pointer">
-              <GoArrowLeft className="text-2xl text-stone-100" />
-              <span className="text-stone-100">Back</span>
-            </button>
-          </div>
-
-          {/* Seller Info */}
-          <div className=" flex flex-col gap-3 items-center absolute -bottom-25 left-0 right-0 mx-auto">
-            {/* Avatar */}
-            <div className="bg-white w-25 h-25 flex justify-center items-center rounded-full shadow-lg inset-ring-3 inset-ring-primary-light overflow-hidden">
-              {sellerInfo.avatar_url ? (
-                <img src={sellerInfo.avatar_url} alt={sellerInfo.business_name} className="w-full h-full object-cover" />
-              ) : (
-                <span className="text-primary font-bold text-3xl">
-                  {sellerInfo.business_name.slice(0, 2).toUpperCase()}
-                </span>
-              )}
-            </div>
+      <div 
+        className={`p-5 relative h-45 mb-30 ${!sellerInfo.avatar_url ? 'bg-primary' : 'bg-cover bg-center'}`}
+        style={sellerInfo.avatar_url ? { backgroundImage: `url(${sellerInfo.avatar_url})` } : {}}
+      >
+        {/* Dark overlay */}
+        {sellerInfo.avatar_url && (
+          <div className="absolute inset-0 bg-black opacity-40"></div>
+        )}
 
         <div className="flex justify-between items-center relative z-10">
           <button
-            onClick={() => navigate("/explore")}
+            onClick={() => navigate(`/explore/${category.catalog}/${category.slug}`)}
             className="flex items-center gap-2 cursor-pointer"
           >
             <GoArrowLeft className="text-2xl text-stone-100" />
@@ -107,7 +84,7 @@ export default function SellerProfile() {
         </div>
 
         {/* Seller Info */}
-        <div className=" flex flex-col gap-3 items-center absolute -bottom-25 left-0 right-0 mx-auto">
+        <div className="flex flex-col gap-3 items-center absolute -bottom-25 left-0 right-0 mx-auto">
           {/* Avatar */}
           <div className="bg-white w-25 h-25 flex justify-center items-center rounded-full shadow-lg inset-ring-3 inset-ring-primary-light overflow-hidden">
             {sellerInfo.avatar_url ? (
