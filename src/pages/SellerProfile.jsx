@@ -62,6 +62,7 @@ export default function SellerProfile() {
   const message = encodeURIComponent(
     `Hi ${sellerInfo?.business_name}, I found you on Haple and I'm interested in your ${category?.catalog}!`
   );
+  //npm run build fixed
   return (
     <section className="min-h-screen space-y-5">
       <div 
