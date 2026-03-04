@@ -10,41 +10,54 @@ import useSellerCategory from "../features/categories/useSellerCategory";
 import useSellerImages from "../features/profiles/useSellerImages";
 import useStats from "../features/stats/useStats";
 
-
 export default function SellerProfile() {
-  const {username} = useParams();
-  const {loading: sellerLoading, error: sellerError, seller: sellerInfo,  fetchSellerByUsername} = useSeller();
-  const {fetchSellerCategory, loading: categoryLoading, error: categoryError, category, } = useSellerCategory();
-  const {handleIncrementWhatsappClicks, handleIncrementProfileViews} = useStats();
-  const {loading: imagesLoading, error: imagesError, images: sellerImages, handleGetImages} = useSellerImages();
+  const { username } = useParams();
+  const {
+    loading: sellerLoading,
+    error: sellerError,
+    seller: sellerInfo,
+    fetchSellerByUsername,
+  } = useSeller();
+  const {
+    fetchSellerCategory,
+    loading: categoryLoading,
+    error: categoryError,
+    category,
+  } = useSellerCategory();
+  const { handleIncrementWhatsappClicks, handleIncrementProfileViews } =
+    useStats();
+  const {
+    loading: imagesLoading,
+    error: imagesError,
+    images: sellerImages,
+    handleGetImages,
+  } = useSellerImages();
   const navigate = useNavigate();
 
-  useEffect(()=> {
-    if(username) fetchSellerByUsername(username);
+  useEffect(() => {
+    if (username) fetchSellerByUsername(username);
   }, [username]);
 
   useEffect(() => {
-      if (sellerInfo?.category_id) fetchSellerCategory(sellerInfo.category_id);
-    }, [sellerInfo?.category_id]);
+    if (sellerInfo?.category_id) fetchSellerCategory(sellerInfo.category_id);
+  }, [sellerInfo?.category_id]);
 
   useEffect(() => {
     if (sellerInfo?.id) handleGetImages(sellerInfo.id);
   }, [sellerInfo?.id]);
 
-  useEffect(()=> {
-    if(sellerInfo?.id) handleIncrementProfileViews(sellerInfo.id);
-  }, [sellerInfo?.id])
+  useEffect(() => {
+    if (sellerInfo?.id) handleIncrementProfileViews(sellerInfo.id);
+  }, [sellerInfo?.id]);
 
   const handleChatClick = () => {
-    if(sellerInfo?.id) handleIncrementWhatsappClicks(sellerInfo.id);
-  }
+    if (sellerInfo?.id) handleIncrementWhatsappClicks(sellerInfo.id);
+  };
 
- 
+  if (sellerLoading || categoryLoading || imagesLoading) return <Spinner />;
+  if (sellerError || categoryError || imagesError) return <NetworkError />;
+  if (!sellerInfo || !category) return <p>Seller not found</p>;
 
-  if(sellerLoading || categoryLoading || imagesLoading) return <Spinner />;
-  if(sellerError || categoryError || imagesError) return <NetworkError />;
-  if(!sellerInfo || !category) return <p>Seller not found</p>;
-  
   const whatsappNumber = sellerInfo.whatsapp_number.replace(/\D/g, "");
   const message = encodeURIComponent(
     `Hi ${sellerInfo?.business_name}, I found you on Haple and I'm interested in your products!`
@@ -83,36 +96,61 @@ export default function SellerProfile() {
               )}
             </div>
 
-            <h2 className="text-2xl font-medium">
-              {sellerInfo.business_name}
-            </h2>
+        <div className="flex justify-between items-center relative z-10">
+          <button
+            onClick={() => navigate("/explore")}
+            className="flex items-center gap-2 cursor-pointer"
+          >
+            <GoArrowLeft className="text-2xl text-stone-100" />
+            <span className="text-stone-100">Back</span>
+          </button>
+        </div>
 
-            <div className="">
-              <span className="bg-stone-100 rounded-full py-1 px-4 capitalize">
-                {category.name}
+        {/* Seller Info */}
+        <div className=" flex flex-col gap-3 items-center absolute -bottom-25 left-0 right-0 mx-auto">
+          {/* Avatar */}
+          <div className="bg-white w-25 h-25 flex justify-center items-center rounded-full shadow-lg inset-ring-3 inset-ring-primary-light overflow-hidden">
+            {sellerInfo.avatar_url ? (
+              <img
+                src={sellerInfo.avatar_url}
+                alt={sellerInfo.business_name}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span className="text-primary font-bold text-3xl">
+                {sellerInfo.business_name.slice(0, 2).toUpperCase()}
               </span>
-            </div>
+            )}
           </div>
 
-        </div>
+          <h2 className="text-2xl font-medium">{sellerInfo.business_name}</h2>
 
-        {/* Description */}
-        <div className="px-5 pt-2 text-stone-700 leading-loose">
-          {sellerInfo.description}
+          <div className="">
+            <span className="bg-stone-100 rounded-full py-1 px-4 capitalize">
+              {category.name}
+            </span>
+          </div>
         </div>
+      </div>
 
+      {/* Description */}
+      <div className="px-5 pt-2 text-stone-700 leading-loose">
+        {sellerInfo.description}
+      </div>
 
       {/* Catalog Text */}
       <div className="flex items-center gap-3 mb-3">
         <div className="flex-1 h-px bg-stone-200" />
-          <h3 className="text-stone-400 tracking-widest">Catalog</h3>
+        <h3 className="text-stone-400 tracking-widest">Catalog</h3>
         <div className="flex-1 h-px bg-stone-200" />
       </div>
 
       {/* How it looks like when added */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-5 place-items-center">
         {sellerImages.length === 0 ? (
-          <p className="text-center w-full text-stone-500">No images available</p>
+          <p className="text-center w-full text-stone-500">
+            No images available
+          </p>
         ) : (
           sellerImages.map((prod) => (
             <div
@@ -151,7 +189,6 @@ export default function SellerProfile() {
           </button>
         </a>
       </div>
-
     </section>
   );
 }
