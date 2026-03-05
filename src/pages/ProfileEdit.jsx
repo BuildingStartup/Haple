@@ -57,10 +57,10 @@ export default function ProfileEdit(){
                 return;
             }
             
-            // File size validation (4MB max)
-            const maxSize = 4 * 1024 * 1024; // 4MB in bytes
+            // File size validation (5MB max)
+            const maxSize = 5 * 1024 * 1024; // 5MB in bytes
             if(file.size > maxSize){
-                setFileError('Image size must be less than 4MB');
+                setFileError('Image size must be less than 5MB');
                 setPreview(null);
                 return;
             }

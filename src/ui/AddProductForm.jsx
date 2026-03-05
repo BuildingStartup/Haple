@@ -69,11 +69,13 @@ export default function AddProductForm({showForm, preview, handleChange, errors,
         
                   <div className="flex gap-2">
                     <button
+                      type="button"
                       onClick={handleSubmit}
                       className="flex-4 p-3 bg-primary rounded text-white cursor-pointer shadow active:scale-95 transition-all capitalize">
                       save 
                     </button>
                     <button
+                      type="button"
                       onClick={handleCancel}
                       className="flex-4 p-3 bg-stone-200 rounded text-stone-800 cursor-pointer active:scale-95 transition-all capitalize">
                       cancel

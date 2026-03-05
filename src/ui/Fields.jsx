@@ -13,6 +13,7 @@ export default function Fields({
   prefix,
   showPassword,
   setShowPassword,
+  autocomplete,
 }) {
   return (
     <div className="flex flex-col gap-2 relative">
@@ -28,10 +29,12 @@ export default function Fields({
         <input
           id={forTag}
           type={type}
+          autoComplete={autocomplete}
           {...register(forTag, {
             required: errorMessage,
             pattern: validation,
           })}
+          required
           onChange={onChange}
           placeholder={placeholder}
           className={`w-full px-3 py-3 ring ring-gray-300 rounded-lg outline-none focus:ring focus:ring-primary transition-all duration-200 ${prefix ? "pl-14" : ""}`}

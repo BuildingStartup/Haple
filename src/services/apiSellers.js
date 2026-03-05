@@ -96,10 +96,11 @@ export async function updateSellerProfile(sellerId, profileData){
     
         const imageName = `${Math.random()}-${imageBase}`.replaceAll("/", "");
     
-    //3. follows this pattern //https://mnojffbasafjsyamcbqw.supabase.co/storage/v1/object/public/seller-avatar/team3.jpg
-    //https://mnojffbasafjsyamcbqw.supabase.co/storage/v1/object/public/seller-avatar/0.0963254126291676-image
+    const filePath = `seller-${sellerId}/${imageName}`;
+    
+    //3. follows this pattern //https://mnojffbasafjsyamcbqw.supabase.co/storage/v1/object/public/seller-avatar/seller-123/team3.jpg
     const imagePath = hasImagePath ? profileData.avatar_url
-    : `${supabaseUrl}/storage/v1/object/public/seller-avatar/${imageName}`;
+    : `${supabaseUrl}/storage/v1/object/public/seller-avatar/${filePath}`;
 
 
     const {data: seller, error} = await supabase
@@ -121,7 +122,7 @@ export async function updateSellerProfile(sellerId, profileData){
     const {error: storageError} = await supabase
     .storage
     .from("seller-avatar")
-    .upload(imageName, profileData.avatar_url)
+    .upload(filePath, profileData.avatar_url)
 
     if(storageError){
         console.log(storageError)

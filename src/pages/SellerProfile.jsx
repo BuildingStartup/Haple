@@ -139,6 +139,7 @@ export default function SellerProfile() {
                 src={prod.image_url}
                 alt={prod.name}
                 className="w-full h-35 object-cover"
+                loading="lazy"
               />
               <div className="p-2">
                 <p className="text-stone-900 capitalize">

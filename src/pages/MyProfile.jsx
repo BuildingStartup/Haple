@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import imageCompression from "browser-image-compression";
 import { GoArrowLeft, GoLink } from "react-icons/go";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaShare } from "react-icons/fa";
@@ -10,12 +11,12 @@ import AddProductButton from "../ui/AddProductButton";
 import SellerContact from "../ui/SellerContact";
 import Spinner from "../ui/Spinner";
 import SellerInfo from "../ui/SellerInfo";
-import SpinnerMini from "../ui/SpinnerMini";
 import NetworkError from "../ui/NetworkError";
 import useSeller from "../features/profiles/useSeller";
 import useSellerCategory from "../features/categories/useSellerCategory";
 import useSellerImages from "../features/profiles/useSellerImages";
 import useSignOut from "../features/authentication/useSignOut";
+import ProfileOptions from "../ui/ProfileOptions";
 
 export default function MyProfile() {
   const { user } = useAuth();
@@ -65,10 +66,10 @@ export default function MyProfile() {
       if (!files[0]) return; // ← user opened picker and cancelled, do nothing
       const file = files[0];
 
-      // Check file size (4MB = 4 * 1024 * 1024 bytes)
+      // Check file size (8MB = 8 * 1024 * 1024 bytes)
       const MAX_FILE_SIZE = 4 * 1024 * 1024;
       if (file.size > MAX_FILE_SIZE) {
-        setErrors({ ...errors, image_url: "Image size must not exceed 4MB" });
+        setErrors({ ...errors, image_url: "Image size must not exceed 8MB" });
         return;
       }
 
@@ -100,17 +101,36 @@ export default function MyProfile() {
     return Object.keys(temp).length === 0;
   };
 
-  const submitProduct = () => {
+  const compressImage = async (file) => {
+    const options = {
+      maxSizeMB: 2,
+      maxWidthOrHeight: 1600,
+      initialQuality: 0.9,
+      useWebWorker: true,
+    };
+    try {
+      const compressedFile = await imageCompression(file, options);
+      return compressedFile;
+    } catch(error){
+      console.error("Image compression error:", error);
+      return file; //fallback
+    }
+  }
+
+  const submitProduct = async () => {
     if (!validate()) return;
+
+    //compress first
+    const compressedImage = await compressImage(newProduct.image_url);
 
     const position = images.length + 1;
 
-    handleUploadImage(
-      newProduct.image_url,
+    await handleUploadImage(
+      compressedImage,
       sellerInfo.id,
       position,
-      newProduct.caption,
-      newProduct.name
+      newProduct.name,
+      newProduct.caption
     );
     setNewProduct({ name: "", image_url: null, caption: "" });
     setPreview(null);
@@ -141,7 +161,7 @@ export default function MyProfile() {
   if (error || categoryError || imageError) return <NetworkError />;
   if (!sellerInfo) return <p>No seller data found</p>;
 
-  const remaining = 3 - images.length;
+  const remaining = 4 - images.length;
 
   // Share and Copy
   // Share and copy
@@ -192,24 +212,12 @@ export default function MyProfile() {
               onClick={() => setOpenOptions((value) => !value)}
             />
             {openOptions && (
-              <ul className="bg-white py-2 space-y-2 w-40 rounded-lg absolute top-7 -right-2 z-10 shadow">
-                <li className="px-4 py-3 hover:bg-stone-200 rounded cursor-pointer">
-                  Share
-                </li>
-                <Link to="edit">
-                  <li className="px-4 py-3 hover:bg-stone-200 rounded cursor-pointer">
-                    Edit
-                  </li>
-                </Link>
-                <li
-                  className="px-4 py-3 hover:bg-stone-200 rounded cursor-pointer flex items-center gap-1 disabled:cursor-not-allowed disabled:text-stone-500"
-                  disabled={signOutLoading}
-                  onClick={handleLogout}
-                >
-                  {signOutLoading && <SpinnerMini />}
-                  <span className="text-red-500">Logout</span>
-                </li>
-              </ul>
+              <ProfileOptions
+                handleShare={handleShare}
+                handleLogout={handleLogout}
+                signOutLoading={signOutLoading}
+                onClose={() => setOpenOptions(false)}
+              />
             )}
           </div>
         </div>

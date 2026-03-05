@@ -213,6 +213,7 @@ export default function SignUp() {
             errorMessage="Email is required"
             errors={errors}
             register={register}
+            autocomplete="email"
           />
           {/* Contact Info */}
 
@@ -248,6 +249,7 @@ export default function SignUp() {
             errors={errors}
             register={register}
             showPassword={showPassword}
+            autocomplete="new-password"
             setShowPassword={setShowPassword}
           />
 
