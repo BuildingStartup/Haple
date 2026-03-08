@@ -254,7 +254,7 @@ export default function MyProfile() {
           className="flex-4 flex flex-col gap-2 items-center justify-center py-2 px-6 ring ring-stone-200 rounded cursor-pointer"
         >
           <FaPen className="text-xl text-primary" />
-          <span className="text-primary">Edit Profile</span>
+          <span className="text-primary">Edit</span>
         </Link>
       </div>
 

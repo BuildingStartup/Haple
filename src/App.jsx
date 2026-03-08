@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import ReactGA from "react-ga4";
@@ -6,17 +6,20 @@ import { AuthProvider } from "./context/AuthContext.jsx";
 
 // PAGES
 import Home from "./pages/Home.jsx";
-import SignUp from "./pages/SignUp.jsx";
-import Login from "./pages/Login.jsx";
-import MyProfile from "./pages/MyProfile.jsx";
-import Explore from "./pages/Explore.jsx";
-import CategorySellers from "./pages/CategorySellers.jsx";
-import SellerProfile from "./pages/SellerProfile.jsx";
-import BigScreen from "./ui/BigScreen.jsx";
-import SmallScreen from "./ui/SmallScreen.jsx";
-import ProfileEdit from "./pages/ProfileEdit.jsx";
 import Error404 from "./ui/Error404.jsx";
 import ProtectedRoute from "./ui/ProtectedRoute.jsx";
+import Spinner from "./ui/Spinner.jsx";
+
+// dynamically imported pages
+const Login = lazy(()=> import("./pages/Login.jsx"))
+const SignUp = lazy(()=> import("./pages/SignUp.jsx"))
+const MyProfile = lazy(()=> import("./pages/MyProfile.jsx"))
+const Explore = lazy(()=> import("./pages/Explore.jsx"))
+const CategorySellers = lazy(()=> import("./pages/CategorySellers.jsx"))
+const SellerProfile = lazy(()=> import("./pages/SellerProfile.jsx"))
+const ProfileEdit = lazy(()=> import("./pages/ProfileEdit.jsx"))
+const BigScreen = lazy(()=> import("./ui/BigScreen.jsx"))
+const SmallScreen = lazy(()=> import("./ui/SmallScreen.jsx"))
 //analytics
 import { Analytics } from '@vercel/analytics/react';
 
@@ -43,35 +46,38 @@ function App() {
     if (!IS_PRODUCTION || !GA_MEASUREMENT_ID) return;
     ReactGA.initialize(GA_MEASUREMENT_ID);
   }, []);
+  // splash screen where suspense is.
 
   return (
     <>
       <BrowserRouter>
-        {IS_PRODUCTION && <Analytics />}
-        <GoogleAnalyticsTracker />
-        <AuthProvider>
-          <SmallScreen>
-            <Routes>
-            <Route path="/" element={<Home />} />
-              {/* seller flow */}
-            <Route path="/signUp" element={<SignUp />} />
-            <Route path="/signIn" element={<Login />} />            
-            <Route path="/my-profile" element={<ProtectedRoute><MyProfile /></ProtectedRoute>} />
-            <Route path="/my-profile/edit" element={<ProtectedRoute><ProfileEdit/></ProtectedRoute>} />
+        <Suspense fallback={<Spinner />}> 
+          {IS_PRODUCTION && <Analytics />}
+          <GoogleAnalyticsTracker />
+          <AuthProvider>
+            <SmallScreen>
+              <Routes>
+              <Route path="/" element={<Home />} />
+                {/* seller flow */}
+              <Route path="/signUp" element={<SignUp />} />
+              <Route path="/signIn" element={<Login />} />            
+              <Route path="/my-profile" element={<ProtectedRoute><MyProfile /></ProtectedRoute>} />
+              <Route path="/my-profile/edit" element={<ProtectedRoute><ProfileEdit/></ProtectedRoute>} />
 
-            {/* buyer flow * //use relative paths/ */}
-            <Route path="/explore" element={<Explore />}/>
-            <Route path="/explore/:catalog/:slug" element={<CategorySellers />} />
-            <Route path="/seller/:username" element={<SellerProfile />} />
+              {/* buyer flow * //use relative paths/ */}
+              <Route path="/explore" element={<Explore />}/>
+              <Route path="/explore/:catalog/:slug" element={<CategorySellers />} />
+              <Route path="/seller/:username" element={<SellerProfile />} />
 
 
 
-            {/* fallback route */}
-            <Route path="*" element={<Error404 />} />
-            </Routes>
-          </SmallScreen>
-          <BigScreen />   
-        </AuthProvider>
+              {/* fallback route */}
+              <Route path="*" element={<Error404 />} />
+              </Routes>
+            </SmallScreen>
+            <BigScreen />   
+          </AuthProvider>
+        </Suspense>  
       </BrowserRouter>
       <Toaster
         position="top-center"
