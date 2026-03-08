@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import imageCompression from "browser-image-compression";
 import { GoArrowLeft, GoLink } from "react-icons/go";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import { FaPen } from "react-icons/fa6";
 import { FaShare } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 import AddProductForm from "../ui/AddProductForm";
@@ -59,6 +60,7 @@ export default function MyProfile() {
   const [openOptions, setOpenOptions] = useState(false);
   const [preview, setPreview] = useState(null);
   const [errors, setErrors] = useState({});
+  const [isSubmittingProduct, setIsSubmittingProduct] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -66,10 +68,10 @@ export default function MyProfile() {
       if (!files[0]) return; // ← user opened picker and cancelled, do nothing
       const file = files[0];
 
-      // Check file size (8MB = 8 * 1024 * 1024 bytes)
-      const MAX_FILE_SIZE = 4 * 1024 * 1024;
+      // Check file size (11MB = 11 * 1024 * 1024 bytes)
+      const MAX_FILE_SIZE = 11 * 1024 * 1024;
       if (file.size > MAX_FILE_SIZE) {
-        setErrors({ ...errors, image_url: "Image size must not exceed 8MB" });
+        setErrors({ ...errors, image_url: "Image size must not exceed 11MB" });
         return;
       }
 
@@ -118,24 +120,30 @@ export default function MyProfile() {
   }
 
   const submitProduct = async () => {
+    if (isSubmittingProduct) return;
     if (!validate()) return;
 
-    //compress first
-    const compressedImage = await compressImage(newProduct.image_url);
+    setIsSubmittingProduct(true);
+    try {
+      // Compress before upload for faster transfer and better UX.
+      const compressedImage = await compressImage(newProduct.image_url);
+      const position = images.length + 1;
 
-    const position = images.length + 1;
+      await handleUploadImage(
+        compressedImage,
+        sellerInfo.id,
+        position,
+        newProduct.name,
+        newProduct.caption
+      );
 
-    await handleUploadImage(
-      compressedImage,
-      sellerInfo.id,
-      position,
-      newProduct.name,
-      newProduct.caption
-    );
-    setNewProduct({ name: "", image_url: null, caption: "" });
-    setPreview(null);
-    setShowForm(false);
-    setErrors({});
+      setNewProduct({ name: "", image_url: null, caption: "" });
+      setPreview(null);
+      setShowForm(false);
+      setErrors({});
+    } finally {
+      setIsSubmittingProduct(false);
+    }
   };
 
   const deleteProduct = (imageId) => {
@@ -164,7 +172,6 @@ export default function MyProfile() {
   const remaining = 4 - images.length;
 
   // Share and Copy
-  // Share and copy
   const profilePath = `/seller/${sellerInfo?.username}`;
   const profileUrl = `${window.location.origin}${profilePath}`;
   // e.g. http://localhost:5173/seller/john
@@ -215,6 +222,7 @@ export default function MyProfile() {
               <ProfileOptions
                 handleShare={handleShare}
                 handleLogout={handleLogout}
+                handleCopyLink={handleCopyLink}
                 signOutLoading={signOutLoading}
                 onClose={() => setOpenOptions(false)}
               />
@@ -233,6 +241,7 @@ export default function MyProfile() {
 
       {/* actions */}
       <div className="flex gap-4 items-center justify-center p-5">
+        
         <button
           onClick={handleShare}
           className="flex-4 flex flex-col gap-2 items-center justify-center py-2 px-6 ring ring-stone-100 rounded cursor-pointer"
@@ -240,13 +249,13 @@ export default function MyProfile() {
           <FaShare className="text-xl text-secondary" />
           <span className="text-secondary">Share</span>
         </button>
-        <button
-          onClick={handleCopyLink}
+
+        <Link to="edit" 
           className="flex-4 flex flex-col gap-2 items-center justify-center py-2 px-6 ring ring-stone-200 rounded cursor-pointer"
         >
-          <GoLink className="text-xl text-primary" />
-          <span className="text-primary">Copy Link</span>
-        </button>
+          <FaPen className="text-xl text-primary" />
+          <span className="text-primary">Edit Profile</span>
+        </Link>
       </div>
 
       {/* Catalog Text */}
@@ -278,6 +287,7 @@ export default function MyProfile() {
         handleCancel={handleCancel}
         newProduct={newProduct}
         handleChange={handleChange}
+        loading={isSubmittingProduct}
       />
 
       {/* Contact Row */}

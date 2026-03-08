@@ -1,11 +1,15 @@
 import { FaImage } from "react-icons/fa";
+import SpinnerMini from "./SpinnerMini";
 
 
-export default function AddProductForm({showForm, preview, handleChange, errors, newProduct, handleSubmit, handleCancel}){
+export default function AddProductForm({showForm, preview, handleChange, errors, newProduct, handleSubmit, handleCancel, loading}){
     return (
         <>
         {showForm && (
-                <form className="mx-5 bg-stone-50 rounded px-6 py-4 flex flex-col gap-3">                  
+                <form
+                  className={`mx-5 bg-stone-50 rounded px-6 py-4 flex flex-col gap-3 transition-opacity duration-300 ${loading ? "opacity-85" : "opacity-100"}`}
+                  aria-busy={loading}
+                >                  
                   <span className="capitalize text-lg">New listing</span>                  
         
                   {/* Image upload preview */}
@@ -29,6 +33,7 @@ export default function AddProductForm({showForm, preview, handleChange, errors,
                         accept="image/*"
                         onChange={handleChange}
                         className="hidden"
+                        disabled={loading}
                         />
                     </label>
                     {errors.image_url && (
@@ -46,6 +51,7 @@ export default function AddProductForm({showForm, preview, handleChange, errors,
                         onChange={handleChange}
                         placeholder="What are you selling?"
                         className="p-3 ring ring-stone-200 rounded outline-none focus:ring-primary bg-white transition-all duration-300"
+                        disabled={loading}
                         />
                         {errors.name && (
                         <p className="text-xs text-red-500">{errors.name}</p>
@@ -56,10 +62,16 @@ export default function AddProductForm({showForm, preview, handleChange, errors,
                         <textarea
                         name="caption"
                         value={newProduct.caption}
-                        onChange={handleChange}
-                        placeholder="Tell us more about it..."
+                        onChange={(e) => {
+                            const wordCount = e.target.value.trim().split(/\s+/).filter(Boolean).length;
+                            if (wordCount <= 15 || e.target.value === '') {
+                                handleChange(e);
+                            }
+                        }}
+                        placeholder="Tell us more about it in 15 words..."
                         rows={2}
                         className="p-3 ring ring-stone-200 rounded outline-none focus:ring-primary bg-white transition-all duration-300"
+                        disabled={loading}
                         />
                         {errors.caption && (
                             <p className="text-xs text-red-500">{errors.caption}</p>
@@ -71,13 +83,15 @@ export default function AddProductForm({showForm, preview, handleChange, errors,
                     <button
                       type="button"
                       onClick={handleSubmit}
-                      className="flex-4 p-3 bg-primary rounded text-white cursor-pointer shadow active:scale-95 transition-all capitalize">
-                      save 
+                      className="flex-4 p-3 bg-primary rounded text-white cursor-pointer flex items-center justify-center gap-2 shadow active:scale-95 transition-all capitalize disabled:cursor-not-allowed disabled:opacity-70" disabled={loading}>
+                        {loading && <SpinnerMini />}
+                        {loading ? "saving product..." : "save product"}
                     </button>
                     <button
                       type="button"
                       onClick={handleCancel}
-                      className="flex-4 p-3 bg-stone-200 rounded text-stone-800 cursor-pointer active:scale-95 transition-all capitalize">
+                      className="flex-4 p-3 bg-stone-200 rounded text-stone-800 cursor-pointer active:scale-95 transition-all capitalize disabled:cursor-not-allowed disabled:opacity-70"
+                      disabled={loading}>
                       cancel
                     </button>
                   </div>

@@ -1,6 +1,13 @@
 import { MdDelete } from "react-icons/md";
+import { useState } from "react";
 
 export default function ViewProducts({products, handleDelete}){
+    const [loadedImages, setLoadedImages] = useState({});
+
+    const handleImageLoad = (id) => {
+      setLoadedImages(prev => ({ ...prev, [id]: true }));
+    };
+
     return (
         <>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-5 place-items-center">
@@ -11,7 +18,7 @@ export default function ViewProducts({products, handleDelete}){
                   >
                     <button
                       onClick={() => handleDelete(prod.id)}
-                      className="absolute top-2 right-2 bg-white rounded-full p-1 transition cursor-pointer"
+                      className="absolute top-2 right-2 bg-white rounded-full p-1 transition cursor-pointer z-10"
                     >
                       <MdDelete className="text-red-500" />
                     </button>
@@ -19,8 +26,11 @@ export default function ViewProducts({products, handleDelete}){
                     <img
                       src={prod.image_url}
                       alt={prod.name}
-                      className="w-full h-35 object-cover"
+                      className={`w-full h-35 object-cover transition-all duration-500 ${
+                        loadedImages[prod.id] ? 'blur-0' : 'blur-md'
+                      }`}
                       loading="lazy"
+                      onLoad={() => handleImageLoad(prod.id)}
                     />
                     <div className="p-2">
                       <p className="text-stone-900 capitalize">

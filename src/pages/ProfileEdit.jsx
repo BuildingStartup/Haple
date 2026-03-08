@@ -212,7 +212,7 @@ export default function ProfileEdit(){
                     disabled={updateLoading}
                   >
                     {updateLoading && <SpinnerMini />}
-                    <span>Edit Seller Account</span>
+                    <span>Save Changes</span>
                   </button>
 
             </form>

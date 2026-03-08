@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { GoArrowLeft } from "react-icons/go";
@@ -33,6 +33,11 @@ export default function SellerProfile() {
     handleGetImages,
   } = useSellerImages();
   const navigate = useNavigate();
+  const [loadedImages, setLoadedImages] = useState({});
+
+  const handleImageLoad = (id) => {
+    setLoadedImages((prev) => ({ ...prev, [id]: true }));
+  };
 
   useEffect(() => {
     if (username) fetchSellerByUsername(username);
@@ -138,8 +143,11 @@ export default function SellerProfile() {
               <img
                 src={prod.image_url}
                 alt={prod.name}
-                className="w-full h-35 object-cover"
+                className={`w-full h-35 object-cover transition-all duration-500 ${
+                  loadedImages[prod.id] ? "blur-0" : "blur-md"
+                }`}
                 loading="lazy"
+                onLoad={() => handleImageLoad(prod.id)}
               />
               <div className="p-2">
                 <p className="text-stone-900 capitalize">
