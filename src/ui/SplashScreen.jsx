@@ -23,7 +23,7 @@ export default function SplashScreen() {
         }}
         className="mb-6"
       >
-        <img className="w-22 h-20" src="./Logo.png" alt="" />
+        <img className="w-22 h-20" src="./Logo.svg" alt="" />
       </motion.div>
 
       {/* 2. BRAND NAME */}
