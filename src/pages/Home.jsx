@@ -15,7 +15,7 @@ export default function Home() {
             initial={{ y: 50, opacity: 0 }}
             animate={{
               // The wave sequence: Start at 0, rise up, return to 0
-              y: [0, -9, 0],
+              y: [0, -10, 0],
               opacity: 1,
             }}
             transition={{

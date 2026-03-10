@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 
 export default function SplashScreen() {
   const brandName = "Haple";
-  const tagline = "Whether you are a seller or buyer, we have you covered";
+  // const tagline = "Whether you are a seller or buyer, we have you covered";
 
   return (
     <motion.div
@@ -23,7 +23,7 @@ export default function SplashScreen() {
         }}
         className="mb-6"
       >
-        <img className="w-22 h-20" src="./Logo.svg" alt="" />
+        <img className="w-22 h-20" src="../Logo.svg" alt="" />
       </motion.div>
 
       {/* 2. BRAND NAME */}
