@@ -16,8 +16,13 @@ import SearchBar from "../ui/SearchBar";
 export default function Explore() {
   const [query, setQuery] = useState("");
   const [isExpanded, setIsExpanded] = useState(null);
-  const {loading, categories, getAllCategories } = useCategories();
-  const {loading: searchLoading, error: searchError, sellers, searchSellers} = useSearchSeller();
+  const { loading, categories, getAllCategories } = useCategories();
+  const {
+    loading: searchLoading,
+    error: searchError,
+    sellers,
+    searchSellers,
+  } = useSearchSeller();
 
   useEffect(() => {
     getAllCategories();
@@ -96,13 +101,20 @@ export default function Explore() {
   const products = categoriesToCatalog("products");
   const services = categoriesToCatalog("services");
 
-  
   return (
     <section className="p-5 space-y-6">
-      <Link to="/" className="flex items-center gap-2 cursor-pointer">
-        <GoArrowLeft className="text-xl text-gray-600 cursor-pointer" />
-        <span className="text-gray-600">Back</span>
-      </Link>
+      <div className="flex justify-between">
+        <Link to="/" className="flex items-center gap-2 cursor-pointer">
+          <GoArrowLeft className="text-xl text-gray-600 cursor-pointer" />
+          <span className="text-gray-600">Back</span>
+        </Link>
+        <Link
+          to="/feedback"
+          className="bg-primary py-2 px-3 rounded-sm text-white text-sm"
+        >
+          Feedback
+        </Link>
+      </div>
 
       <SearchBar query={query} onSearch={handleSearch} />
 
@@ -114,17 +126,29 @@ export default function Explore() {
           {sellers.length > 0 ? (
             <SellersList sellers={sellers} />
           ) : (
-            !searchLoading && <p className="text-center text-stone-500">No sellers found</p>
+            !searchLoading && (
+              <p className="text-center text-stone-500">No sellers found</p>
+            )
           )}
         </div>
+      ) : // Show categories
+      loading ? (
+        <Spinner />
       ) : (
-        // Show categories
-        loading ? <Spinner /> : (
-          <div className="space-y-8">
-            <CatalogDisplay catalog={products} name="Products" isExpanded={isExpanded} setIsExpanded={setIsExpanded} />
-            <CatalogDisplay catalog={services} name="Services" isExpanded={isExpanded} setIsExpanded={setIsExpanded} />
-          </div>
-        )
+        <div className="space-y-8">
+          <CatalogDisplay
+            catalog={products}
+            name="Products"
+            isExpanded={isExpanded}
+            setIsExpanded={setIsExpanded}
+          />
+          <CatalogDisplay
+            catalog={services}
+            name="Services"
+            isExpanded={isExpanded}
+            setIsExpanded={setIsExpanded}
+          />
+        </div>
       )}
     </section>
   );

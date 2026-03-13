@@ -8,6 +8,7 @@ import SpinnerMini from "../ui/SpinnerMini.jsx";
 import useSignUp from "../features/authentication/useSignUp.js";
 import useCategories from "../features/categories/useCategories.js";
 import FieldDescription from "../ui/FieldDescription.jsx";
+import { FaRegEye } from "react-icons/fa";
 
 export default function SignUp() {
   const { loading, handleSignUp } = useSignUp();
@@ -55,7 +56,9 @@ export default function SignUp() {
   const onSubmit = (data) => {
     if (!data.email || !data.password) return;
 
-    const whatsappDigits = (data.whatsapp || "").replace(/\D/g, "").slice(0, 10);
+    const whatsappDigits = (data.whatsapp || "")
+      .replace(/\D/g, "")
+      .slice(0, 10);
 
     handleSignUp({
       email: data.email,
@@ -265,8 +268,11 @@ export default function SignUp() {
         </div>
       </form>
 
-      <p className="text-center text-gray-600"> 
-        Already have an account? <Link to="/signIn" className="text-primary font-medium">Sign in</Link>
+      <p className="text-center text-gray-600">
+        Already have an account?{" "}
+        <Link to="/signIn" className="text-primary font-medium">
+          Sign in
+        </Link>
       </p>
     </div>
   );

@@ -9,19 +9,20 @@ import Home from "./pages/Home.jsx";
 import Error404 from "./ui/Error404.jsx";
 import ProtectedRoute from "./ui/ProtectedRoute.jsx";
 import Spinner from "./ui/Spinner.jsx";
+import Feedback from "./pages/Feedback.jsx";
 
 // dynamically imported pages
-const Login = lazy(()=> import("./pages/Login.jsx"))
-const SignUp = lazy(()=> import("./pages/SignUp.jsx"))
-const MyProfile = lazy(()=> import("./pages/MyProfile.jsx"))
-const Explore = lazy(()=> import("./pages/Explore.jsx"))
-const CategorySellers = lazy(()=> import("./pages/CategorySellers.jsx"))
-const SellerProfile = lazy(()=> import("./pages/SellerProfile.jsx"))
-const ProfileEdit = lazy(()=> import("./pages/ProfileEdit.jsx"))
-const BigScreen = lazy(()=> import("./ui/BigScreen.jsx"))
-const SmallScreen = lazy(()=> import("./ui/SmallScreen.jsx"))
+const Login = lazy(() => import("./pages/Login.jsx"));
+const SignUp = lazy(() => import("./pages/SignUp.jsx"));
+const MyProfile = lazy(() => import("./pages/MyProfile.jsx"));
+const Explore = lazy(() => import("./pages/Explore.jsx"));
+const CategorySellers = lazy(() => import("./pages/CategorySellers.jsx"));
+const SellerProfile = lazy(() => import("./pages/SellerProfile.jsx"));
+const ProfileEdit = lazy(() => import("./pages/ProfileEdit.jsx"));
+const BigScreen = lazy(() => import("./ui/BigScreen.jsx"));
+const SmallScreen = lazy(() => import("./ui/SmallScreen.jsx"));
 //analytics
-import { Analytics } from '@vercel/analytics/react';
+import { Analytics } from "@vercel/analytics/react";
 
 const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID;
 const IS_PRODUCTION = import.meta.env.PROD;
@@ -51,33 +52,50 @@ function App() {
   return (
     <>
       <BrowserRouter>
-        <Suspense fallback={<Spinner />}> 
+        <Suspense fallback={<Spinner />}>
           {IS_PRODUCTION && <Analytics />}
           <GoogleAnalyticsTracker />
           <AuthProvider>
             <SmallScreen>
               <Routes>
-              <Route path="/" element={<Home />} />
+                <Route path="/" element={<Home />} />
                 {/* seller flow */}
-              <Route path="/signUp" element={<SignUp />} />
-              <Route path="/signIn" element={<Login />} />            
-              <Route path="/my-profile" element={<ProtectedRoute><MyProfile /></ProtectedRoute>} />
-              <Route path="/my-profile/edit" element={<ProtectedRoute><ProfileEdit/></ProtectedRoute>} />
+                <Route path="/signUp" element={<SignUp />} />
+                <Route path="/signIn" element={<Login />} />
+                <Route
+                  path="/my-profile"
+                  element={
+                    <ProtectedRoute>
+                      <MyProfile />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/my-profile/edit"
+                  element={
+                    <ProtectedRoute>
+                      <ProfileEdit />
+                    </ProtectedRoute>
+                  }
+                />
 
-              {/* buyer flow * //use relative paths/ */}
-              <Route path="/explore" element={<Explore />}/>
-              <Route path="/explore/:catalog/:slug" element={<CategorySellers />} />
-              <Route path="/seller/:username" element={<SellerProfile />} />
+                {/* buyer flow * //use relative paths/ */}
+                <Route path="/explore" element={<Explore />} />
+                <Route
+                  path="/explore/:catalog/:slug"
+                  element={<CategorySellers />}
+                />
+                <Route path="/seller/:username" element={<SellerProfile />} />
 
-
-
-              {/* fallback route */}
-              <Route path="*" element={<Error404 />} />
+                {/* fallback route */}
+                <Route path="*" element={<Error404 />} />
+                {/* Feedback Page */}
+                <Route path="/feedback" element={<Feedback />} />
               </Routes>
             </SmallScreen>
-            <BigScreen />   
+            <BigScreen />
           </AuthProvider>
-        </Suspense>  
+        </Suspense>
       </BrowserRouter>
       <Toaster
         position="top-center"
