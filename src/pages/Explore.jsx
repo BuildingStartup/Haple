@@ -108,12 +108,6 @@ export default function Explore() {
           <GoArrowLeft className="text-xl text-gray-600 cursor-pointer" />
           <span className="text-gray-600">Back</span>
         </Link>
-        <Link
-          to="/feedback"
-          className="bg-primary py-2 px-3 rounded-sm text-white text-sm"
-        >
-          Feedback
-        </Link>
       </div>
 
       <SearchBar query={query} onSearch={handleSearch} />

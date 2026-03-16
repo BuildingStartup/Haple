@@ -9,7 +9,7 @@ import Home from "./pages/Home.jsx";
 import Error404 from "./ui/Error404.jsx";
 import ProtectedRoute from "./ui/ProtectedRoute.jsx";
 import Spinner from "./ui/Spinner.jsx";
-import Feedback from "./pages/Feedback.jsx";
+import GlobalFeedbackButton from "./ui/GlobalFeedbackButton.jsx";
 
 // dynamically imported pages
 const Login = lazy(() => import("./pages/Login.jsx"));
@@ -19,6 +19,7 @@ const Explore = lazy(() => import("./pages/Explore.jsx"));
 const CategorySellers = lazy(() => import("./pages/CategorySellers.jsx"));
 const SellerProfile = lazy(() => import("./pages/SellerProfile.jsx"));
 const ProfileEdit = lazy(() => import("./pages/ProfileEdit.jsx"));
+const Feedback = lazy(() => import("./pages/Feedback.jsx"));
 const BigScreen = lazy(() => import("./ui/BigScreen.jsx"));
 const SmallScreen = lazy(() => import("./ui/SmallScreen.jsx"));
 //analytics
@@ -92,6 +93,7 @@ function App() {
                 {/* Feedback Page */}
                 <Route path="/feedback" element={<Feedback />} />
               </Routes>
+              <GlobalFeedbackButton />
             </SmallScreen>
             <BigScreen />
           </AuthProvider>
