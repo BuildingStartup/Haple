@@ -1,39 +1,24 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { GoArrowLeft } from "react-icons/go";
-import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import useFeedback from "../features/feedback/useFeedback";
+import SpinnerMini from "../ui/SpinnerMini";
 
 export default function Feedback() {
   const { register, handleSubmit, reset } = useForm();
-  const [status, setStatus] = useState(false);
+  const { loading, submitFeedback } = useFeedback();
   const navigate = useNavigate();
+
   const onSubmit = async (data) => {
-    try {
-      const res = await fetch(
-        "https://formsubmit.co/ajax/joelOhikhena12@gmail.com",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify(data),
-        }
-      );
-      const result = res.json();
-      if (result.success) {
-        setStatus("success");
-        reset();
-      } else {
-        setStatus("failed");
-      }
-    } catch {
-      setStatus("error");
+    const isSubmitted = await submitFeedback(data);
+    if (isSubmitted) {
+      reset();
     }
   };
+
   return (
-    <section className="py-4 px-3">
+    <section className="min-h-screen px-3 py-4 flex flex-col">
+
       <Link
         onClick={() => navigate(-1)}
         className="flex items-center gap-2 cursor-pointer"
@@ -41,39 +26,44 @@ export default function Feedback() {
         <GoArrowLeft className="text-xl text-gray-600 cursor-pointer" />
         <span className="text-gray-600">Back</span>
       </Link>
-      <div className="text-center mt-6 space-y-1">
-        <h2 className="text-lg text-primary">Help Us Improve Haple</h2>
-        <p className="text-gray-600 leading-relaxed">
-          Your suggestions and complaints help us build a better marketplace and
-          experience for everyone.
-        </p>
-      </div>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="mt-5 space-y-2 h-screen"
-      >
-        <input
-          {...register("_honey")}
-          type="text"
-          style={{ display: "none" }}
-        />
-        <input type="hidden" value="Feedback Form" {...register("_subject")} />
-        <input type="hidden" value="box" {...register("_template")} />
-        <textarea
-          {...register("message", { required: true })}
-          className="p-1 border border-gray-500 w-full h-44 resize-none leading-loose text-sm pl-2 outline-0 text-gray-900"
-        ></textarea>
-        <button
-          type="submit"
-          className="bg-primary w-full p-3 rounded-sm text-white text-sm"
-        >
-          Send
-        </button>
 
-        {status === "success" && <p>Message sent successfully!</p>}
-        {status === "failed" && <p>Something went wrong.</p>}
-        {status === "error" && <p>Error sending message.</p>}
-      </form>
+      <div className="flex-1 flex items-center justify-center">
+        <div className="w-full max-w-md">
+          <div className="text-center space-y-1">
+            <h2 className="text-lg text-primary font-medium">Help Us Improve Haple</h2>
+            <p className="text-gray-600 leading-relaxed">
+              Your suggestions and complaints help us build a better platform and
+              experience for everyone.
+            </p>
+          </div>
+
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-2"
+          >
+            <input
+              {...register("_honey")}
+              type="text"
+              style={{ display: "none" }}
+            />
+            <input type="hidden" value="Feedback Form" {...register("_subject")} />
+            <input type="hidden" value="box" {...register("_template")} />
+            <textarea
+              {...register("message", { required: true })}
+              className="p-1 border border-gray-500 w-full h-44 resize-none leading-loose text-sm pl-2 outline-0 text-gray-900"
+            ></textarea>
+            <button
+              type="submit"
+              className="bg-primary w-full p-3 rounded flex items-center justify-center gap-2 text-white text-sm cursor-pointer disabled:cursor-not-allowed disabled:bg-gray-400"
+              disabled={loading}
+            >
+              {loading && <SpinnerMini />}
+              {loading ? "Sending..." : "Send"}
+            </button>
+          </form>
+        </div>
+      </div>
+
     </section>
   );
 }
