@@ -1,5 +1,6 @@
 import supabase from "../services/supabase";
 import { createContext, useState, useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext();
 
@@ -7,6 +8,7 @@ const AuthContext = createContext();
 function AuthProvider({children}){
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(()=> {
         //get current session on app load
@@ -21,7 +23,10 @@ function AuthProvider({children}){
         getSession();
 
         //listen for auth changes(login, logout, signup)
-        const {data: authListener} = supabase.auth.onAuthStateChange((_event, session)=> {
+        const {data: authListener} = supabase.auth.onAuthStateChange((event, session)=> {
+            if (event === "PASSWORD_RECOVERY") {
+                navigate("/updatePassword", { replace: true });
+            }
             setUser(session?.user ?? null);
             setLoading(false);
         });
@@ -32,7 +37,7 @@ function AuthProvider({children}){
        }  
         
         
-    }, []);
+    }, [navigate]);
 
     // const value = {
     //     user, // globally stored user 

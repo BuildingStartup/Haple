@@ -65,13 +65,15 @@ export default function Login(){
 
             
             {/* PassWord */}
+            <div className="flex flex-col gap-3">
+
             <Fields
                 forTag="password"
                 labelName="Password"
                 validation={{
-                value: /^(?=.*[!@#$%^&*]).{8,}$/, // at least 8 chars, 1 symbol
-                message:
-                    "Password must be at least 8 characters with at least 1 symbol",
+                  value: /^(?=.*[!@#$%^&*]).{8,}$/, // at least 8 chars, 1 symbol
+                  message:
+                  "Password must be at least 8 characters with at least 1 symbol",
                 }}
                 placeholder="********"
                 type={showPassword ? "text" : "password"}
@@ -81,6 +83,10 @@ export default function Login(){
                 showPassword={showPassword}
                 setShowPassword={setShowPassword}
             />
+            <Link to="/forgotPassword" className="text-primary font-medium hover:underline">Forgot Password?</Link>
+            </div>
+
+            
 
             {/* Submit Button */}
             <button

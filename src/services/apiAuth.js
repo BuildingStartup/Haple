@@ -64,3 +64,35 @@ export async function getCurrentUser(){
 };
 
 
+export async function forgotPassword(email, redirectPath){
+    const { error } = await supabase.auth.resetPasswordForEmail(
+        email,
+        {
+            redirectTo: redirectPath,
+        }
+    )
+
+    if(error){
+        console.log(error);
+        const forgotPasswordError = new Error(error.message);
+        forgotPasswordError.status = error.status;
+        forgotPasswordError.code = error.code;
+        throw forgotPasswordError;
+    }
+}
+
+
+export async function updateUserPassword(newPassword){
+    const {error} = await supabase.auth.updateUser({
+        password: newPassword,
+    });
+
+    if(error){
+        console.log(error);
+        throw new Error(error.message);
+    }
+}
+
+
+
+

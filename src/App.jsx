@@ -14,6 +14,8 @@ import GlobalFeedbackButton from "./ui/GlobalFeedbackButton.jsx";
 // dynamically imported pages
 const Login = lazy(() => import("./pages/Login.jsx"));
 const SignUp = lazy(() => import("./pages/SignUp.jsx"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword.jsx"));
+const UpdatePassword = lazy(() => import("./pages/updatePassword.jsx"));
 const MyProfile = lazy(() => import("./pages/MyProfile.jsx"));
 const Explore = lazy(() => import("./pages/Explore.jsx"));
 const CategorySellers = lazy(() => import("./pages/CategorySellers.jsx"));
@@ -63,6 +65,8 @@ function App() {
                 {/* seller flow */}
                 <Route path="/signUp" element={<SignUp />} />
                 <Route path="/signIn" element={<Login />} />
+                <Route path="/forgotPassword" element={<ForgotPassword />} />
+                <Route path="/updatePassword" element={<UpdatePassword />} />
                 <Route
                   path="/my-profile"
                   element={
@@ -111,7 +115,7 @@ function App() {
             duration: 5000,
           },
           style: {
-            fontSize: "16px",
+            fontSize: "14px",
             maxWidth: "500px",
             padding: "16px 20px",
             backgroundColor: "white",

@@ -48,7 +48,7 @@ export default function Fields({
           </span>
         </div>
       )}
-      {forTag === "password" && (
+      {forTag === "password" || forTag === "confirmPassword" ? (
         <button
           type="button"
           onClick={() => setShowPassword(!showPassword)}
@@ -56,7 +56,7 @@ export default function Fields({
         >
           {showPassword ? <FaEye /> : <FaEyeSlash />}
         </button>
-      )}
+      ) : null}
     </div>
   );
 }
