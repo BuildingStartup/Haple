@@ -12,8 +12,10 @@ function useSellerImages(){
         try {
             const newImage = await uploadSellerImage(imageFile, sellerId, position, name, caption);
             setImages((prevImages) => [...prevImages, newImage]);
+            return newImage;
         } catch (err) {
             setError(err.message);
+            throw err;
         } finally {
             setLoading(false);
         }

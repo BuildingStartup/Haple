@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import imageCompression from "browser-image-compression";
 import { GoArrowLeft, GoLink } from "react-icons/go";
@@ -50,54 +50,128 @@ export default function MyProfile() {
     if (sellerInfo?.id) handleGetImages(sellerInfo.id);
   }, [sellerInfo?.id]);
 
-  // Products added by user
-  const [newProduct, setNewProduct] = useState({
-    name: "",
-    image_url: null,
-    caption: "",
-  });
+  // Products selected for upload (max 4 in total catalog)
+  const [newProducts, setNewProducts] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [openOptions, setOpenOptions] = useState(false);
-  const [preview, setPreview] = useState(null);
   const [errors, setErrors] = useState({});
   const [isSubmittingProduct, setIsSubmittingProduct] = useState(false);
+  const selectedProductsRef = useRef([]);
 
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    if (files) {
-      if (!files[0]) return; // ← user opened picker and cancelled, do nothing
-      const file = files[0];
+  const handleSelectImages = (e) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
 
-      // Check file size (11MB = 11 * 1024 * 1024 bytes)
-      const MAX_FILE_SIZE = 11 * 1024 * 1024;
+    const MAX_FILE_SIZE = 11 * 1024 * 1024;
+    const remainingSlots = Math.max(0, 4 - images.length - newProducts.length);
+    const selectedFiles = files.slice(0, remainingSlots);
+
+    const validItems = [];
+    let hasLargeFile = false;
+
+    selectedFiles.forEach((file) => {
       if (file.size > MAX_FILE_SIZE) {
-        setErrors({ ...errors, image_url: "Image size must not exceed 11MB" });
+        hasLargeFile = true;
         return;
       }
 
-      // Clear any previous image_url errors
-      const newErrors = { ...errors };
-      delete newErrors.image_url;
-      setErrors(newErrors);
+      validItems.push({
+        file,
+        preview: URL.createObjectURL(file),
+        name: "",
+        caption: "",
+      });
+    });
 
-      setNewProduct((prev) => ({ ...prev, [name]: file }));
-      setPreview(URL.createObjectURL(file));
-    } else {
-      setNewProduct((prev) => ({ ...prev, [name]: value }));
+    setNewProducts((prev) => [...prev, ...validItems]);
+    setErrors((prev) => {
+      const next = { ...prev };
+      delete next.items;
+      if (hasLargeFile) {
+        next.image_url = "Some files were skipped because they exceed 11MB.";
+      } else {
+        delete next.image_url;
+      }
+      return next;
+    });
+
+    // Allow selecting the same file again after removing it.
+    e.target.value = "";
+  };
+
+  const handleProductFieldChange = (index, field, value) => {
+    if (field === "caption") {
+      const wordCount = value.trim().split(/\s+/).filter(Boolean).length;
+      if (wordCount > 15 && value !== "") return;
     }
+
+    setNewProducts((prev) =>
+      prev.map((item, i) => (i === index ? { ...item, [field]: value } : item))
+    );
+
+    setErrors((prev) => {
+      const next = { ...prev };
+      if (next.items?.[index]?.[field]) {
+        next.items = { ...next.items, [index]: { ...next.items[index], [field]: undefined } };
+      }
+      return next;
+    });
+  };
+
+  const handleRemoveSelectedImage = (index) => {
+    setNewProducts((prev) => {
+      const removedItem = prev[index];
+      if (removedItem?.preview) URL.revokeObjectURL(removedItem.preview);
+      return prev.filter((_, i) => i !== index);
+    });
+
+    setErrors((prev) => {
+      const next = { ...prev };
+      if (next.items) {
+        const rebuilt = {};
+        Object.entries(next.items).forEach(([key, value]) => {
+          const currentIndex = Number(key);
+          if (currentIndex < index) rebuilt[currentIndex] = value;
+          if (currentIndex > index) rebuilt[currentIndex - 1] = value;
+        });
+        next.items = rebuilt;
+      }
+      return next;
+    });
   };
 
   useEffect(() => {
+    selectedProductsRef.current = newProducts;
+  }, [newProducts]);
+
+  useEffect(() => {
     return () => {
-      if (preview) URL.revokeObjectURL(preview);
+      selectedProductsRef.current.forEach((item) => {
+        if (item.preview) URL.revokeObjectURL(item.preview);
+      });
     };
-  }, [preview]);
+  }, []);
 
   const validate = () => {
     let temp = {};
-    if (!newProduct.name) temp.name = "Listing name is required";
-    if (!newProduct.image_url) temp.image_url = "Listing image is required";
-    if (!newProduct.caption) temp.caption = "Listing caption is required";
+    if (!newProducts.length) {
+      temp.image_url = "Select at least one image";
+    }
+
+    const itemErrors = {};
+    newProducts.forEach((item, index) => {
+      const perItemErrors = {};
+      if (!item.name.trim()) perItemErrors.name = "Listing name is required";
+      if (!item.caption.trim()) perItemErrors.caption = "Listing description is required";
+
+      if (Object.keys(perItemErrors).length) {
+        itemErrors[index] = perItemErrors;
+      }
+    });
+
+    if (Object.keys(itemErrors).length) {
+      temp.items = itemErrors;
+    }
 
     setErrors(temp);
     return Object.keys(temp).length === 0;
@@ -125,20 +199,24 @@ export default function MyProfile() {
 
     setIsSubmittingProduct(true);
     try {
-      // Compress before upload for faster transfer and better UX.
-      const compressedImage = await compressImage(newProduct.image_url);
-      const position = images.length + 1;
+      for (let index = 0; index < newProducts.length; index += 1) {
+        const item = newProducts[index];
+        const compressedImage = await compressImage(item.file);
+        const position = images.length + index + 1;
 
-      await handleUploadImage(
-        compressedImage,
-        sellerInfo.id,
-        position,
-        newProduct.name,
-        newProduct.caption
-      );
+        await handleUploadImage(
+          compressedImage,
+          sellerInfo.id,
+          position,
+          item.name.trim(),
+          item.caption.trim()
+        );
+      }
 
-      setNewProduct({ name: "", image_url: null, caption: "" });
-      setPreview(null);
+      newProducts.forEach((item) => {
+        if (item.preview) URL.revokeObjectURL(item.preview);
+      });
+      setNewProducts([]);
       setShowForm(false);
       setErrors({});
     } finally {
@@ -152,13 +230,16 @@ export default function MyProfile() {
   };
 
   const handleCancel = () => {
+    newProducts.forEach((item) => {
+      if (item.preview) URL.revokeObjectURL(item.preview);
+    });
+    setNewProducts([]);
+    setErrors({});
     setShowForm(false);
-    setPreview(null);
   };
 
   const handleAddItem = () => {
     setShowForm(true);
-    setPreview(null);
   };
 
   const handleLogout = () => {
@@ -282,11 +363,13 @@ export default function MyProfile() {
       <AddProductForm
         showForm={showForm}
         handleSubmit={submitProduct}
-        preview={preview}
+        selectedProducts={newProducts}
         errors={errors}
         handleCancel={handleCancel}
-        newProduct={newProduct}
-        handleChange={handleChange}
+        handleSelectImages={handleSelectImages}
+        handleProductFieldChange={handleProductFieldChange}
+        handleRemoveSelectedImage={handleRemoveSelectedImage}
+        remaining={Math.max(0, 4 - images.length - newProducts.length)}
         loading={isSubmittingProduct}
       />
 

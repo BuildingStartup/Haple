@@ -2,7 +2,18 @@ import { FaImage } from "react-icons/fa";
 import SpinnerMini from "./SpinnerMini";
 
 
-export default function AddProductForm({showForm, preview, handleChange, errors, newProduct, handleSubmit, handleCancel, loading}){
+export default function AddProductForm({
+    showForm,
+    selectedProducts,
+    handleSelectImages,
+    handleProductFieldChange,
+    handleRemoveSelectedImage,
+    errors,
+    handleSubmit,
+    handleCancel,
+    loading,
+    remaining,
+}){
     return (
         <>
         {showForm && (
@@ -12,71 +23,82 @@ export default function AddProductForm({showForm, preview, handleChange, errors,
                 >                  
                   <span className="capitalize text-lg">New listing</span>                  
         
-                  {/* Image upload preview */}
+                  {/* Image upload selector */}
                   <div className="flex flex-col gap-1">
-                    <label className="w-full h-48 rounded border-2 border-dashed border-stone-300 flex items-center justify-center cursor-pointer overflow-hidden bg-white">
-                        {preview ? (
-                        <img
-                            src={preview}
-                            alt="preview"
-                            className="w-full h-full object-contain"
-                            />
-                        ) : (
-                            <div className="flex flex-col items-center gap-2 text-stone-400">
-                            <FaImage className="text-lg" />
-                            <span>Upload listing photo</span>
-                        </div>
-                        )}
-                        <input
+                    <label className="w-full h-32 rounded border-2 border-dashed border-stone-300 flex items-center justify-center cursor-pointer overflow-hidden bg-white">
+                      <div className="flex flex-col items-center gap-2 text-stone-400 text-center px-3">
+                        <FaImage className="text-lg" />
+                        <span>
+                          Select up to {remaining} more image{remaining !== 1 ? "s" : ""}
+                        </span>
+                      </div>
+                      <input
                         type="file"
                         name="image_url"
                         accept="image/*"
-                        onChange={handleChange}
+                        multiple
+                        onChange={handleSelectImages}
                         className="hidden"
-                        disabled={loading}
-                        />
+                        disabled={loading || remaining === 0}
+                      />
                     </label>
                     {errors.image_url && (
-                        <p className="text-xs text-red-500">{errors.image_url}</p>
-                        )}
-                    </div>
+                      <p className="text-xs text-red-500">{errors.image_url}</p>
+                    )}
+                  </div>
         
-                  {/* Inputs */}
-                  <div className="space-y-2">
-                    <div className="flex flex-col gap-1">
-                        <input
-                        type="text"
-                        name="name"
-                        value={newProduct.name}
-                        onChange={handleChange}
-                        placeholder="What are you selling?"
-                        className="p-3 ring ring-stone-200 rounded outline-none focus:ring-primary bg-white transition-all duration-300"
-                        disabled={loading}
-                        />
-                        {errors.name && (
-                        <p className="text-xs text-red-500">{errors.name}</p>
-                        )}
-                    </div>
+                  {/* Per-image metadata */}
+                  <div className="space-y-3">
+                    {selectedProducts.map((item, index) => (
+                      <div key={`${item.preview}-${index}`} className="bg-white p-3 rounded ring ring-stone-200 space-y-2">
+                        <div className="flex items-start gap-3">
+                          <img
+                            src={item.preview}
+                            alt={`Selected listing ${index + 1}`}
+                            className="w-20 h-20 object-cover rounded"
+                          />
+                          <div className="flex-1">
+                            <p className="text-sm text-stone-600">Item {index + 1}</p>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveSelectedImage(index)}
+                              className="text-xs text-red-500 cursor-pointer"
+                              disabled={loading}
+                            >
+                              remove
+                            </button>
+                          </div>
+                        </div>
 
-                    <div className="flex flex-col gap-1">
-                        <textarea
-                        name="caption"
-                        value={newProduct.caption}
-                        onChange={(e) => {
-                            const wordCount = e.target.value.trim().split(/\s+/).filter(Boolean).length;
-                            if (wordCount <= 15 || e.target.value === '') {
-                                handleChange(e);
-                            }
-                        }}
-                        placeholder="Tell us more about it in 15 words..."
-                        rows={2}
-                        className="p-3 ring ring-stone-200 rounded outline-none focus:ring-primary bg-white transition-all duration-300"
-                        disabled={loading}
-                        />
-                        {errors.caption && (
-                            <p className="text-xs text-red-500">{errors.caption}</p>
-                        )}
-                    </div>    
+                        <div className="flex flex-col gap-1">
+                          <input
+                            type="text"
+                            value={item.name}
+                            onChange={(e) => handleProductFieldChange(index, "name", e.target.value)}
+                            placeholder="What are you selling?"
+                            className="p-3 ring ring-stone-200 rounded outline-none focus:ring-primary bg-white transition-all duration-300"
+                            disabled={loading}
+                          />
+                          {errors.items?.[index]?.name && (
+                            <p className="text-xs text-red-500">{errors.items[index].name}</p>
+                          )}
+                        </div>
+
+                        <div className="flex flex-col gap-1">
+                          <textarea
+                            value={item.caption}
+                            onChange={(e) => handleProductFieldChange(index, "caption", e.target.value)}
+                            placeholder="Tell us more about it in 15 words..."
+                            rows={2}
+                            className="p-3 ring ring-stone-200 rounded outline-none focus:ring-primary bg-white transition-all duration-300"
+                            disabled={loading}
+                          />
+                          {errors.items?.[index]?.caption && (
+                            <p className="text-xs text-red-500">{errors.items[index].caption}</p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
                   </div>
         
                   <div className="flex gap-2">
