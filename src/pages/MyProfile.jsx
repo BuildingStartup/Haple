@@ -13,11 +13,11 @@ import SellerContact from "../ui/SellerContact";
 import Spinner from "../ui/Spinner";
 import SellerInfo from "../ui/SellerInfo";
 import NetworkError from "../ui/NetworkError";
+import ProfileOptions from "../ui/ProfileOptions";
 import useSeller from "../features/profiles/useSeller";
 import useSellerCategory from "../features/categories/useSellerCategory";
 import useSellerImages from "../features/profiles/useSellerImages";
 import useSignOut from "../features/authentication/useSignOut";
-import ProfileOptions from "../ui/ProfileOptions";
 
 export default function MyProfile() {
   const { user } = useAuth();
@@ -29,12 +29,14 @@ export default function MyProfile() {
     category,
   } = useSellerCategory();
   const {
-    handleUploadImage,
-    handleDeleteImage,
-    handleGetImages,
-    images,
-    loading: imageLoading,
-    error: imageError,
+      isUploading,
+      isDeleting,
+      handleUploadImage,
+      handleGetImages,
+      handleDeleteImage,
+      images,
+      loading: imageLoading,
+      error: imageError,
   } = useSellerImages();
   const { loading: signOutLoading, handleSignOut } = useSignOut();
 
@@ -57,6 +59,8 @@ export default function MyProfile() {
   const [errors, setErrors] = useState({});
   const [isSubmittingProduct, setIsSubmittingProduct] = useState(false);
   const selectedProductsRef = useRef([]);
+  const [uploadProgress, setUploadProgress] = useState([]);
+  const isProductUploadBusy = isSubmittingProduct || isUploading;
 
   const handleSelectImages = (e) => {
     const files = Array.from(e.target.files || []);
@@ -140,10 +144,12 @@ export default function MyProfile() {
     });
   };
 
+  // keeps latest selected items
   useEffect(() => {
     selectedProductsRef.current = newProducts;
   }, [newProducts]);
 
+  // revokes object URLs on unmount to prevent memory leaks
   useEffect(() => {
     return () => {
       selectedProductsRef.current.forEach((item) => {
@@ -194,24 +200,28 @@ export default function MyProfile() {
   }
 
   const submitProduct = async () => {
-    if (isSubmittingProduct) return;
+    if (isProductUploadBusy) return;
     if (!validate()) return;
 
     setIsSubmittingProduct(true);
+    setUploadProgress(new Array(newProducts.length).fill(0));
     try {
-      for (let index = 0; index < newProducts.length; index += 1) {
-        const item = newProducts[index];
-        const compressedImage = await compressImage(item.file);
-        const position = images.length + index + 1;
+      const uploadItems = await Promise.all(
+        newProducts.map(async (item, index) => ({
+          imageFile: await compressImage(item.file),
+          position: images.length + index + 1,
+          name: item.name.trim(),
+          caption: item.caption.trim(),
+        }))
+      );
 
-        await handleUploadImage(
-          compressedImage,
-          sellerInfo.id,
-          position,
-          item.name.trim(),
-          item.caption.trim()
-        );
-      }
+      await handleUploadImage(uploadItems, sellerInfo.id, (itemIndex, progress) => {
+        setUploadProgress((prev) => {
+          const updated = [...prev];
+          updated[itemIndex] = progress;
+          return updated;
+        });
+      });
 
       newProducts.forEach((item) => {
         if (item.preview) URL.revokeObjectURL(item.preview);
@@ -219,6 +229,7 @@ export default function MyProfile() {
       setNewProducts([]);
       setShowForm(false);
       setErrors({});
+      setUploadProgress([]);
     } finally {
       setIsSubmittingProduct(false);
     }
@@ -246,7 +257,7 @@ export default function MyProfile() {
     handleSignOut();
   };
 
-  if (loading || categoryLoading || imageLoading) return <Spinner />;
+  if (loading || categoryLoading || imageLoading || isDeleting) return <Spinner />;
   if (error || categoryError || imageError) return <NetworkError />;
   if (!sellerInfo) return <p>No seller data found</p>;
 
@@ -365,12 +376,14 @@ export default function MyProfile() {
         handleSubmit={submitProduct}
         selectedProducts={newProducts}
         errors={errors}
+        isDeleting={isDeleting}
         handleCancel={handleCancel}
         handleSelectImages={handleSelectImages}
         handleProductFieldChange={handleProductFieldChange}
         handleRemoveSelectedImage={handleRemoveSelectedImage}
         remaining={Math.max(0, 4 - images.length - newProducts.length)}
-        loading={isSubmittingProduct}
+        loading={isProductUploadBusy}
+        uploadProgress={uploadProgress}
       />
 
       {/* Contact Row */}

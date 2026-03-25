@@ -3,21 +3,36 @@ import { uploadSellerImage, getSellerImage, deleteSellerImage } from "../../serv
 
 function useSellerImages(){
     const [loading, setLoading] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
     const [error, setError] = useState(null);
     const [images, setImages] = useState([]);
 
-    async function handleUploadImage(imageFile, sellerId, position, name, caption){
-        setLoading(true);
+    async function handleUploadImage(imageFileOrItems, sellerId, positionOrOnItemProgress, name, caption, onProgress){
+        setIsUploading(true);
         setError(null);
         try {
-            const newImage = await uploadSellerImage(imageFile, sellerId, position, name, caption);
-            setImages((prevImages) => [...prevImages, newImage]);
-            return newImage;
+            const uploadedResult = await uploadSellerImage(
+                imageFileOrItems,
+                sellerId,
+                positionOrOnItemProgress,
+                name,
+                caption,
+                onProgress
+            );
+
+            if (Array.isArray(uploadedResult)) {
+                setImages((prevImages) => [...prevImages, ...uploadedResult]);
+            } else {
+                setImages((prevImages) => [...prevImages, uploadedResult]);
+            }
+
+            return uploadedResult;
         } catch (err) {
             setError(err.message);
             throw err;
         } finally {
-            setLoading(false);
+            setIsUploading(false);
         }
     }
 
@@ -37,7 +52,7 @@ function useSellerImages(){
     }
 
     async function handleDeleteImage(sellerId, imageId){
-        setLoading(true);
+        setIsDeleting(true);
         setError(null);
         try {
             await deleteSellerImage(sellerId, imageId);
@@ -45,11 +60,20 @@ function useSellerImages(){
         } catch (err) {
             setError(err.message);
         } finally {
-            setLoading(false);
+            setIsDeleting(false);
         }
     }
 
-    return { loading, error, images, handleUploadImage, handleGetImages, handleDeleteImage };
+    return {
+        loading,
+        isUploading,
+        isDeleting,
+        error,
+        images,
+        handleUploadImage,
+        handleGetImages,
+        handleDeleteImage,
+    };
 }
 
 export default useSellerImages;

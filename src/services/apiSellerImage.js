@@ -1,7 +1,7 @@
 import supabase, {supabaseUrl} from "./supabase";
 
 
-export async function uploadSellerImage(imageFile, sellerId, position, name, caption){
+async function uploadSingleSellerImage(imageFile, sellerId, position, name, caption, onProgress){
      //1. checking if it has an image path already
         const hasImagePath = imageFile?.startsWith?.(supabaseUrl);
     
@@ -23,13 +23,20 @@ export async function uploadSellerImage(imageFile, sellerId, position, name, cap
     
     
     //upload to supabase storage
+    if (onProgress) onProgress(10); // start progress
+
     const {error: uploadError, } = await supabase.storage
         .from("seller-images")
-        .upload(filePath, imageFile);
+        .upload(filePath, imageFile, { 
+          cacheControl: '3600',
+          upsert: false 
+        });
     
     if(uploadError){
         throw new Error(uploadError.message);
     }
+
+    if (onProgress) onProgress(60); // progress mid-upload
 
     //get public url
     const {data: publicUrlData, error: publicUrlError} = supabase.storage
@@ -41,6 +48,7 @@ export async function uploadSellerImage(imageFile, sellerId, position, name, cap
         }
     
         const imageUrl = publicUrlData.publicUrl;
+        if (onProgress) onProgress(80); // progress after URL generated
 
         //insert into seller-images table
         const {data, error: insertError} = await supabase
@@ -64,8 +72,40 @@ export async function uploadSellerImage(imageFile, sellerId, position, name, cap
             throw new Error(insertError.message);
         }
 
+        if (onProgress) onProgress(100); // complete
         return data;
 };  
+
+export async function uploadSellerImage(imageFileOrItems, sellerId, positionOrOnItemProgress, name, caption, onProgress){
+    if (Array.isArray(imageFileOrItems)) {
+        const items = imageFileOrItems;
+        const onItemProgress = typeof positionOrOnItemProgress === "function"
+            ? positionOrOnItemProgress
+            : undefined;
+
+        return Promise.all(
+            items.map((item, index) =>
+                uploadSingleSellerImage(
+                    item.imageFile,
+                    sellerId,
+                    item.position,
+                    item.name,
+                    item.caption,
+                    (progress) => onItemProgress?.(index, progress)
+                )
+            )
+        );
+    }
+
+    return uploadSingleSellerImage(
+        imageFileOrItems,
+        sellerId,
+        positionOrOnItemProgress,
+        name,
+        caption,
+        onProgress
+    );
+}
 
 
 
