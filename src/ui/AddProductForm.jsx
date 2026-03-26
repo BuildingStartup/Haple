@@ -1,5 +1,6 @@
 import { FaImage } from "react-icons/fa";
 import SpinnerMini from "./SpinnerMini";
+import Modal from "./Modal";
 
 
 export default function AddProductForm({
@@ -12,7 +13,6 @@ export default function AddProductForm({
     handleSubmit,
     handleCancel,
     loading,
-    isDeleting,
     remaining,
     uploadProgress,
 }){
@@ -52,6 +52,7 @@ export default function AddProductForm({
                   {/* Per-image metadata */}
                   <div className="space-y-3">
                     {selectedProducts.map((item, index) => (
+                      <>
                       <div key={`${item.preview}-${index}`} className="bg-white p-3 rounded ring ring-stone-200 space-y-2">
                         <div className="flex items-start gap-3">
 
@@ -60,19 +61,6 @@ export default function AddProductForm({
                             alt={`Selected listing ${index + 1}`}
                             className=" object-cover rounded"
                           />
-
-                          {/* <div className="flex-1">
-                            <p className="text-sm text-stone-600">Item {index + 1}</p>
-                            <button
-                              type="button"
-                              onClick={() => handleRemoveSelectedImage(index)}
-                              className="text-xs text-red-500 cursor-pointer"
-                              disabled={loading}
-                            >
-                              remove
-                            </button>
-                          </div> */}
-
                         </div>
 
                         <div className="flex flex-col gap-1">
@@ -95,7 +83,7 @@ export default function AddProductForm({
                             onChange={(e) => handleProductFieldChange(index, "caption", e.target.value)}
                             placeholder="Tell us more about it in 15 words..."
                             rows={2}
-                            className="p-3 ring ring-stone-200 rounded outline-none focus:ring-primary bg-white transition-all duration-300"
+                            className="p-3 ring ring-stone-200 rounded outline-none focus:ring-primary bg-white transition-all duration-300 resize-none"
                             disabled={loading}
                           />
                           {errors.items?.[index]?.caption && (
@@ -122,21 +110,30 @@ export default function AddProductForm({
 
                         {/* work on delete loading spinner */}
                         <div className="flex gap-2">
-                          <button
-                            type="button"
-                            className="flex-4 p-3 bg-white rounded text-primary cursor-pointer flex items-center justify-center gap-2 shadow active:scale-95 transition-all capitalize disabled:cursor-not-allowed disabled:opacity-70" disabled={loading}>
-                              Preview
-                          </button>
+                          <Modal.Open opens={`productPreview-${index}`}>
+                            <button
+                              type="button"
+                              className="flex-4 p-3 bg-white rounded text-primary cursor-pointer flex items-center justify-center gap-2 shadow active:scale-95 transition-all capitalize disabled:cursor-not-allowed disabled:opacity-70" disabled={loading}>
+                                Preview
+                            </button>
+                          </Modal.Open>
                           <button
                             type="button"
                             onClick={() => handleRemoveSelectedImage(index)}
-                            className="flex-4 p-3 bg-stone-200 rounded text-stone-800 cursor-pointer flex items-center justify-center gap-2 active:scale-95 transition-all capitalize disabled:cursor-not-allowed disabled:opacity-70"
-                            disabled={isDeleting}>
-                            {isDeleting && <Spinner />} 
-                            {isDeleting ? "Deleting.." : "Delete"}
+                            className="flex-4 p-3 bg-stone-200 rounded text-stone-800 cursor-pointer flex items-center justify-center gap-2 active:scale-95 transition-all capitalize disabled:cursor-not-allowed disabled:opacity-70">
+                            Delete
                           </button>
                         </div>
                       </div>
+
+                      <Modal.Preview name={`productPreview-${index}`} key={index}>
+                          <img
+                            src={item.preview}
+                            alt={`Selected listing ${index + 1}`}
+                            className=" object-cover rounded w-full"
+                          />
+                      </Modal.Preview>  
+                    </>
                     ))}
                   </div>
         
@@ -156,8 +153,10 @@ export default function AddProductForm({
                       cancel
                     </button>
                   </div>
-                </form>
+                </form>                  
               )}
+
+              
         </>
     )
 }

@@ -26,6 +26,7 @@ const BigScreen = lazy(() => import("./ui/BigScreen.jsx"));
 const SmallScreen = lazy(() => import("./ui/SmallScreen.jsx"));
 //analytics
 import { Analytics } from "@vercel/analytics/react";
+import AppLayout from "./ui/AppLayout.jsx";
 
 const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID;
 const IS_PRODUCTION = import.meta.env.PROD;
@@ -61,41 +62,43 @@ function App() {
           <AuthProvider>
             <SmallScreen>
               <Routes>
-                <Route path="/" element={<Home />} />
-                {/* seller flow */}
-                <Route path="/signUp" element={<SignUp />} />
-                <Route path="/signIn" element={<Login />} />
-                <Route path="/forgotPassword" element={<ForgotPassword />} />
-                <Route path="/updatePassword" element={<UpdatePassword />} />
-                <Route
-                  path="/my-profile"
-                  element={
-                    <ProtectedRoute>
-                      <MyProfile />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/my-profile/edit"
-                  element={
-                    <ProtectedRoute>
-                      <ProfileEdit />
-                    </ProtectedRoute>
-                  }
-                />
+                <Route element={<AppLayout />} >
+                  <Route path="/" element={<Home />} />
+                  {/* seller flow */}
+                  <Route path="/signUp" element={<SignUp />} />
+                  <Route path="/signIn" element={<Login />} />
+                  <Route path="/forgotPassword" element={<ForgotPassword />} />
+                  <Route path="/updatePassword" element={<UpdatePassword />} />
+                  <Route
+                    path="/my-profile"
+                    element={
+                      <ProtectedRoute>
+                        <MyProfile />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/my-profile/edit"
+                    element={
+                      <ProtectedRoute>
+                        <ProfileEdit />
+                      </ProtectedRoute>
+                    }
+                  />
 
-                {/* buyer flow * //use relative paths/ */}
-                <Route path="/explore" element={<Explore />} />
-                <Route
-                  path="/explore/:catalog/:slug"
-                  element={<CategorySellers />}
-                />
-                <Route path="/seller/:username" element={<SellerProfile />} />
+                  {/* buyer flow * //use relative paths/ */}
+                  <Route path="/explore" element={<Explore />} />
+                  <Route
+                    path="/explore/:catalog/:slug"
+                    element={<CategorySellers />}
+                  />
+                  <Route path="/seller/:username" element={<SellerProfile />} />
 
-                {/* fallback route */}
-                <Route path="*" element={<Error404 />} />
-                {/* Feedback Page */}
-                <Route path="/feedback" element={<Feedback />} />
+                  {/* fallback route */}
+                  <Route path="*" element={<Error404 />} />
+                  {/* Feedback Page */}
+                  <Route path="/feedback" element={<Feedback />} />
+                </Route>
               </Routes>
               <GlobalFeedbackButton />
             </SmallScreen>

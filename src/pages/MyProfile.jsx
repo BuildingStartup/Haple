@@ -376,7 +376,6 @@ export default function MyProfile() {
         handleSubmit={submitProduct}
         selectedProducts={newProducts}
         errors={errors}
-        isDeleting={isDeleting}
         handleCancel={handleCancel}
         handleSelectImages={handleSelectImages}
         handleProductFieldChange={handleProductFieldChange}
