@@ -5,6 +5,7 @@ import { GoArrowLeft, GoLink } from "react-icons/go";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaPen } from "react-icons/fa6";
 import { FaShare } from "react-icons/fa";
+import { MdLogout } from "react-icons/md";
 import { useAuth } from "../context/AuthContext";
 import AddProductForm from "../ui/AddProductForm";
 import ViewProducts from "../ui/ViewProducts";
@@ -14,6 +15,8 @@ import Spinner from "../ui/Spinner";
 import SellerInfo from "../ui/SellerInfo";
 import NetworkError from "../ui/NetworkError";
 import ProfileOptions from "../ui/ProfileOptions";
+import Modal from "../ui/Modal";
+import ConfirmAction from "../ui/ConfirmAction";
 import useSeller from "../features/profiles/useSeller";
 import useSellerCategory from "../features/categories/useSellerCategory";
 import useSellerImages from "../features/profiles/useSellerImages";
@@ -235,9 +238,9 @@ export default function MyProfile() {
     }
   };
 
-  const deleteProduct = (imageId) => {
+  const deleteProduct = async (imageId) => {
     if (!imageId) return;
-    handleDeleteImage(sellerInfo.id, imageId);
+    return handleDeleteImage(sellerInfo.id, imageId);
   };
 
   const handleCancel = () => {
@@ -257,7 +260,7 @@ export default function MyProfile() {
     handleSignOut();
   };
 
-  if (loading || categoryLoading || imageLoading || isDeleting) return <Spinner />;
+  if (loading || categoryLoading || imageLoading) return <Spinner />;
   if (error || categoryError || imageError) return <NetworkError />;
   if (!sellerInfo) return <p>No seller data found</p>;
 
@@ -313,9 +316,7 @@ export default function MyProfile() {
             {openOptions && (
               <ProfileOptions
                 handleShare={handleShare}
-                handleLogout={handleLogout}
                 handleCopyLink={handleCopyLink}
-                signOutLoading={signOutLoading}
                 onClose={() => setOpenOptions(false)}
               />
             )}
@@ -360,6 +361,7 @@ export default function MyProfile() {
       {/* How it looks like when added */}
       <ViewProducts
         products={images}
+        isDeleting={isDeleting}
         handleDelete={(imageId) => deleteProduct(imageId)}
       />
 
@@ -387,6 +389,11 @@ export default function MyProfile() {
 
       {/* Contact Row */}
       <SellerContact sellerInfo={sellerInfo} category={category} />
+
+      <Modal.Window name="confirm-logout">
+        <ConfirmAction action={"logout"} onClick={handleLogout} loading={signOutLoading} icon={<MdLogout />} />
+      </Modal.Window> 
+
     </section>
   );
 }

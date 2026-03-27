@@ -11,6 +11,8 @@ import { useAuth } from "../context/AuthContext";
 import useSeller from "../features/profiles/useSeller.js";
 import useUpdateSeller from "../features/profiles/useUpdateSeller.js";
 import FieldDescription from "../ui/FieldDescription.jsx";
+import Modal from "../ui/Modal.jsx";
+import ConfirmAction from "../ui/ConfirmAction.jsx";
 
 export default function ProfileEdit(){
     const { user } = useAuth();
@@ -118,10 +120,16 @@ export default function ProfileEdit(){
     if(loading) return <Spinner />;
     return (
         <div className="h-screen px-4 py-6 space-y-6 pb-20">
-              <Link to="#" onClick={handleGoBack} className="flex items-center gap-2 cursor-pointer">
-                <GoArrowLeft className="text-2xl text-gray-600 cursor-pointer" />
-                <span className="text-gray-600">Back</span>
-              </Link>
+              <Modal.Open opens={"backEdit"}>
+                <button className="flex items-center gap-2 cursor-pointer">
+                  <GoArrowLeft className="text-2xl text-gray-600 cursor-pointer" />
+                  <span className="text-gray-600">Back</span>
+                </button>
+              </Modal.Open>
+
+              <Modal.Window name="backEdit">
+                <ConfirmAction action={"discard changes"} onClick={handleGoBack} />
+              </Modal.Window>
         
               {/* Header */}
               <div className="text-center space-y-1">

@@ -1,12 +1,13 @@
 // import { Link } from "react-router-dom";
+import { MdLogout } from "react-icons/md";
 import { useOutsideClick } from "../hooks/useOutsideClick";
+import ConfirmAction from "./ConfirmAction";
+import Modal from "./Modal";
 import SpinnerMini from "./SpinnerMini";
 
 export default function ProfileOptions({
   handleShare,
-  handleLogout,
   handleCopyLink,
-  signOutLoading,
   onClose,
 }) {
   const ref = useOutsideClick(() => onClose?.());
@@ -30,17 +31,14 @@ export default function ProfileOptions({
         Copy Link
       </li>
 
-      <li
-        className="px-4 py-3 hover:bg-stone-200 rounded cursor-pointer flex items-center gap-1 disabled:cursor-not-allowed disabled:text-stone-500"
-        disabled={signOutLoading}
-        onClick={() => {
-          handleLogout?.();
-          onClose?.();
-        }}
-      >
-        {signOutLoading && <SpinnerMini />}
-        <span className="text-red-500">Logout</span>
-      </li>
+      <Modal.Open opens="confirm-logout">
+        <li
+          className="px-4 py-3 hover:bg-stone-200 rounded cursor-pointer flex items-center gap-1 disabled:cursor-not-allowed disabled:text-stone-500">
+          <span className="text-red-500">Logout</span>
+        </li>
+      </Modal.Open>   
+      
+          
     </ul>
   );
 } 

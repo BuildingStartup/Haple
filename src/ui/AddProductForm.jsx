@@ -120,7 +120,8 @@ export default function AddProductForm({
                           <button
                             type="button"
                             onClick={() => handleRemoveSelectedImage(index)}
-                            className="flex-4 p-3 bg-stone-200 rounded text-stone-800 cursor-pointer flex items-center justify-center gap-2 active:scale-95 transition-all capitalize disabled:cursor-not-allowed disabled:opacity-70">
+                            className="flex-4 p-3 bg-stone-200 rounded text-stone-800 cursor-pointer flex items-center justify-center gap-2 active:scale-95 transition-all capitalize disabled:cursor-not-allowed disabled:opacity-70"
+                            disabled={loading}>
                             Delete
                           </button>
                         </div>

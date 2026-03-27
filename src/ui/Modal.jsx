@@ -38,9 +38,9 @@ function Window({children, name}){
 
     return createPortal (
         <div className="fixed top-0 left-0 w-full h-screen bg-black/20 backdrop-blur-sm transition-all duration-500 z-50">
-            <StyledModal ref={ref}>
-                <button className="p-1.5 rounded-sm absolute top-5 right-7 group hover:bg-primary cursor-pointer" onClick={close}>
-                    <HiXMark className="text-xl group-hover:text-white" />
+            <StyledModal ref={ref} className="h-full flex flex-col gap-3  justify-center px-5">
+                <button className="p-1.5 rounded-sm group cursor-pointer ml-auto" onClick={close}>
+                    <HiXMark className="text-xl font-bold" />
                 </button>
                 <div>
                     {cloneElement(children, {onCloseModal: close})}
